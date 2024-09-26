@@ -1,3 +1,4 @@
+/*
 'use client'
 import { useState } from "react"
 import { Button, Container, Form, Table } from "react-bootstrap";
@@ -154,3 +155,5 @@ const Sample =()=>{
 }
 
 export default Sample
+
+*/
