@@ -1,6 +1,23 @@
 import Plot from 'react-plotly.js';
 
 const MathGraph = ({ dataPoints }) => {
+  let xstart
+  let xend
+  let ystart
+  let yend
+  if(dataPoints&& dataPoints.length>0){
+    xstart = dataPoints[0].x-0.5
+    xend = dataPoints[dataPoints.length - 1].x +1;
+    ystart = dataPoints[0].y-1
+    yend = dataPoints[dataPoints.length - 1].y + 10;
+
+  }else{
+    xstart = 0;
+    xend= 7;
+    ystart=0
+    yend=7;
+
+  }
   const xData = dataPoints.map(point => point.x);
   const yData = dataPoints.map(point => point.y);
 
@@ -19,14 +36,12 @@ const MathGraph = ({ dataPoints }) => {
       layout={{
         title: 'Graph of Function',
         xaxis: {
-          title: 'X-Axis',
-          range: [-7, 7],
+          range: [xstart, xend],
           zeroline: true,
           zerolinecolor: 'black',
         },
         yaxis: {
-          title: 'Y-Axis',
-          range: [-7, 7],
+          range: [ystart, yend],
           zeroline: true,
           zerolinecolor: 'black',
         },

@@ -6,7 +6,7 @@ import 'katex/dist/katex.min.css';
 import axios from 'axios'
 
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
-import { fixEquation, findx, roundToSignificantDecimals } from '../../components/function'; 
+import { findx, roundToSignificantDecimals } from '../../components/function'; 
 
 export default function Graphical() {
   const [fx, setInputValue] = useState('');
@@ -43,11 +43,11 @@ export default function Graphical() {
   };
     const handleSubmit = async (event) => {
       event.preventDefault();
-      const fixedEquation = fixEquation(fx);
+      const newEquation = fx;
       let x0Num = parseFloat(x0);
       let xlassNum = parseFloat(xlass);
       const tolerance = parseFloat(toleranceinput)
-      graphical(fixedEquation,x0Num,xlassNum,tolerance)
+      graphical(newEquation,x0Num,xlassNum,tolerance)
       try{
         await axios.post('/api/equation',{
           name:fx
@@ -60,7 +60,7 @@ export default function Graphical() {
 
 function graphical(fx, x0Num, xlassNum, tolerance) {
     const newIterations = [];
-    if (isNaN(x0Num) || isNaN(xlassNum) || x0Num >= xlassNum ) {
+    if (isNaN(x0Num) || isNaN(xlassNum) || x0Num >= xlassNum ||!isNaN(fx)) {
         alert('กรุณาใส่ค่า x0 และ xlass ที่ถูกต้อง และ fx');
         return;
     }
@@ -126,6 +126,7 @@ function graphical(fx, x0Num, xlassNum, tolerance) {
           x: iter.xk,
           y: iter.result
         }));
+        graphPoints.sort((a, b) => a.x - b.x);
         setIterations(newIterations);
         setGraphData(graphPoints);
 
@@ -207,61 +208,23 @@ function graphical(fx, x0Num, xlassNum, tolerance) {
 
 
               <div className='bg-slate-200	m-10 p-8 h-auto '>table 
+                      <div className='bg-slate-200 m-10 p-8 h-auto'>
+                                <div className='grid grid-cols-4 gap-4 p-4"'> <div>iter</div> <div>Xk</div> <div>yk</div>   <div>error</div>
 
-              <div className="grid grid-cols-4 gap-4 p-4">
-                    <div>iter
-                    <div>
-                      {iterations.map((iteration, index) => (
-                      <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                        <div>{index }</div>
-                      </div>
-                      ))}
+                                </div>
+                                <div className="grid grid-cols-1 gap-4 p-4">
 
-
-                      </div>
+                                    {iterations.map((iteration, index) => (
+                                        <div key={index} className="grid grid-cols-4 gap-4 p-4">
+                                            <div>{index}</div>
+                                            <div>{iteration.xk.toFixed(6)}</div>
+                                            <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
+                                            <div>{iteration.error.toFixed(6)}%</div>
+                                        </div>
+                                    ))}
+                                </div>
 
                     </div>
-
-                    <div>Xk
-                    <div>
-                      {iterations.map((iteration, index) => (
-                      <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                        <div>{roundToSignificantDecimals(iteration.xk.toFixed(6))}</div>
-                      </div>
-                      ))}
-
-
-                      </div>
-                    </div>
-
-                    <div>yk
-                    <div>
-                      {iterations.map((iteration, index) => (
-                      <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                        <div>{roundToSignificantDecimals(iteration.result.toFixed(6))}</div>
-                      </div>
-                      ))}
-
-
-                      </div>
-                      
-                    </div>
-                    <div>error
-                    <div>
-                      {iterations.map((iteration, index) => (
-                      <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                        <div>{roundToSignificantDecimals(iteration.error.toFixed(6))}%</div>
-                      </div>
-                      ))}
-
-
-                      </div>
-                      
-                    </div>
-
-
-
-              </div>
               </div>
 
 

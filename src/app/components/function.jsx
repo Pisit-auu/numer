@@ -1,16 +1,5 @@
 import { evaluate } from 'mathjs';
 
-export function fixEquation(equation) {
-  if (!equation.includes('x')) {
-    alert('สมการต้องมี x')
-    throw new Error("Equation must contain the variable 'x'");
-  }
-  let parsedEquation = equation.replace(/(\d)(x)/g, "$1*$2");
-  parsedEquation = parsedEquation.replace(/(x)(\d+)/g, "$1*$2");
-  return parsedEquation;
-}
-
-
 export function findx(fx, x0) {
   const scope = { x: x0 };
   return evaluate(fx, scope); 
