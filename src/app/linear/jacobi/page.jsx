@@ -161,7 +161,7 @@ export default function Jacobi() {
                                                                 </div>
 
                                                                 <div className="grid" style={{ gridTemplateRows: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixX.map((value, rowIndex) => (
+                                                                {matrixX.map((value, rowIndex) => (
                                                                     <input
                                                                       key={rowIndex}
                                                                       type="text"

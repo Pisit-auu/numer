@@ -178,6 +178,104 @@ function pushBcolumn(A, B, column) {
     
         return LT;
     }
+   //conjugate
+   
+   
+   export  function bxa(b, a) {
+    const m = a.length;         
+    const n = a[0].length;      
+
+    if (b.length !== n) {
+        throw new Error("ขนาดของเวกเตอร์ b ต้องตรงกับจำนวนคอลัมน์ของแมทริกซ์ a");
+    }
+    let r = new Array(m).fill(0); 
+    for (let i = 0; i < m; i++) {
+        for (let j = 0; j < n; j++) {
+            r[i] += a[i][j] * b[j]; 
+        }
+    }
+    return r; 
+}
+    export function bx1(d, r) {
+        let result = 0;
+        for (let i = 0; i < d.length; i++) {
+            result += d[i] * r[i];
+        }
+        return result; 
+    }
+
+    export function findr(A, B, X) {
+        let r = bxa(X, A);
+        for (let i = 0; i < r.length; i++) {
+            r[i] -= B[i];
+        }
+        
+        return r; 
+    }
+    export function findd0(r) {
+        let d = new Array(r.length);
+    
+        for (let i = 0; i < r.length; i++) {
+            d[i] = r[i]; 
+        }
+        
+        for (let i = 0; i < r.length; i++) {
+            d[i] *= -1; 
+        }
+    
+        return d; 
+    }
+    export function findlamda(d, r, a) {
+        let result1 = bx1(d, r);
+        let dxa = bxa(d, a);
+        let result2 = bx1(d, dxa);
+        let result = result1 / result2 * -1;
+        return result;
+    }
+    export function vectorx(x, v) {
+        let vector = new Array(x.length);
+        for (let i = 0; i < vector.length; i++) {
+            vector[i] = x[i] * v;
+        }
+        return vector;
+    }
+
+    export function findxconju(x, lamda, d) {
+        let xnew = new Array(x.length);
+        let vector = vectorx(d, lamda);
+        for (let i = 0; i < xnew.length; i++) {
+            xnew[i] = x[i] + vector[i];
+        }
+        return xnew;
+    }
+    export function finderror(r) {
+        let error = 0;
+        for (let i = 0; i < r.length; i++) {
+            error += Math.pow(r[i], 2);
+        }   
+        error = Math.sqrt(error);
+        return error;
+    }
+    export function finda0(r, A, d) {
+        let a0 = 0;
+        let result1 = bxa(r, A);
+        let result = bx1(result1, d);
+        result1 = bxa(d, A);
+        let result2 = bx1(result1, d);
+        a0 = result / result2;
+        return a0;
+    }
+
+    export function findd(r, a0, d) {
+        let dxao = vectorx(d, a0);
+        let newr = vectorx(r, -1);
+        let dnew = new Array(d.length);
+        for (let i = 0; i < d.length; i++) {
+            dnew[i] = newr[i] + dxao[i];
+        }
+        return dnew;
+    }
+    
     
     
     

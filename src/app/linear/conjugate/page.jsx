@@ -2,17 +2,17 @@
 import { useState, useEffect } from 'react';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
-import { findx } from '@/app/components/matrix';
-export default function Eliminate() {
+import ArrayDisplay from '@/app/components/showmatrixnxn'
+import { findr,findd0,findlamda,findxconju,finda0,finderror,findd,caldet } from '@/app/components/matrix'
+export default function Seidel() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
-  const [Result, setResult] = useState([]);  // ค่าDetA1-An
+  const [Result, setResult] = useState([]); 
   const [matrixA, setmatrixA] = useState([]);
   const [matrixB, setMatrixB] = useState([]);
+  const [matrixX0, setMatrixX0] = useState([]);
   const [matrixX, setMatrixX] = useState([]);
-  const [check,setCheck]= useState([]);
-
-  const [Step , setStep] = useState('')
+  const [showsolution ,setsolution]= useState(false);
 
     const handleMatrixChange = (rowIndex, colIndex, value) => {  //อัพเดตค่าA
       const numericValue = parseFloat(value);
@@ -27,32 +27,79 @@ export default function Eliminate() {
       const newMatrix = [...matrixB];
       newMatrix[rowIndex] = validValue;
       setMatrixB(newMatrix);
-      
+
+    };
+    const handleMatrixChangeX0 = (rowIndex, value) => {   //อัพเดตค่าx0
+      const numericValue = parseFloat(value);
+      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; 
+      const newMatrix = [...matrixX0];
+      newMatrix[rowIndex] = validValue;
+      setMatrixX0(newMatrix);
     };
 
-    const matrixToLaTeX = (matrix) => {
-        const formatMatrix = (m) => {
-          // ใช้ array สำหรับจัดเรียง matrix
-          return `\\begin{array}{${'c'.repeat(m[0].length)}}\n` +
-                 m.map(row => row.join(' & ')).join(' \\\\\n') + 
-                 '\n\\end{array}';
-        };
+    function findX(r,d,matrixA,matrixX0,matrixB,tolerance) {
+      let x = Array.from(matrixX0);
+      let lamda
+      let a0
+      let error=1
+      const savexi = [];
+      setResult(savexi)
+      console.log(savexi)
 
-        const latexChunks = matrix.map((slice, index) => (
-          `\\text{Slice ${index + 1}}: \n` +
-          `\\begin{bmatrix} \n` + 
-          formatMatrix(slice) + 
-          `\n\\end{bmatrix}`
-        ));
-        
-        return latexChunks.join(' \\\\\n');
-      };
+      while(error>tolerance){
+        lamda = findlamda(d,r,matrixA);
+        x = findxconju(x,lamda,d);
+         r = findr(matrixA,matrixB,x);
+         error = finderror(r);
+         savexi.push({yk:lamda,Dk:d,Xk:x,Rk:r,er:error})
+          a0 = finda0(r,matrixA,d);
+         d = findd(r,a0,d);
+        }
+
+    
+
+    
+      return x;
+    }
+    const hasEmptyValue = array => array.some(value => value === "" || value === " " || value === null || value === undefined);
+    const hasEmptyValueInMatrix = matrix =>   matrix.some(row => row.some(value => value === "" || value === " " || value === null || value === undefined));
+
+
 
     const handleSubmit = (event) => {
-      event.preventDefault();
-      const updatedMatrixAB = insertB(matrixA, matrixB);
-      guass(updatedMatrixAB)
+      event.preventDefault(); // ย้ายการเรียกใช้ preventDefault ไปไว้ด้านบนสุด
+    
+      if (sizematrix < 1 || hasEmptyValueInMatrix(matrixA) || hasEmptyValue(matrixB) || hasEmptyValue(matrixX0)) {
+        console.log("matrixA, matrixB, หรือ matrixX0 มีค่าว่างอย่างน้อย 1 index");
+        return;
+      }
+   /*   if(matrixA[0][0]>0){
+          for(let i=2;i<=sizematrix;i++){
+            let detcheck = Array.from({ length: i }, () => Array(i).fill(0));
+            for(let j=0;j<i;j++){
+              for(let k=0;k<i;k++){
+                detcheck[j][k] = matrixA[j][k]
+              }
+              if(caldet(detcheck) <= 0){
+                alert("det ต้อง >0")
+                return
+              }
+            }
+          }
+      }else{
+        alert("det ต้อง >0")
+        return
+      }*/
+      
+      const tolerance = parseFloat(toleranceinput);
+      let r = findr(matrixA,matrixB,matrixX0);
+      let d = findd0(r);
+      findX(r,d,matrixA,matrixX0,matrixB,tolerance)
+      
+ 
+
     };
+    
 
     useEffect(() => {
       const newMatrixA = Array.from({ length: sizematrix }, () =>
@@ -63,95 +110,13 @@ export default function Eliminate() {
       setMatrixB(newMatrixB);
       const newMatrixX = Array.from({ length: sizematrix }, () => "");
       setMatrixX(newMatrixX);
+      const newMatrixX0 = Array.from({ length: sizematrix }, () => "");
+      setMatrixX0(newMatrixX0);
     }, [sizematrix],);
-    
-    function findX(A){
-      let n = A.length;
-      let X = [];
-      const newx = [];
-      const checkresult = [];
-      for(let i=n-1;i>=0;i--){
-              X[i] = A[i][n];
-              if(A[i][i]===0){
-                  alert('มีdivision error')
-                  return
-              }
-          for(let k=i+1;k<n;k++){
-              X[i]-=A[i][k]*X[k];
-          }
-          X[i]/=A[i][i];
-          newx.push({iteration: i,result:X[i]})
-      }
-       console.log(newx)
-       console.log(matrixA  )
-      
-      for(let i=0;i<n;i++){
-        let sum =0;
-        for(let j=0;j<n;j++){
-          sum += newx[n-1-j].result*matrixA[i][j]
-            console.log(newx[(n-1-j)].result,"*",matrixA[i][j])
-          
-        }
-        checkresult.push("b",{i},"= ",sum)
-      }
-      console.log(checkresult)
-      setResult(newx)      
-      return X;
-  }
-  
-    function insertB(A, B) {
-        let newarray = Array.from({ length: A.length }, () => Array(A[0].length + 1));
-        
 
-        for (let i = 0; i < A.length; i++) {
-            for (let j = 0; j < A[0].length; j++) {
-                newarray[i][j] = A[i][j];
-            }
-
-            newarray[i][A[0].length] = B[i]; 
-        } 
-        return newarray;
-    }
     
-    function eliminate(A) { 
-        let steps = []; 
-        let n = A.length;
-        steps.push(A.map(row => [...row])); 
-        for (let i = 0; i < n; i++) {
-            for (let j = i + 1; j < n; j++) {
-                if (A[i][i] !== 0) {
-                    let r = A[j][i] / A[i][i];
-                    for (let k = i; k < n + 1; k++) {
-                        A[j][k] -= r * A[i][k];     
-                    }
-                }
-                steps.push(A.map(row => [...row])); 
-            }
-            
-        }
-        findX(A)
-        return steps;
-    }
 
-    function guass(updatedMatrixAB) {
-        let newStep = [] 
-        // ตรวจสอบขนาดของ AB ก่อน
-        if (updatedMatrixAB.length === 0 || updatedMatrixAB[0].length === 0) {
-            alert('Size > 0.');
-            return;
-        }
-        // ตรวจสอบว่าเป็นตัวเลขทั้งหมด
-        const allNumbersInMatrix = updatedMatrixAB.flat().every(item => Number.isFinite(item));
-    
-        if (allNumbersInMatrix) {
-            newStep = eliminate(updatedMatrixAB); 
-            console.log(newStep)
-            setStep(matrixToLaTeX(newStep))
-            
-        } else {
-            alert('ต้องเป็นตัวเลข.');
-        }
-    }
+ 
 
     return (
     <div>
@@ -170,7 +135,7 @@ export default function Eliminate() {
                                   </form>
                         </div>
 
-                      <div className="text-center text-blue-500 text-3xl"> Guass Elimination Methods  {/*column2*/}
+                      <div className="text-center text-blue-500 text-3xl">conjugate Methods  {/*column2*/}
 
                               <div> [A]=  {sizematrix}
                                   {matrixA.length > 0 && (
@@ -200,7 +165,7 @@ export default function Eliminate() {
                                                                 </div>
 
                                                                 <div className="grid" style={{ gridTemplateRows: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixX.map((value, rowIndex) => (
+                                                                {matrixX.map((value, rowIndex) => (
                                                                     <input
                                                                       key={rowIndex}
                                                                       type="text"
@@ -222,6 +187,18 @@ export default function Eliminate() {
                                                                     />
                                                                   ))}
                                                               </div>
+
+                                                              <div className="grid" style={{ gridTemplateColumns: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>  x0
+                                                                    <div className='flex'>{matrixX0.map((value, rowIndex) => (
+                                                                    <input
+                                                                      key={rowIndex}
+                                                                      type="number"
+                                                                      value={value}
+                                                                      onChange={(e) => handleMatrixChangeX0(rowIndex, e.target.value)}
+                                                                      className="border p-2 w-20 text-center"
+                                                                    />
+                                                                  ))}</div>
+                                                                </div>
                                                   </div>
                                           </div>
                                     )}
@@ -233,39 +210,47 @@ export default function Eliminate() {
               </div >
 
 
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
-              solution  <div className='text-center	'> Forward Elimination
+              <div className='bg-slate-200 font-bold m-10 p-8 h-auto'> {/* กรอบแสดงผล */}
+  <h2 className='text-2xl mb-4 '>Table</h2>
+  <div className='bg-white shadow-md rounded-lg p-6'>
+    <div className='grid grid-cols-6 gap-4 p-4 bg-blue-100 '> 
+    <div className='font-semibold text-center'>iter</div> 
+      <div className='font-semibold text-center'>λk-1</div>   
+      <div className='font-semibold text-center'>Dk−1</div>
+      <div className='font-semibold text-center'>Xk</div> 
+      <div className='font-semibold text-center'>Rk</div>   
+      <div className='font-semibold text-center'>error%</div>
+    </div>
+    <div className="grid gap-4 p-4">
+      {Result.map((iteration, index) => (
+        <div key={index} className="grid grid-cols-6 gap-4 p-4 border-b border-slate-300">
+          <div className='text-center'><BlockMath math={`${index + 1}`} /></div>
+          <div className='text-center'>
+            {<BlockMath key={iteration} math={`${iteration.yk}`} />}
+          </div> 
+          <div className='text-center'>{<ArrayDisplay matrix={iteration.Dk} />}
+          </div>
+          <div className='text-center'>{<ArrayDisplay matrix={iteration.Xk} />}
+          </div> {/* แสดงค่า Xk  savexi.push({yk:lamda,Dk:d,Xk:x,Rk:r,er:error})   {<ArrayDisplay matrix={iteration.Rk} />}*/ }
+          <div className='text-center'> {<ArrayDisplay matrix={iteration.Rk} />}
+          </div>
+          <div className='text-center'>
+            {<BlockMath key={iteration} math={`${iteration.er.toFixed(6)}`} />}
+          </div> {/* แสดงค่า error */}
 
-                          <div className="grid grid-cols-1 gap-0 p-4">      
-                          <div>
-                          <BlockMath math={Step} />
-  
-                            </div> 
-                             
 
-                            <div>Back Subtiution
-                            
-                                                          {/*แสดง x แต่ละตัว*/}
-                                                          <div className="text-xl" style={{ gridTemplateColumns: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
-                                                                {Result.map((Result, index) => (
-                                                                <div key={index} className="">
-                                                                    <div>X{Result.iteration+1}={Result.result }</div>
-                                                                </div>
-                                                                ))}
-                                                                </div>    
-                                
-     
-                            </div> 
-                           
-                           </div>
-                     </div>
-                </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
     </div>
   );
 }
-// <BlockMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
+// <InlineMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
 // <BlockMath math={' From Cramer’s Rule:x_i = \\frac{det(A_i)}{det(A)}'} />
-    
+    //<InlineMath math={}>
     
         // setdetA0(`\\text{det}(A) = \\begin{bmatrix} ${parseFloat(DetAll[0])} \\end{bmatrix}`)
        // setResult(newX);
