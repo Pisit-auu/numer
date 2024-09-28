@@ -37,40 +37,38 @@ export default function Jacobi() {
       setMatrixX0(newMatrix);
     };
 
-    function findX(A, B, X, tolerance) {
-      const Xnew = new Array(X.length).fill(0);
-      const error = new Array(X.length).fill(0);
+    function findX(A, B, newmatrixx0, tolerance) {
+      
+      let X = Array.from(newmatrixx0);
       let check = false;
-      let savexi = [];
-    
+      const savexi = [];
+      savexi.push({x:newmatrixx0,e:newmatrixx0})
+      setResult(savexi)
+      console.log(savexi)
       while (!check) {
-        console.log("iteration : ")
+        let Xnew = new Array(X.length).fill(0);
+        let error = new Array(X.length).fill(0);
         check = true;
-        let newx = []; // รีเซ็ต newx สำหรับแต่ละ iteration
-    
+
         for (let i = 0; i < A.length; i++) {
           Xnew[i] = B[i];
-    
           for (let j = 0; j < A[0].length; j++) {
             if (i !== j) {
               Xnew[i] -= A[i][j] * X[j];
             }
           }
-    
           if (A[i][i] === 0) {
             alert(`Error: A[${i}][${i}] == 0`);
             return;
           }
     
           Xnew[i] /= A[i][i];
-          error[i] = Math.abs((Xnew[i] - X[i]) / Xnew[i]);
-          console.log(Xnew[i])
-          if (error[i] > tolerance) {
+          error[i] = Math.abs((Xnew[i] - X[i]) / Xnew[i]*100);
+          if (error[i] > tolerance*100) {
             check = false;
           }
         }
-
-
+        savexi.push({x:Xnew,e:error})
         for (let i = 0; i < X.length; i++) {
           X[i] = Xnew[i];
         }
@@ -93,7 +91,6 @@ export default function Jacobi() {
         return;
       }
       const tolerance = parseFloat(toleranceinput);
-   
       findX(matrixA,matrixB,matrixX0,tolerance)
  
 
@@ -209,17 +206,40 @@ export default function Jacobi() {
               </div >
 
 
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
-              Table  
-                                 
-                       
-                </div>
+              <div className='bg-slate-200 font-bold m-10 p-8 h-auto'> {/* กรอบแสดงผล */}
+  <h2 className='text-2xl mb-4 '>Table</h2>
+  <div className='bg-white shadow-md rounded-lg p-6'>
+    <div className='grid grid-cols-4 gap-4 p-4 bg-blue-100 '> 
+    <div className='font-semibold text-center'>iter</div> 
+      <div className='font-semibold text-center'>Xk</div>   
+      <div className='font-semibold text-center'>error%</div>
+    </div>
+    <div className="grid gap-4 p-4">
+      {Result.map((iteration, index) => (
+        <div key={index} className="grid grid-cols-4 gap-4 p-4 border-b border-slate-300">
+          <div className='text-center'><BlockMath math={`${index + 1}`} /></div>
+          <div className='text-center'>
+            {iteration.x.map((x, idx) => (
+              <BlockMath key={idx} math={`X_{${idx + 1}} = ${x.toFixed(6)}`} />
+            ))}
+          </div> {/* แสดงค่า Xk */}
+          <div className='text-center'>
+            {iteration.e.map((e, idx) => (
+              <BlockMath key={idx} math={`e_{${idx + 1}} = ${e.toFixed(6)}`} />
+            ))}
+          </div> {/* แสดงค่า error */}
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
     </div>
   );
 }
-// <BlockMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
+// <InlineMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
 // <BlockMath math={' From Cramer’s Rule:x_i = \\frac{det(A_i)}{det(A)}'} />
-    
+    //<InlineMath math={}>
     
         // setdetA0(`\\text{det}(A) = \\begin{bmatrix} ${parseFloat(DetAll[0])} \\end{bmatrix}`)
        // setResult(newX);
