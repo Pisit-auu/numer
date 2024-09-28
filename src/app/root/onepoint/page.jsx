@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { derivative } from 'mathjs';
 import dynamic from 'next/dynamic';
 import { findx, roundToSignificantDecimals } from '../../components/function'; 
 import { InlineMath } from 'react-katex';
@@ -16,7 +15,7 @@ export default function onepoint() {
     const [graphData, setGraphData] = useState([]);
 
 
-    function onepoint(fx, x0num, tolerance,divfx) {
+    function onepoint(fx, x0num, tolerance) {
         const newIterations = [];
         let x1 =0;
         let x0 = x0num
@@ -30,9 +29,9 @@ export default function onepoint() {
             alert('ค่าความทนทานต้องเป็นค่าที่มากกว่าศูนย์');
             return;
         }
-        while (Error > tolerance) {
-            x1 = x0-(findx(fx,x0)/findx(divfx,x0))
-            Error = Math.abs(findx(fx,x0));
+        while (Error > tolerance&&i<100) {
+            x1 = findx(fx,x0)
+            Error = Math.abs((x1-x0)/x1);
             if (!newIterations.some(iter => iter.iter === i)) {
             newIterations.push({ xk: x0,result: findx(fx,x0), error: Error * 100 });
             }
@@ -51,11 +50,10 @@ export default function onepoint() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const newEquation = fx;
-        const divfx = derivative(fx,'x').toString();
        // console.log(divfx) 
         let x0num = parseFloat(x0);
         const tolerance = parseFloat(toleranceinput)
-        onepoint(newEquation,x0num,tolerance,divfx)
+        onepoint(newEquation,x0num,tolerance)
         
       };
     return (
@@ -75,7 +73,7 @@ export default function onepoint() {
                       </div>
     
                        <div className="text-center text-blue-500 text-3xl">
-                       Newton-Raphson methods
+                       onepoint methods
 
                     <div>fx = <InlineMath math={fx} /></div>
                               <div> Xstart =  {x0} </div>
@@ -100,16 +98,15 @@ export default function onepoint() {
      
     
                   <div className='bg-slate-200 m-10 p-8 h-auto'>
-                        <div className='grid grid-cols-4 gap-4 p-4"'> <div>iter</div> <div>Xk</div> <div>yk</div>   <div>error</div>
+                        <div className='grid grid-cols-3 gap-3 p-4"'> <div>iter</div> <div>Xk</div>    <div>error</div>
 
                          </div>
-                        <div className="grid grid-cols-1 gap-4 p-4">
+                        <div className="grid grid-cols-1 gap-3 p-4">
 
                             {iterations.map((iteration, index) => (
-                                <div key={index} className="grid grid-cols-4 gap-4 p-4">
+                                <div key={index} className="grid grid-cols-3 gap-4 p-4">
                                     <div>{index}</div>
                                     <div>{iteration.xk.toFixed(6)}</div>
-                                    <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
                                     <div>{iteration.error.toFixed(6)}%</div>
                                 </div>
                             ))}
