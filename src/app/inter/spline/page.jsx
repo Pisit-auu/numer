@@ -83,8 +83,6 @@ export default function Spline() {
             }
             m[i-1] = (y[i]-y[i-1])/(x[i]-x[i-1]);
           }
-          setarraym(m)
-          console.log(m)
           return m
     }
     
