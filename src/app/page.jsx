@@ -13,6 +13,7 @@ export default function Home() {
     { value: 'graphical',label: 'graphical',},     
     { value: 'bisection',label: 'bisection',},     
     { value: 'falseposition',label: 'falseposition',},     
+    { value: 'onepoint',label: 'One point',}, 
     { value: 'newton',label: 'newton Rapson',},     
     { value: 'secant',label: 'secant method',},     
   ]
@@ -36,7 +37,6 @@ export default function Home() {
 
   const handleproublem = (value) => {
     setpathproblem(value)
-    console.log(value);
     if(value =='root'){
       setsolution(root)
     }else if(value =='linear'){
