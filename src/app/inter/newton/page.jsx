@@ -76,14 +76,14 @@ export default function Newton() {
         }
       }
       
-      // หาค่า result
+      // หาresult
       let result = 0;
       result += cn[0][0];
       for (let i = 1; i < n; i++) {
         result += xi[i] * cn[0][i]; 
       }
       
-      // สร้าง newcn เพื่อนำไปใช้
+      //newcn 
       for (let i = 0; i < n; i++) {
         if (i === 0) {
           newcn.push({ cn: cn[0][i], xi: 1 });
