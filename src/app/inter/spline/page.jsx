@@ -111,7 +111,9 @@ export default function Spline() {
       setresult(`f(${Xinput}) = ${r}`)
     
     }
-    
+    function quadratic(x, y, Xinput) {
+
+    }
     
   
   return (
