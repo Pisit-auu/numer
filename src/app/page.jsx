@@ -31,7 +31,12 @@ export default function Home() {
   const Interpolition =  [
     { value: 'newton',label: 'Newton',},     
     { value: 'lagrange',label: 'lagrange',},     
-    { value: 'spline',label: 'Spline',},     
+    { value: 'spline',label: 'Spline',}, 
+
+  ]
+  const extrapolation =  [
+    { value: 'simple',label: 'Simple Regression',},     
+    { value: 'multiple',label: 'Multiple Regression',},     
 
   ]
 
@@ -43,6 +48,8 @@ export default function Home() {
       setsolution(linear)
     }else if(value =='inter'){
       setsolution(Interpolition)
+    }else if(value == 'extrapolation'){
+      setsolution(extrapolation)
     }
   };
   const handleSolution = (value) => {
@@ -74,9 +81,8 @@ export default function Home() {
                     label: 'inter',
                   },
                   {
-                    value: 'ex',
-                    label: 'ex',
-                    disabled: true,
+                    value: 'extrapolation',
+                    label: 'Extrapolation',
                   },
                 ]}
               /> 

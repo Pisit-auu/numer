@@ -276,9 +276,62 @@ function pushBcolumn(A, B, column) {
         return dnew;
     }
     
-    
-    
-    
+    export function eliminate(A) { 
+        let steps = []; 
+        let n = A.length;
+        steps.push(A.map(row => [...row])); 
+        for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+                if (A[i][i] !== 0) {
+                    let r = A[j][i] / A[i][i];
+                    for (let k = i; k < n + 1; k++) {
+                        A[j][k] -= r * A[i][k];     
+                    }
+                }
+                steps.push(A.map(row => [...row])); 
+            }
+            
+        }
+        return A;
+    }
+    export function findXeliminate(A){
+        console.log(A)
+        let n = A.length;
+        let X = [];
+        const newx = [];
+        const checkresult = [];
+        for(let i=n-1;i>=0;i--){
+                X[i] = A[i][n];
+                if(A[i][i]===0){
+                    alert('มีdivision error')
+                    return
+                }
+            for(let k=i+1;k<n;k++){
+                X[i]-=A[i][k]*X[k];
+            }
+            X[i]/=A[i][i];
+            newx.push({iteration: i,result:X[i]})
+        }
+        const temp = []
+        for(let i=newx.length-1;i>=0;i--){
+            temp.push(newx[i])
+        }
+        console.log(checkresult)      
+        return temp;
+    }
+    export function insertB(A, B) {
+        let newarray = Array.from({ length: A.length }, () => Array(A[0].length + 1));
+        
+
+        for (let i = 0; i < A.length; i++) {
+            for (let j = 0; j < A[0].length; j++) {
+                newarray[i][j] = A[i][j];
+            }
+
+            newarray[i][A[0].length] = B[i]; 
+        } 
+        return newarray;
+    }
     import React from 'react';
 import { BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css'; 
