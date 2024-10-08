@@ -276,24 +276,34 @@ function pushBcolumn(A, B, column) {
         return dnew;
     }
     
-    export function eliminate(A) { 
-        let steps = []; 
+    export function eliminate(A) {
+        let steps = [];
         let n = A.length;
-        steps.push(A.map(row => [...row])); 
+        steps.push(A.map(row => [...row]));
+    
         for (let i = 0; i < n; i++) {
+            if (A[i][i] === 0) {
+                for (let j = i + 1; j < n; j++) {
+                    if (A[j][i] !== 0) {
+                        [A[i], A[j]] = [A[j], A[i]]; // สลับแถว
+                        break;
+                    }
+                }
+            }
+            
             for (let j = i + 1; j < n; j++) {
                 if (A[i][i] !== 0) {
                     let r = A[j][i] / A[i][i];
                     for (let k = i; k < n + 1; k++) {
-                        A[j][k] -= r * A[i][k];     
+                        A[j][k] -= r * A[i][k];
                     }
                 }
-                steps.push(A.map(row => [...row])); 
+                steps.push(A.map(row => [...row]));
             }
-            
         }
         return A;
     }
+    
     export function findXeliminate(A){
         console.log(A)
         let n = A.length;
@@ -309,7 +319,7 @@ function pushBcolumn(A, B, column) {
             for(let k=i+1;k<n;k++){
                 X[i]-=A[i][k]*X[k];
             }
-            X[i]/=A[i][i];
+            X[i]/=(A[i][i]);
             newx.push({iteration: i,result:X[i]})
         }
         const temp = []
@@ -318,6 +328,7 @@ function pushBcolumn(A, B, column) {
         }    
         return temp;
     }
+   
     export function insertB(A, B) {
         let newarray = Array.from({ length: A.length }, () => Array(A[0].length + 1));
         
