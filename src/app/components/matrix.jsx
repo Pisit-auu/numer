@@ -315,8 +315,7 @@ function pushBcolumn(A, B, column) {
         const temp = []
         for(let i=newx.length-1;i>=0;i--){
             temp.push(newx[i])
-        }
-        console.log(checkresult)      
+        }    
         return temp;
     }
     export function insertB(A, B) {
