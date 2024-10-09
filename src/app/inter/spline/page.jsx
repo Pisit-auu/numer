@@ -111,6 +111,7 @@ export default function Spline() {
     function cubic(x,y,xinput){
           let keepi
           let check =true;
+          //find range
           for(let i=0;i<pointValue-1;i++){
               if(Xinput >= x[i]&& Xinput<=x[i+1]){
                 keepi = i;
@@ -122,11 +123,15 @@ export default function Spline() {
             return
           }
 
+
+
           const newmatrix = Array.from({ length: (pointValue-1)*4 }, () => Array((pointValue-1)*4).fill(0));
           let count =0
           let index=1;
-          let start=0;
-    
+          let start=0;//keepindex when push x
+          
+
+          // push matrix abcdn
           let an= []
           for(let i = 1; i <= newmatrix.length/4; i++) {
             an.push(`a${i}`);
@@ -136,7 +141,7 @@ export default function Spline() {
           }
           setmatrixa(an)
 
-
+          //push arrayX  x two at a time
           for(let i=0;i<(pointValue-2)*2;i+=2){
             for(let k=count;k<=count+3;k++){
               if(k==count){
@@ -153,12 +158,12 @@ export default function Spline() {
                 newmatrix[i+1][k+4] = Math.pow(x[index], 2);
               }
           }
-          start+=2;
+          start+=2; 
           count+=4;
           index++
         }
  
-  
+          //push x0 xn-1
             newmatrix[start][0] = Math.pow(x[0], 3);
             newmatrix[start][1] = Math.pow(x[0], 2);
             newmatrix[start][2] = x[0]
@@ -168,9 +173,10 @@ export default function Spline() {
             newmatrix[(start+1)][newmatrix.length-2] = x[(parseInt(pointValue)-1)];
             newmatrix[(start+1)][newmatrix.length-3] =  Math.pow(x[(parseInt(pointValue)-1)], 2);
             newmatrix[(start+1)][newmatrix.length-4] =  Math.pow(x[(parseInt(pointValue)-1)], 3);
-          console.log(newmatrix)
-
           setMatrixnewA(newmatrix)
+
+
+          //push f'(x)
           count =0
           for(let i=0;i<parseInt(pointValue)-2;i++){
               for(let j=count;j<7+count;j++){
@@ -193,8 +199,9 @@ export default function Spline() {
               }
               count+=4
           }
-          start+=parseInt(pointValue)-2
+          start+=parseInt(pointValue)-2 //keepindex wantto push f'(x)
           count =0
+          //push f''(x)
           for(let i=0;i<parseInt(pointValue)-2;i++){
               for(let j=count;j<7+count;j++){
                   if(j==count){
@@ -215,29 +222,33 @@ export default function Spline() {
               }
               count+=4
           }
-          start-=parseInt(pointValue)-2
+          start-=parseInt(pointValue)-2 //back to index push head 
+
+
           newmatrix[newmatrix.length-2][0] = x[0]*6
           newmatrix[newmatrix.length-2][1] = 2;
           newmatrix[(newmatrix.length-1)][newmatrix.length-3] = 2;
           newmatrix[(newmatrix.length-1)][newmatrix.length-4] =  x[parseInt(pointValue)-1]*6;
 
-
+          //push y to array b
           const newmatrixsumy = new Array(newmatrix.length).fill(0);
           index=0
+          //push fn(x) 
           for(let i=0;i<start;i+=2){
                 newmatrixsumy[i] =y[index+1];
                 newmatrixsumy[i+1] =y[index+1];
             index++
           }
           setMatrixnewB(newmatrixsumy)
+
+          //push fx(0) fx(n-1)
           newmatrixsumy[start] =y[0];
           newmatrixsumy[start+1] =y[parseInt(pointValue)-1];
 
-
+            //elminate
           let ab = insertB(newmatrix,newmatrixsumy)
           let eliminateab = eliminate(ab)
           let findxab = findXeliminate(eliminateab)
-          console.log(findxab)
 
           let arraykeepabc =[]
 
@@ -248,12 +259,10 @@ export default function Spline() {
               arraykeepabc[i] = {a: findxab[keepindex].result,b:findxab[keepindex+1].result,c: findxab[keepindex+2].result,d: findxab[keepindex+3].result}
               keepindex+=4;
           }
-          console.log(arraykeepabc)
 
-
+          //fx(x)= anbncndn = what value
           let equationarray =[]
           let equation= ''
-
           for(let i = 1; i <= newmatrix.length/4; i++) {
                 equation += ` a_{${i}} = {${arraykeepabc[i-1].a}}`;
                 equation += `, b_{${i}} = {${arraykeepabc[i-1].b}}`;
@@ -263,6 +272,9 @@ export default function Spline() {
               equation=''
           }
           setshowfxresult(equationarray)
+
+
+          //array fx insert  anbncndn
           let arrayfx =[]
           let fx = ''
           keepindex= 0
@@ -275,19 +287,18 @@ export default function Spline() {
               keepindex+=4
             fx=''
           }
-          console.log(arrayfx[0])
           setfx(arrayfx)
 
+
+          //find result
           let fxreult;
           let arrayfxresult =[]
-
             fxreult = `f_${keepi+1}(${Xinput}) = ${(arraykeepabc[keepi].a*xinput*xinput*xinput)+(arraykeepabc[keepi].b*xinput*xinput)+(arraykeepabc[keepi].c*xinput)+arraykeepabc[keepi].d}`
 
           arrayfxresult.push(fxreult)
           keepindex= 0
           
           setfxresult(arrayfxresult)
-          
           setcubic( true)
     }
     function qua(x,y,xinput){
@@ -412,7 +423,6 @@ export default function Spline() {
             }
     
           }
-          console.log(arraykeepabc)
 
 
           let equationarray =[]
@@ -454,7 +464,6 @@ export default function Spline() {
             }
           fx=''
           }
-          console.log(arrayfx[0])
           setfx(arrayfx)
 
           let fxreult;
