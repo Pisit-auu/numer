@@ -30,7 +30,7 @@ const MathGraph = ({ dataPoints }) => {
           mode: 'lines+markers',
           type: 'scatter',
           marker: { color: 'red' },
-          line: { color: 'blue', width: 2 },
+          line: { color: 'blue', width: 2, shape: 'spline' },
         },
       ]}
       layout={{
@@ -51,7 +51,6 @@ const MathGraph = ({ dataPoints }) => {
       }}
       config={{
         scrollZoom: true,
-        responsive: true,
       }}
     />
   );
