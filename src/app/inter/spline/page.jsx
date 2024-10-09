@@ -93,7 +93,7 @@ export default function Spline() {
       }else if(spline==='quadratic'){
         qua(newmetrixX,newmetrixY,parseFloat(Xinput));
       }else if(spline==='cubic'){
-        alert('ยังไม่ทำ')
+        cubic(newmetrixX,newmetrixY,parseFloat(Xinput));
       }
       
     };
@@ -107,6 +107,188 @@ export default function Spline() {
             m[i-1] = (y[i]-y[i-1])/(x[i]-x[i-1]);
           }
           return m
+    }
+    function cubic(x,y,xinput){
+          let keepi
+          let check =true;
+          for(let i=0;i<pointValue-1;i++){
+              if(Xinput >= x[i]&& Xinput<=x[i+1]){
+                keepi = i;
+                check=false;
+              }
+          }
+          if(check){
+            alert("x not found")
+            return
+          }
+
+          const newmatrix = Array.from({ length: (pointValue-1)*4 }, () => Array((pointValue-1)*4).fill(0));
+          let count =0
+          let index=1;
+          let start=0;
+    
+          let an= []
+          for(let i = 1; i <= newmatrix.length/4; i++) {
+            an.push(`a${i}`);
+            an.push(`b${i}`);
+            an.push(`c${i}`);
+            an.push(`d${i}`);
+          }
+          setmatrixa(an)
+
+
+          for(let i=0;i<(pointValue-2)*2;i+=2){
+            for(let k=count;k<=count+3;k++){
+              if(k==count){
+                newmatrix[i][k] = Math.pow(x[index], 3);
+                newmatrix[i+1][k+4] = Math.pow(x[index], 3);
+              }else if(Math.abs(k-count)==2){
+                newmatrix[i][k] = x[index]
+                newmatrix[i+1][k+4] = x[index]
+              }else if(Math.abs(k-count)==3){
+                newmatrix[i][k] = 1
+                newmatrix[i+1][k+4] = 1
+              }else{
+                newmatrix[i][k] = Math.pow(x[index], 2);
+                newmatrix[i+1][k+4] = Math.pow(x[index], 2);
+              }
+          }
+          start+=2;
+          count+=4;
+          index++
+        }
+ 
+  
+            newmatrix[start][0] = Math.pow(x[0], 3);
+            newmatrix[start][1] = Math.pow(x[0], 2);
+            newmatrix[start][2] = x[0]
+            newmatrix[start][3] = 1;
+  
+            newmatrix[(start+1)][newmatrix.length-1] = 1
+            newmatrix[(start+1)][newmatrix.length-2] = x[(parseInt(pointValue)-1)];
+            newmatrix[(start+1)][newmatrix.length-3] =  Math.pow(x[(parseInt(pointValue)-1)], 2);
+            newmatrix[(start+1)][newmatrix.length-4] =  Math.pow(x[(parseInt(pointValue)-1)], 3);
+          console.log(newmatrix)
+
+          setMatrixnewA(newmatrix)
+          count =0
+          for(let i=0;i<parseInt(pointValue)-2;i++){
+              for(let j=count;j<7+count;j++){
+                  if(j==count){
+                    newmatrix[start+2+i][j] = Math.pow(x[i+1],2)*3
+                  }else if(j-count ==1){
+                    newmatrix[start+2+i][j] = x[i+1]*2
+                  }else if(j-count ==2){
+                    newmatrix[start+2+i][j] = 1
+                  }else if(j-count ==3){
+                    newmatrix[start+2+i][j] = 0
+                  }else if(j-count ==4){
+                    newmatrix[start+2+i][j] = Math.pow(x[i+1],2)*(-3)
+                  }else if(j-count ==5){
+                    newmatrix[start+2+i][j] = x[i+1]*(-2)
+                  }else if(j-count ==6){
+                    newmatrix[start+2+i][j] = -1
+                  }
+                  
+              }
+              count+=4
+          }
+          start+=parseInt(pointValue)-2
+          count =0
+          for(let i=0;i<parseInt(pointValue)-2;i++){
+              for(let j=count;j<7+count;j++){
+                  if(j==count){
+                    newmatrix[start+2+i][j] = x[i+1]*6
+                  }else if(j-count ==1){
+                    newmatrix[start+2+i][j] = 2
+                  }else if(j-count ==2){
+                    newmatrix[start+2+i][j] = 0
+                  }else if(j-count ==3){
+                    newmatrix[start+2+i][j] = 0
+                  }else if(j-count ==4){
+                    newmatrix[start+2+i][j] = x[i+1]*(-6)
+                  }else if(j-count ==5){
+                    newmatrix[start+2+i][j] = -2
+                  }else if(j-count ==6){
+                    newmatrix[start+2+i][j] = 0
+                  }
+              }
+              count+=4
+          }
+          start-=parseInt(pointValue)-2
+          newmatrix[newmatrix.length-2][0] = x[0]*6
+          newmatrix[newmatrix.length-2][1] = 2;
+          newmatrix[(newmatrix.length-1)][newmatrix.length-3] = 2;
+          newmatrix[(newmatrix.length-1)][newmatrix.length-4] =  x[parseInt(pointValue)-1]*6;
+
+
+          const newmatrixsumy = new Array(newmatrix.length).fill(0);
+          index=0
+          for(let i=0;i<start;i+=2){
+                newmatrixsumy[i] =y[index+1];
+                newmatrixsumy[i+1] =y[index+1];
+            index++
+          }
+          setMatrixnewB(newmatrixsumy)
+          newmatrixsumy[start] =y[0];
+          newmatrixsumy[start+1] =y[parseInt(pointValue)-1];
+
+
+          let ab = insertB(newmatrix,newmatrixsumy)
+          let eliminateab = eliminate(ab)
+          let findxab = findXeliminate(eliminateab)
+          console.log(findxab)
+
+          let arraykeepabc =[]
+
+
+          
+          let keepindex= 0
+          for(let i = 0; i < newmatrix.length/4; i++) {
+              arraykeepabc[i] = {a: findxab[keepindex].result,b:findxab[keepindex+1].result,c: findxab[keepindex+2].result,d: findxab[keepindex+3].result}
+              keepindex+=4;
+          }
+          console.log(arraykeepabc)
+
+
+          let equationarray =[]
+          let equation= ''
+
+          for(let i = 1; i <= newmatrix.length/4; i++) {
+                equation += ` a_{${i}} = {${arraykeepabc[i-1].a}}`;
+                equation += `, b_{${i}} = {${arraykeepabc[i-1].b}}`;
+              equation += `, c_{${i}} = {${arraykeepabc[i-1].c}}`;
+              equation += `, d_{${i}} = {${arraykeepabc[i-1].d}}`;
+              equationarray.push(equation)
+              equation=''
+          }
+          setshowfxresult(equationarray)
+          let arrayfx =[]
+          let fx = ''
+          keepindex= 0
+          for(let i = 1; i <= newmatrix.length/4; i++) {
+                fx += `f${i}(x) = {${findxab[keepindex].result}}x^3`;
+                fx += `+ {${findxab[keepindex+1].result}}x^2`;
+                fx += `+ {${findxab[keepindex+2].result}}x`;
+                fx += `+ {${findxab[keepindex+3].result}} \\quad ;\\quad  ${x[i-1]}<=x<=${x[i]}`;
+                arrayfx.push(fx);
+              keepindex+=4
+            fx=''
+          }
+          console.log(arrayfx[0])
+          setfx(arrayfx)
+
+          let fxreult;
+          let arrayfxresult =[]
+
+            fxreult = `f_${keepi+1}(${Xinput}) = ${(arraykeepabc[keepi].a*xinput*xinput*xinput)+(arraykeepabc[keepi].b*xinput*xinput)+(arraykeepabc[keepi].c*xinput)+arraykeepabc[keepi].d}`
+
+          arrayfxresult.push(fxreult)
+          keepindex= 0
+          
+          setfxresult(arrayfxresult)
+          
+          setcubic( true)
     }
     function qua(x,y,xinput){
       let keepi
@@ -122,7 +304,6 @@ export default function Spline() {
         return
       }
       const newmatrix = Array.from({ length: (pointValue-1)*3 }, () => Array((pointValue-1)*3).fill(0));
-      
       let count =0
       let index=1;
       let start=0;
@@ -181,6 +362,8 @@ export default function Spline() {
               }
               count+=3
           }
+
+
           index=1
           const newmatrixsumy = new Array(newmatrix.length).fill(0);
           
@@ -252,9 +435,6 @@ export default function Spline() {
             equation=''
           }
           setshowfxresult(equationarray)
-
-
-
           let arrayfx =[]
           let fx = ''
           keepindex= 0
@@ -429,15 +609,25 @@ export default function Spline() {
                                           )}  
 
                                         {showcubic && (
-                                                    <div>
-                                                      <div className='flex justify-center items-center'><ArrayDisplay matrix={matrixnewA} /> 
-                                                            <ArrayDisplay matrix={metexta} /> 
-                                                            <BlockMath math={`=`} /> <ArrayDisplay matrix={matrixnewB} /> 
-                                                            fx
-                                                            showfxresult fxresult
-                                                            'f(x) = a0+b1x+cx^2'
-                                                    </div>
-                                                    </div>
+                                                       <div>
+                                                       <div className='flex justify-center items-center'><ArrayDisplay matrix={matrixnewA} /> 
+                                                             <ArrayDisplay matrix={metexta} /> 
+                                                             <BlockMath math={`=`} /> <ArrayDisplay matrix={matrixnewB} /> 
+                                                             
+                                                     </div>
+                                                     <div>
+                                                         {showfxresult.map((showfxresult,index)=> (
+                                                                 <BlockMath key={index} math={showfxresult} />
+                                                             ))}
+                                                         <BlockMath math={'f_i(x) = a_ix^3+b_ix^2+c_ix+d_i'} />
+                                                         {fx.map((fx,index)=> (
+                                                             <BlockMath key={index} math={fx} />
+                                                         ))}
+                                                         {fxresult.map((fxresult,index)=> (
+                                                             <BlockMath key={index} math={fxresult} />
+                                                         ))}
+                                                     </div>
+                                                     </div>
                                           )}  
                         
                        
