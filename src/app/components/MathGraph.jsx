@@ -5,12 +5,13 @@ const MathGraph = ({ dataPoints }) => {
   let xend
   let ystart
   let yend
+  console.log("s")
   if(dataPoints&& dataPoints.length>0){
     xstart = dataPoints[0].x-0.5
     xend = dataPoints[dataPoints.length - 1].x +1;
     ystart = dataPoints[0].y-1
     yend = dataPoints[dataPoints.length - 1].y + 10;
-
+    
   }else{
     xstart = 0;
     xend= 7;
@@ -29,12 +30,14 @@ const MathGraph = ({ dataPoints }) => {
           y: yData,
           mode: 'lines+markers',
           type: 'scatter',
-          marker: { color: 'red' },
-          line: { color: 'blue', width: 2, shape: 'spline' },
-        },
+          marker: { color: 'red',size: 6 },
+          line: { color: 'blue', width: 1, shape: 'spline' },
+        }
       ]}
       layout={{
         title: 'Graph of Function',
+        height: 600, // กำหนดความสูงของกราฟ
+       width: 1200,
         xaxis: {
           range: [xstart, xend],
           zeroline: true,
@@ -57,3 +60,4 @@ const MathGraph = ({ dataPoints }) => {
 };
 
 export default MathGraph;
+

@@ -104,7 +104,7 @@ export default function Bisection() {
                         <div className='bg-slate-200 m-10 p-8 h-auto'>
                       <div className="text-blue-500 text-3xl mb-4">Graph</div>
                       <div className="flex justify-center">
-                        <div className="max-w-full overflow-hidden"> 
+                        <div className="max-w-full"> 
                           <MathGraph dataPoints={graphData} />
                         </div>
                       </div>

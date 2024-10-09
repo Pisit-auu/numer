@@ -5,7 +5,7 @@ import { findx, roundToSignificantDecimals } from '../../components/function';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
-const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
+const MathGraphmanypoint = dynamic(() => import('../../components/mathonepoint'), { ssr: false });
 
 export default function onepoint() {
     const [fx, setInputValue] = useState('');
@@ -89,7 +89,7 @@ export default function onepoint() {
                       <div className="text-blue-500 text-3xl mb-4">Graph</div>
                       <div className="flex justify-center">
                         <div className="max-w-full overflow-hidden"> 
-                          <MathGraph dataPoints={graphData} />
+                          <MathGraphmanypoint dataPoints={graphData} />
                         </div>
                       </div>
                     </div>
