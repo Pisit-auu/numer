@@ -56,64 +56,41 @@ export default function Home() {
     router.push(`/${pathproblem}/${value}`); 
   };
   return (
-    
-    <div className=" bg-gray-100 min-h-screen">
-      <Navbar></Navbar>
-      <h1 className="text-4xl font-bold text-center text-blue-500 mt-16"> Numerical methods</h1>
-
-      <div className="m-8 text-center	 text-2xl font-bold  text-blue-500"> <div>
-        
-        <div className="flex m-4 items-center justify-center">Type Proublem         
-          
-              <div className="ml-4 flex"><Select defaultValue="-"   style={{width: 200,  }}
-                onChange={handleproublem}
-                options={[
-                  {
-                    value: 'root',
-                    label: 'root',
-                  },
-                  {
-                    value: 'linear',
-                    label: 'linear',
-                  },
-                  {
-                    value: 'inter',
-                    label: 'inter',
-                  },
-                  {
-                    value: 'extrapolation',
-                    label: 'Extrapolation',
-                  },
-                ]}
-              /> 
-                  <div className=" ml-4 flex " > Soulution </div>
-                <div className="ml-4">
-                <Select defaultValue="-"   style={{width: 200,  }}
-                      onChange={handleSolution}
-                      options={solution.map(item => ({
-                        value: item.value,
-                        label: item.label,
-                      }))}
-                    />
-                  </div>
-    
-    
-    </div>  
-
-    
-    </div>
-
-    
-    
-
-    
-    
-    
-    </div>
-     
+    <div className="bg-gray-100 min-h-screen">
+    <Navbar />
+    <h1 className="text-4xl font-bold text-center text-blue-500 mt-16">
+      Numerical Methods
+    </h1>
+  
+    <div className="m-8 text-center text-2xl font-bold text-blue-500">
+      <div className="flex flex-col items-center">
+        <span>Type Problem</span>
+        <div className="flex m-4 items-center justify-center">
+          <Select
+            defaultValue="-"
+            style={{ width: 200 }}
+            onChange={handleproublem}
+            options={[
+              { value: 'root', label: 'Root' },
+              { value: 'linear', label: 'Linear' },
+              { value: 'inter', label: 'Inter' },
+              { value: 'extrapolation', label: 'Extrapolation' },
+            ]}
+          />
+          <span className="ml-4">Solution</span>
+          <Select
+            defaultValue="-"
+            style={{ width: 200 }}
+            onChange={handleSolution}
+            options={solution.map(item => ({
+              value: item.value,
+              label: item.label,
+            }))}
+            className="ml-4"
+          />
+        </div>
       </div>
-
-   
     </div>
+  </div>
   );
 }
