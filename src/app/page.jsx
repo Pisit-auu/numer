@@ -4,6 +4,7 @@ import { Select, Space } from 'antd';
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import Navbar from  "./components/header";
+import axios from 'axios'
 export default function Home() {
   const [pathproblem,setpathproblem] = useState('')
   const [solution,setsolution] = useState([])
@@ -114,11 +115,11 @@ export default function Home() {
                   }))}
                   className="ml-4"
                 />
-
-                
               </div>
-
-              <div className="max-w-5xl mt-4 mx-auto bg-white shadow-md rounded-lg p-8">
+            </div>
+            
+            
+            <div className="max-w-5xl mt-4 mx-auto bg-white shadow-md rounded-lg p-8">
           <div className="grid grid-cols-1 border-b-2 border-gray-300 pb-4">
           <header className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Equation History</h2>
@@ -138,7 +139,9 @@ export default function Home() {
 
           </div>
           </div>
-            </div>
+
+
+          
           </div>
         </div>
 
