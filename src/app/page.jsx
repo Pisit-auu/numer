@@ -8,7 +8,33 @@ export default function Home() {
   const [pathproblem,setpathproblem] = useState('')
   const [solution,setsolution] = useState([])
   const router = useRouter()
+  const [equation,setEquation]= useState([]);
   
+  const fetchequation = async () => {
+    try{
+        const Response= await axios.get('/api/equation')
+        setEquation(Response.data)
+        console.log(Response)
+    }catch(error){
+      console.log('error',error)
+    }
+  }
+
+  useEffect(()=>{
+    fetchequation()
+  },[])
+
+  const deleteequation = async (id) => {
+    try {
+      await axios.delete(`/api/equation/${id}`);
+      alert('Delete Successful!');
+      fetchequation();
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Something went wrong');
+    }
+  };
   const root =  [
     { value: 'graphical',label: 'graphical',},     
     { value: 'bisection',label: 'bisection',},     
@@ -88,7 +114,30 @@ export default function Home() {
                   }))}
                   className="ml-4"
                 />
+
+                
               </div>
+
+              <div className="max-w-5xl mt-4 mx-auto bg-white shadow-md rounded-lg p-8">
+          <div className="grid grid-cols-1 border-b-2 border-gray-300 pb-4">
+          <header className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Equation History</h2>
+            </header>
+            <div className="grid grid-cols-1 gap-4">
+              {equation.map((cat) => (
+                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                  <button className="font-bold">{cat.name}</button>
+                  <div className="space-x-4">
+                    <button onClick={() => deleteequation(cat.id)} className="text-red-600 hover:text-red-900">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+          </div>
             </div>
           </div>
         </div>

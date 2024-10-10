@@ -13,32 +13,8 @@ export default function falseposition() {
     const [toleranceinput , setTolerance] = useState('0.000001');
     const [iterations, setIterations] = useState([]);
     const [graphData, setGraphData] = useState([]);
-    const [equation,setEquation]= useState([]);
 
-    const fetchequation = async () => {
-      try{
-          const Response= await axios.get('/api/equation')
-          setEquation(Response.data)
-      }catch(error){
-        console.log('error',error)
-      }
-    }
-  
-    useEffect(()=>{
-      fetchequation()
-    },[])
-  
-    const deleteequation = async (id) => {
-      try {
-        await axios.delete(`/api/equation/${id}`);
-        alert('Delete Successful!');
-        fetchequation();
-        window.location.reload();
-      } catch (error) {
-        console.error('Error deleting post:', error);
-        alert('Something went wrong');
-      }
-    };
+
 
     function falseposition(fx, xlnum, xrNum, tolerance) {
         const newIterations = [];
@@ -99,96 +75,66 @@ export default function falseposition() {
         
       };
     return (
-        <div>    
-              <div className="grid grid-cols-3 gap-4 p-4">
-                      <div className="text-center text-blue-500 text-3xl">input   
-                                  <form onSubmit={handleSubmit}>fx
-                                  <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)}/>
-                                    <div className="pt-4">XL
-                                          <input type="number"  value={xl}  onChange={(e) => setXl(e.target.value)}  ></input>
-                                    </div>
-                                    <div className="pt-4">XR
-                                    <input type="number"  value={xr}  onChange={(e) => setXr(e.target.value)}  ></input>
-                                    </div>
-                                    <div className="pt-4">tolerance
-                                    <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
-                                    </div>
-                                  <button type="submit">Submit</button>
-                                </form>
-                      </div>
-    
-                       <div className="text-center text-blue-500 text-3xl">
-                              falseposition
-                              <div>fx = <InlineMath math={fx} /></div>
-                              <div> XL =  {xl} </div>
-                              <div> XR =  {xr}</div>
-                        </div>
-    
-                    <div className="text-center text-blue-500 text-3xl"></div>
-                        
-                    <div>
-                    </div>
-    
-                  </div >
-
-
-                  <div className="max-w-5xl mt-4 mx-auto bg-white shadow-md rounded-lg p-8">
-          <div className="grid grid-cols-1 border-b-2 border-gray-300 pb-4">
-          <header className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Equation History</h2>
-            </header>
-            <div className="grid grid-cols-1 gap-4">
-              {equation.map((cat) => (
-                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                  <button className="font-bold">{cat.name}</button>
-                  <div className="space-x-4">
-                    <button onClick={() => deleteequation(cat.id)} className="text-red-600 hover:text-red-900">
-                      Delete
-                    </button>
+          <div>    
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+              <div className="text-center text-blue-500 text-3xl">
+                input   
+                <form onSubmit={handleSubmit}>
+                  fx
+                  <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)} className="border border-gray-300 p-2 rounded" />
+                  <div className="pt-4">XL
+                    <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} className="border border-gray-300 p-2 rounded" />
                   </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-          </div>
-
-
-
-              <div className='bg-slate-200 m-10 p-8 h-auto'>
-                <div className="text-blue-500 text-3xl mb-4">Graph</div>
-                <div className="flex justify-center">
-                  <div className="max-w-full ">
-                    <MathGraph dataPoints={graphData} />
+                  <div className="pt-4">XR
+                    <input type="number" value={xr} onChange={(e) => setXr(e.target.value)} className="border border-gray-300 p-2 rounded" />
                   </div>
-                </div>
+                  <div className="pt-4">tolerance
+                    <input type="number" value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} className="border border-gray-300 p-2 rounded" />
+                  </div>
+                  <button type="submit" className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Submit</button>
+                </form>
               </div>
 
+              <div className="text-center text-blue-500 text-3xl">
+                falseposition
+                <div>fx = <InlineMath math={fx} /></div>
+                <div> XL = {xl} </div>
+                <div> XR = {xr}</div>
+              </div>
+
+              <div className="text-center text-blue-500 text-3xl"></div>
+            </div>
 
 
-                  <div className='bg-slate-200	m-10 p-8 h-auto '>table 
+            <div className="bg-slate-200 m-10 p-8 h-auto">
+              <div className="text-blue-500 text-3xl mb-4">Graph</div>
+              <div className="flex justify-center">
+                <div className="max-w-full">
+                  <MathGraph dataPoints={graphData} />
+                </div>
+              </div>
+            </div>
 
-                        <div className='bg-slate-200 m-10 p-8 h-auto'>
-                              <div className='grid grid-cols-4 gap-4 p-4"'> <div>iter</div> <div>Xk</div> <div>yk</div>   <div>error</div>
+            <div className="bg-slate-200 m-10 p-8 h-auto">
+              <div className="grid grid-cols-1 gap-4 p-4">
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div className="font-bold">iter</div>
+                  <div className="font-bold">Xk</div>
+                  <div className="font-bold">yk</div>
+                  <div className="font-bold">error</div>
+                </div>
 
-                              </div>
-                              <div className="grid grid-cols-1 gap-4 p-4">
-
-                                  {iterations.map((iteration, index) => (
-                                      <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                                          <div>{index}</div>
-                                          <div>{iteration.xk.toFixed(6)}</div>
-                                          <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
-                                          <div>{iteration.error.toFixed(6)}%</div>
-                                      </div>
-                                  ))}
-                              </div>
-
-                      </div>
-    
+                {iterations.map((iteration, index) => (
+                  <div key={index} className="grid grid-cols-4 gap-4 p-4 border border-gray-300 rounded-md">
+                    <div>{index}</div>
+                    <div>{iteration.xk.toFixed(6)}</div>
+                    <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
+                    <div>{iteration.error.toFixed(6)}%</div>
                   </div>
-    
-        </div>
+                ))}
+              </div>
+            </div>
+          </div>
       );
     }
     
