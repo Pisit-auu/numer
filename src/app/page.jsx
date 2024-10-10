@@ -56,41 +56,42 @@ export default function Home() {
     router.push(`/${pathproblem}/${value}`); 
   };
   return (
-    <div className="bg-gray-100 min-h-screen">
-    <Navbar />
-    <h1 className="text-4xl font-bold text-center text-blue-500 mt-16">
-      Numerical Methods
-    </h1>
-  
-    <div className="m-8 text-center text-2xl font-bold text-blue-500">
-      <div className="flex flex-col items-center">
-        <span>Type Problem</span>
-        <div className="flex m-4 items-center justify-center">
-          <Select
-            defaultValue="-"
-            style={{ width: 200 }}
-            onChange={handleproublem}
-            options={[
-              { value: 'root', label: 'Root' },
-              { value: 'linear', label: 'Linear' },
-              { value: 'inter', label: 'Inter' },
-              { value: 'extrapolation', label: 'Extrapolation' },
-            ]}
-          />
-          <span className="ml-4">Solution</span>
-          <Select
-            defaultValue="-"
-            style={{ width: 200 }}
-            onChange={handleSolution}
-            options={solution.map(item => ({
-              value: item.value,
-              label: item.label,
-            }))}
-            className="ml-4"
-          />
+        <div className="bg-gray-100 min-h-screen">
+          <Navbar />
+          <h1 className="text-4xl font-bold text-center text-blue-500 mt-16">
+            Numerical Methods
+          </h1>
+
+          <div className="m-8 text-center text-2xl font-bold text-blue-500">
+            <div className="flex flex-col items-center">
+              <span>Type Problem</span>
+              <div className="flex flex-col md:flex-row items-center justify-center m-4">
+                <Select
+                  defaultValue="-"
+                  style={{ width: 200 }}
+                  onChange={handleproublem}
+                  options={[
+                    { value: 'root', label: 'Root' },
+                    { value: 'linear', label: 'Linear' },
+                    { value: 'inter', label: 'Inter' },
+                    { value: 'extrapolation', label: 'Extrapolation' },
+                  ]}
+                />
+                <span className="ml-4">Solution</span>
+                <Select
+                  defaultValue="-"
+                  style={{ width: 200 }}
+                  onChange={handleSolution}
+                  options={solution.map(item => ({
+                    value: item.value,
+                    label: item.label,
+                  }))}
+                  className="ml-4"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
+
   );
 }
