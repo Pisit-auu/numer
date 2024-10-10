@@ -59,27 +59,28 @@ export default function onepoint() {
     return (
         <div>    
               <div className="grid grid-cols-3 gap-4 p-4">
-                      <div className="text-center text-blue-500 text-3xl">input   
-                                  <form onSubmit={handleSubmit}>Xn+1= 
-                                  <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)}/>
-                                    <div className="pt-4">Xstart
-                                          <input type="number"  value={x0}  onChange={(e) => setX0(e.target.value)}  ></input>
-                                    </div>
-                                    <div className="pt-4">tolerance
-                                    <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
-                                    </div>
-                                  <button type="submit">Submit</button>
-                                </form>
-                      </div>
+                      <div>{/*column 1*/}</div>
     
-                       <div className="text-center text-blue-500 text-3xl">
-                       onepoint methods
-
-                    <div>fx = <InlineMath math={fx} /></div>
-                              <div> Xstart =  {x0} </div>
-                        </div>
+                      <div className="text-center text-blue-500 text-3xl">
+                        one-point iteration methods
+                          <div> <InlineMath math={`x_{n+1} = ${fx}`} /></div>
+                          <form onSubmit={handleSubmit}>
+                        <div className="pt-4">
+                        <InlineMath math={`x_{n+1}`} /> <input type="text" className='w-full' value={fx} onChange={(e) => setInputValue(e.target.value)} />
+                            </div>
+                          <div className="p-4">
+                            <div className="pt-2">
+                            <InlineMath math={`x_{start}`} /> <input type="number" className='w-full' value={x0} onChange={(e) => setX0(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="pt-4 pb-4">
+                            Tolerance <input type="number" className='w-full' value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                          </div>
+                          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+                        </form>
+                    </div>
     
-                    <div className="text-center text-blue-500 text-3xl"></div>
+                    <div>{/*column 3*/}</div>
                         
                     <div>
                     </div>

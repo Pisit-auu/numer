@@ -111,77 +111,66 @@ function graphical(fx, x0Num, xlassNum, tolerance) {
 }
 
   return (
-    <div>
-
-
-          <div className="grid grid-cols-3 gap-4 p-4">
-                  <div className="text-center text-blue-500 text-3xl">input   
-                              <form onSubmit={handleSubmit}>fx
-                              <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)}/>
-                                <div className="pt-4">XL
-                                      <input type="number"  value={x0}  onChange={(e) => setX0(e.target.value)}  ></input>
-                                </div>
-                                <div className="pt-4">XR
-                                <input type="number"  value={xlass}  onChange={(e) => setXlass(e.target.value)}  ></input>
-                                </div>
-                                <div className="pt-4">tolerance
-                                <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
-                                </div>
-                              <button type="submit">Submit</button>
-                            </form>
-                  </div>
-
-                   <div className="text-center text-blue-500 text-3xl">
-                          graphical 
-                          <div>fx = <InlineMath math={fx} /></div>
-                          <div> XL =  {x0} </div>
-                          <div> XR =  {xlass}</div>
+                    <div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+                      <div>{/*column 1*/}</div>
+                  
+                      <div className="text-center text-blue-500 text-3xl">
+                        Graphical methods
+                        <div className='pt-4'>
+                          <InlineMath math={`f(x) = ${fx}`} />
+                        </div>
+                  
+                        <form onSubmit={handleSubmit}>
+                        <div className="pt-4">
+                        <InlineMath math={`f(x)`} /> <input type="text" className='w-full' value={fx} onChange={(e) => setInputValue(e.target.value)} />
+                            </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-4">
+                            <div className="pt-4">
+                            <InlineMath math={`X_L`} /> <input type="number" className='w-full' value={x0} onChange={(e) => setX0(e.target.value)} />
+                            </div>
+                            <div className="pt-4">
+                            <InlineMath math={`X_R`} /><input type="number" className='w-full' value={xlass} onChange={(e) => setXlass(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="pt-4 pb-4">
+                            Tolerance <input type="number" className='w-full' value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                          </div>
+                          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+                        </form>
+                      </div>
+                  
+                      <div>{/*column 2*/}</div>
+                      <div>{/*column 3*/}</div>
                     </div>
-
-                <div className="text-center text-blue-500 text-3xl"></div>
-                    
-                <div>
-                </div>
-
-              </div >
-
-              <div className='bg-slate-200 m-10 p-8 h-auto'>
-                <div className="text-blue-500 text-3xl mb-4">Graph</div>
-                <div className="flex justify-center">
-                  <div className="max-w-full overflow-hidden"> 
-                    <MathGraph dataPoints={graphData} />
-                  </div>
-                </div>
-              </div>
-
-
-
-
-              <div className='bg-slate-200	m-10 p-8 h-auto '>table 
-                      <div className='bg-slate-200 m-10 p-8 h-auto'>
-                                <div className='grid grid-cols-4 gap-4 p-4"'> <div>iter</div> <div>Xk</div> <div>yk</div>   <div>error</div>
-
-                                </div>
-                                <div className="grid grid-cols-1 gap-4 p-4">
-
-                                    {iterations.map((iteration, index) => (
-                                        <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                                            <div>{index}</div>
-                                            <div>{iteration.xk.toFixed(6)}</div>
-                                            <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
-                                            <div>{iteration.error.toFixed(6)}%</div>
-                                        </div>
-                                    ))}
-                                </div>
-
+                  
+                    <div className='bg-slate-200 m-10 p-8 h-auto'>
+                      <div className="text-blue-500 text-3xl mb-4">Graph</div>
+                      <div className="flex justify-center">
+                        <div className="max-w-full overflow-hidden">
+                          <MathGraph dataPoints={graphData} />
+                        </div>
+                      </div>
                     </div>
-              </div>
-
-
-
-
-
-
-    </div>
+                  
+                    <div className='bg-slate-200 m-10 p-8 h-auto'>
+                      <div className='grid grid-cols-1 md:grid-cols-4 gap-4 p-4'>
+                        <div>Iter</div>
+                        <div>Xk</div>
+                        <div>Yk</div>
+                        <div>Error</div>
+                      </div>
+                      <div className="grid grid-cols-1 gap-4 p-4">
+                        {iterations.map((iteration, index) => (
+                          <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
+                            <div>{index}</div>
+                            <div>{iteration.xk.toFixed(6)}</div>
+                            <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
+                            <div>{iteration.error.toFixed(6)}%</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
   );
 }

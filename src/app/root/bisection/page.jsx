@@ -70,30 +70,31 @@ export default function Bisection() {
     return (
         <div>    
               <div className="grid grid-cols-3 gap-4 p-4">
-                      <div className="text-center text-blue-500 text-3xl">input   
-                                  <form onSubmit={handleSubmit}>fx
-                                  <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)}/>
-                                    <div className="pt-4">XL
-                                          <input type="number"  value={xl}  onChange={(e) => setXl(e.target.value)}  ></input>
-                                    </div>
-                                    <div className="pt-4">XR
-                                    <input type="number"  value={xr}  onChange={(e) => setXr(e.target.value)}  ></input>
-                                    </div>
-                                    <div className="pt-4">tolerance
-                                    <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
-                                    </div>
-                                  <button type="submit">Submit</button>
-                                </form>
-                      </div>
+                          <div>{/*column 1*/}</div>
     
-                       <div className="text-center text-blue-500 text-3xl">
-                              bisection 
-                              <div>fx = <InlineMath math={fx} /></div>
-                              <div> XL =  {xl} </div>
-                              <div> XR =  {xr}</div>
-                        </div>
+                      <div className="text-center text-blue-500 text-3xl">
+                          Bisection methods
+                          <div> <InlineMath math={`f(x) = ${fx}`} /></div>
+                          <form onSubmit={handleSubmit}>
+                        <div className="pt-4">
+                        <InlineMath math={`f(x)`} /> <input type="text" className='w-full' value={fx} onChange={(e) => setInputValue(e.target.value)} />
+                            </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-4">
+                            <div className="pt-4">
+                            <InlineMath math={`X_L`} /> <input type="number" className='w-full' value={xl} onChange={(e) => setXl(e.target.value)} />
+                            </div>
+                            <div className="pt-4">
+                            <InlineMath math={`X_R`} /> <input type="number" className='w-full' value={xr} onChange={(e) => setXr(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="pt-4 pb-4">
+                            Tolerance <input type="number" className='w-full' value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                          </div>
+                          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+                        </form>
+                    </div>
     
-                    <div className="text-center text-blue-500 text-3xl"></div>
+                    <div>{/*column 2*/}</div>
                         
                     <div>
                     </div>
