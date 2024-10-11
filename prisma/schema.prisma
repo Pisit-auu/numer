@@ -16,3 +16,10 @@ model Equation {
   id    Int    @id @default(autoincrement())
   name  String @unique
 }
+model root {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  xl    Int
+  xr    Int 
+}
+
