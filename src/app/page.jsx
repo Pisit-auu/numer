@@ -66,6 +66,19 @@ export default function Home() {
     { value: 'multiple',label: 'Multiple Regression',},     
 
   ]
+  const integration =  [
+    { value: 'trapezoidal',label: 'Trapezoidal Rule',},     
+    { value: 'composite',label: 'Composite Trapezoidal Rule',},     
+    { value: 'simpson',label: 'Simpson Rule',},     
+    { value: 'compositesimpson',label: 'Conposite Simpson Rule',},     
+    
+
+  ]
+  const differentiation =  [
+    { value: 'divided',label: 'Differentiation'},     
+    
+
+  ]
 
   const handleproublem = (value) => {
     setpathproblem(value)
@@ -77,6 +90,10 @@ export default function Home() {
       setsolution(Interpolition)
     }else if(value == 'extrapolation'){
       setsolution(extrapolation)
+    }else if(value == 'integration'){
+      setsolution(integration)
+    }else if(value == 'differentiation'){
+      setsolution(differentiation)
     }
   };
   const handleSolution = (value) => {
@@ -102,6 +119,8 @@ export default function Home() {
                     { value: 'linear', label: 'Linear' },
                     { value: 'inter', label: 'Inter' },
                     { value: 'extrapolation', label: 'Extrapolation' },
+                    { value: 'integration', label: 'Integration' },
+                    { value: 'differentiation', label: 'Differentiation' },
                   ]}
                 />
                 <span className="ml-4">Solution</span>
