@@ -28,7 +28,7 @@ export function GET(){
 }
 
 export async function POST(request){
-    const{name} = await request.json()
+    const {name} = await request.json()
     return Response.json({
         data:{
             name
