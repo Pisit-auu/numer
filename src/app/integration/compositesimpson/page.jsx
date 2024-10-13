@@ -14,7 +14,7 @@ export default function Compositesimpson(){
     const [fxi,setfxi] = useState([])
     const [fxcalodd,setfxcalodd] = useState()
     const [fxcaleven,setfxcaleven] = useState()
-    const [show,setshow] = useState(true)
+    const [show,setshow] = useState(false)
     const [sumeven,Setsumeven] = useState()
     const [sumodd,Setsumodd] = useState()
     const [result,setresult] = useState()
@@ -70,6 +70,7 @@ export default function Compositesimpson(){
         sum+= calxi[0]+calxi[n*2]
         sum = sum*(1/3)*h
         setresult(sum)
+        setshow(true)
     }
     const handlesubmit = (event) =>{
         event.preventDefault();
