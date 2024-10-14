@@ -39,7 +39,7 @@ export default function Eliminate() {
         };
 
         const latexChunks = matrix.map((slice, index) => (
-          `\\text{Slice ${index + 1}}: \n` +
+          `\\text{Step ${index + 1}}: \n` +
           `\\begin{bmatrix} \n` + 
           formatMatrix(slice) + 
           `\n\\end{bmatrix}`
