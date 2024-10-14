@@ -13,7 +13,7 @@ export default function Home() {
   
   const fetchequation = async () => {
     try{
-        const Response= await axios.get('/api/equation')
+        const Response= await axios.get('/api/root')
         setEquation(Response.data)
         console.log(Response)
     }catch(error){
@@ -27,7 +27,7 @@ export default function Home() {
 
   const deleteequation = async (id) => {
     try {
-      await axios.delete(`/api/equation/${id}`);
+      await axios.delete(`/api/root/${id}`);
       alert('Delete Successful!');
       fetchequation();
       window.location.reload();

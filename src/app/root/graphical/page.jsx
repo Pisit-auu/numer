@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import axios from 'axios'
+import { Select, Space } from 'antd';
 
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 import { findx, roundToSignificantDecimals } from '../../components/function'; 
@@ -15,6 +16,7 @@ export default function Graphical() {
   const [toleranceinput , setTolerance] = useState('0.000001');
   const [iterations, setIterations] = useState([]);
   const [graphData, setGraphData] = useState([]);
+  const [equation,setEquation]= useState([]);
 
     const handleSubmit = async (event) => {
       event.preventDefault();
@@ -24,14 +26,40 @@ export default function Graphical() {
       const tolerance = parseFloat(toleranceinput)
       graphical(newEquation,x0Num,xlassNum,tolerance)
       try{
-        await axios.post('/api/equation',{
-          name:fx
+        await axios.post('/api/root',{
+          name:fx,
+          xl:x0Num,
+          xr:xlassNum
         })
     }catch(error){
       console.log('error',error)
     }
     };
 
+    const fetchequation = async () => {
+      try{
+          const Response= await axios.get('/api/root')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            keepequation.push({ value: test[i].id, label: test[i].name});
+          }
+          setEquation(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/root/${value}`)
+      setX0(Response.data.xl)
+      setXlass(Response.data.xr)
+      setInputValue(Response.data.name)
+    }
+  
+    useEffect(()=>{
+      fetchequation()
+    },[])
+  
 
 function graphical(fx, x0Num, xlassNum, tolerance) {
     const newIterations = [];
@@ -138,6 +166,17 @@ function graphical(fx, x0Num, xlassNum, tolerance) {
                           </div>
                           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
                         </form>
+                        <div className='mt-4'>Root Equation History</div>
+                                <Select
+                          defaultValue="-"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
                       </div>
                   
                       <div>{/*column 2*/}</div>

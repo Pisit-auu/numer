@@ -8,3 +8,13 @@ export async function DELETE(request, { params }) {
     })
     return Response.json(deleteroot)
 }
+
+export async function GET(request, { params }){
+    const rootId = Number(params.id)
+    const findequation = await prisma.root.findUnique({
+        where:{
+            id: rootId
+        }
+    })
+    return Response.json(findequation)
+}   

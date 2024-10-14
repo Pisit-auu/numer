@@ -2,7 +2,6 @@
 
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
- //ตัวแทนพูดคุยไปยัง database
 
 export async function POST(request){
     const{name} = await request.json()

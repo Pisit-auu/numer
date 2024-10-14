@@ -5,6 +5,9 @@ import 'katex/dist/katex.min.css';
 import dynamic from 'next/dynamic';
 import {findx, roundToSignificantDecimals } from '../../components/function'; 
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
+import axios from 'axios'
+import { Select, Space } from 'antd';
+
 
 export default function Secant() {
     const [fx, setInputValue] = useState('x^2 - 7');
@@ -13,7 +16,7 @@ export default function Secant() {
     const [toleranceinput , setTolerance] = useState('0.000001');
     const [iterations, setIterations] = useState([]);
     const [graphData, setGraphData] = useState([]);
-
+    const [equation,setEquation]= useState([]);
     function secant(fx, x0num, tolerance, x1num) {
         const newIterations = [];
         let x1 = x1num;
@@ -52,15 +55,47 @@ export default function Secant() {
         setIterations(newIterations);
         setGraphData(graphPoints);
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const newEquation = fx;
         let x0num = parseFloat(x0);
         let x1num = parseFloat(x1);
         const tolerance = parseFloat(toleranceinput);
         secant(newEquation, x0num, tolerance, x1num);
+        try{
+            await axios.post('/api/root',{
+              name:fx,
+              xl:x0num,
+              xr:x1num
+            })
+        }catch(error){
+          console.log('error',error)
+        }
         
       };
+      const fetchequation = async () => {
+        try{
+            const Response= await axios.get('/api/root')
+            let test = Response.data
+            let keepequation = []
+            for(let i=0;i< test.length;i++){
+              keepequation.push({ value: test[i].id, label: test[i].name});
+            }
+            setEquation(keepequation)
+        }catch(error){
+          console.log('error',error)
+        }
+      }
+      const handleeuation = async (value)=>{
+        const Response = await axios.get(`/api/root/${value}`)
+        setX0(Response.data.xl)
+        setX1(Response.data.xr)
+        setInputValue(Response.data.name)
+      }
+    
+      useEffect(()=>{
+        fetchequation()
+      },[])
     return (
         <div>    
               <div className="grid grid-cols-3 gap-4 p-4">
@@ -87,6 +122,17 @@ export default function Secant() {
                           </div>
                           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
                         </form>
+                        <div className='mt-4'>Root Equation History</div>
+                                <Select
+                          defaultValue="-"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
                     </div>
                     <div>{/*column 2*/}</div>
             </div>

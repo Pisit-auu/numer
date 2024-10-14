@@ -4,6 +4,9 @@ import dynamic from 'next/dynamic';
 import { findx, roundToSignificantDecimals } from '../../components/function'; 
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
+import axios from 'axios'
+import { Select, Space } from 'antd';
+
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 
 export default function Bisection() {
@@ -13,7 +16,7 @@ export default function Bisection() {
     const [toleranceinput , setTolerance] = useState('0.000001');
     const [iterations, setIterations] = useState([]);
     const [graphData, setGraphData] = useState([]);
-
+    const [equation,setEquation]= useState([]);
 
     function bisection(fx, xlnum, xrNum, tolerance) {
         const newIterations = [];
@@ -57,16 +60,49 @@ export default function Bisection() {
         setIterations(newIterations);
         setGraphData(graphPoints);
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
         event.preventDefault();
         const newEquation = fx;
         let xlnum = parseFloat(xl);
         let xrNum = parseFloat(xr);
         const tolerance = parseFloat(toleranceinput)
         bisection(newEquation,xlnum,xrNum,tolerance)
+        try{
+          await axios.post('/api/root',{
+            name:fx,
+            xl:xlnum,
+            xr:xrNum
+          })
+          }catch(error){
+            console.log('error',error)
+          }
+          
         
         
       };
+      const fetchequation = async () => {
+        try{
+            const Response= await axios.get('/api/root')
+            let test = Response.data
+            let keepequation = []
+            for(let i=0;i< test.length;i++){
+              keepequation.push({ value: test[i].id, label: test[i].name});
+            }
+            setEquation(keepequation)
+        }catch(error){
+          console.log('error',error)
+        }
+      }
+      useEffect(()=>{
+        fetchequation()
+      },[])
+      const handleeuation = async (value)=>{
+        const Response = await axios.get(`/api/root/${value}`)
+        setXl(Response.data.xl)
+        setXr(Response.data.xr)
+        setInputValue(Response.data.name)
+      }
+
     return (
         <div>    
               <div className="grid grid-cols-3 gap-4 p-4">
@@ -92,6 +128,17 @@ export default function Bisection() {
                           </div>
                           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
                         </form>
+                        <div className='mt-4'>Root Equation History</div>
+                                <Select
+                          defaultValue="-"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
                     </div>
     
                     <div>{/*column 2*/}</div>

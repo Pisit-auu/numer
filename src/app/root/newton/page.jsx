@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { derivative } from 'mathjs';
 import dynamic from 'next/dynamic';
 import { findx, roundToSignificantDecimals } from '../../components/function'; 
+import axios from 'axios'
+import { Select, Space } from 'antd';
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -13,7 +15,7 @@ export default function Newton() {
     const [toleranceinput , setTolerance] = useState('0.000001');
     const [iterations, setIterations] = useState([]);
     const [graphData, setGraphData] = useState([]);
-
+    const [equation,setEquation]= useState([]);
 
     function newton(fx, x0num, tolerance,divfx) {
         const newIterations = [];
@@ -47,7 +49,7 @@ export default function Newton() {
         setIterations(newIterations);
         setGraphData(graphPoints);
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const newEquation = fx;
         const divfx = derivative(fx,'x').toString();
@@ -55,8 +57,38 @@ export default function Newton() {
         let x0num = parseFloat(x0);
         const tolerance = parseFloat(toleranceinput)
         newton(newEquation,x0num,tolerance,divfx)
-        
+        try{
+          await axios.post('/api/root',{
+            name:fx,
+            xl:x0num,
+            xr:0,
+          })
+      }catch(error){
+        console.log('error',error)
+      }
       };
+      const fetchequation = async () => {
+        try{
+            const Response= await axios.get('/api/root')
+            let test = Response.data
+            let keepequation = []
+            for(let i=0;i< test.length;i++){
+              keepequation.push({ value: test[i].id, label: test[i].name});
+            }
+            setEquation(keepequation)
+        }catch(error){
+          console.log('error',error)
+        }
+      }
+      const handleeuation = async (value)=>{
+        const Response = await axios.get(`/api/root/${value}`)
+        setX0(Response.data.xl)
+        setInputValue(Response.data.name)
+      }
+    
+      useEffect(()=>{
+        fetchequation()
+      },[])
     return (
         <div>    
               <div className="grid grid-cols-3 gap-4 p-4">
@@ -80,6 +112,17 @@ export default function Newton() {
                           </div>
                           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
                         </form>
+                        <div className='mt-4'>Root Equation History</div>
+                                <Select
+                          defaultValue="-"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
                     </div>
 
                     <div>{/*column 2*/}</div>
