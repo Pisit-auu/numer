@@ -108,8 +108,8 @@ export default function Home() {
 
           <div className="m-8 text-center text-2xl font-bold text-blue-500">
             <div className="flex flex-col items-center">
-              <span>Type Problem</span>
               <div className="flex flex-col md:flex-row items-center justify-center m-4">
+              <span className="mr-4">Choose Problem</span>
                 <Select
                   defaultValue="-"
                   style={{ width: 200 }}
@@ -123,7 +123,7 @@ export default function Home() {
                     { value: 'differentiation', label: 'Differentiation' },
                   ]}
                 />
-                <span className="ml-4">Solution</span>
+                <span className="ml-4">Choose Method</span>
                 <Select
                   defaultValue="-"
                   style={{ width: 200 }}
