@@ -457,11 +457,11 @@ export default function Divided(){
                 xi[i] = parseFloat(x)
                 x+=h
             }
-            console.log(xi)
             let fxi = []
             for(let i=0;i<=n;i++){
-                xi[i] = evaluate(fx, {x: xi[i]});
+                fxi[i] = evaluate(fx, {x: xi[i]});
             }
+            console.log(xi)
             let start = 1
             let sum =0;
             let fxical =[]
