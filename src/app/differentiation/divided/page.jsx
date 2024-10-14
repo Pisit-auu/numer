@@ -17,7 +17,7 @@ export default function Divided(){
     const [selectoperation,setselectoperation] = useState()
     const [derivativenumer,setderivativenumer] = useState()
     const [selectO ,setselectO] = useState()
-    const [show,setshow] = useState(true)
+    const [show,setshow] = useState(false)
     const [result,setresult] = useState()
 
 
@@ -108,7 +108,7 @@ export default function Divided(){
         }
         setdx(setdxx);
         
-        
+        setshow(true)
 
     }
     function forwardOh2(n,x,h,fx){
@@ -278,6 +278,7 @@ export default function Divided(){
             setdxx = derivative(setdxx, 'x').toString();
         }
         setdx(setdxx);
+        setshow(true)
     }
     function backwardOh2(n,x,h,fx){
         let xi = []
@@ -446,6 +447,7 @@ export default function Divided(){
             setdxx = derivative(setdxx, 'x').toString();
         }
         setdx(setdxx);
+        setshow(true)
     }
 
     function forwardOh(n,x,h,fx){
@@ -534,7 +536,7 @@ export default function Divided(){
                 setdxx = derivative(setdxx, 'x').toString();
             }
             setdx(setdxx);
-            
+            setshow(true)
 
     }
     function Centeredoh2(n,x,h,fx){
@@ -698,7 +700,7 @@ export default function Divided(){
             setdxx = derivative(setdxx, 'x').toString();
         }
         setdx(setdxx);
-        
+        setshow(true)
     }
     function Centeredoh4(n,x,h,fx){
         let xi = []
@@ -938,6 +940,7 @@ export default function Divided(){
                 setdxx = derivative(setdxx, 'x').toString();
             }
             setdx(setdxx);
+            setshow(true)
 
     }
 
