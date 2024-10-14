@@ -82,19 +82,15 @@ export default function Eliminate() {
           X[i]/=A[i][i];
           newx.push({iteration: i,result:X[i]})
       }
-       console.log(newx)
-       console.log(matrixA  )
       
       for(let i=0;i<n;i++){
         let sum =0;
         for(let j=0;j<n;j++){
           sum += newx[n-1-j].result*matrixA[i][j]
-            console.log(newx[(n-1-j)].result,"*",matrixA[i][j])
           
         }
         checkresult.push("b",{i},"= ",sum)
       }
-      console.log(checkresult)
       setResult(newx)      
       return X;
   }
@@ -141,9 +137,9 @@ export default function Eliminate() {
             return;
         }
         // ตรวจสอบว่าเป็นตัวเลขทั้งหมด
-        const allNumbersInMatrix = updatedMatrixAB.flat().every(item => Number.isFinite(item));
+        const checkmatrixisnumber = updatedMatrixAB.flat().every(item => Number.isFinite(item));
     
-        if (allNumbersInMatrix) {
+        if (checkmatrixisnumber) {
             newStep = eliminate(updatedMatrixAB); 
             console.log(newStep)
             setStep(matrixToLaTeX(newStep))

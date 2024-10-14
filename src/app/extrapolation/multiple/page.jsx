@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { evaluate, re } from 'mathjs';
+import { evaluate } from 'mathjs';
 import { eliminate ,findXeliminate,insertB} from '@/app/components/matrix';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import 'katex/dist/katex.min.css';
@@ -8,7 +8,6 @@ import { InlineMath, BlockMath } from 'react-katex';
 export default function Multiple() {
   const [pointValue, setpointValue] = useState(2);
   const [Xnumber , setXnumber] = useState(1);
-  const [Xinput , setXinput] = useState(1);
   const [matrixX, setMatrixX ] = useState([]);  
   const [matrixY, setMatrixY] = useState([]);  
   const [showfx , setshowfx] = useState('');
@@ -57,14 +56,13 @@ export default function Multiple() {
     
     const handleSubmit = (event) => {  
       event.preventDefault();
-      if(Xinput ===''||pointValue<2){
+      if( pointValue<2){
         alert('โปรดกรอกค่า x หรือ point > 1')
         return
       }
       const newmetrixX =matrixX
       const newmetrixY =matrixY
       const newmetrixx0 =matrixX0
-      const X = parseFloat(Xinput);
       const numx = parseInt(Xnumber);
       multiple(newmetrixX,newmetrixY,newmetrixx0,numx)
     };
@@ -180,9 +178,6 @@ export default function Multiple() {
                                         <input type="number"  value={pointValue}  onChange={(e) => {setpointValue(e.target.value)}}/>
                                         <div className="pt-4">number x
                                             <input type="number"  value={Xnumber}  onChange={(e) => setXnumber(e.target.value)}  ></input>
-                                        </div>
-                                        <div className="pt-4">X value
-                                            <input type="number"  min='1' value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
                                         </div>
 
                                         <button type="submit">Submit</button>
