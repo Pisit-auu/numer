@@ -20,7 +20,7 @@ export default function Divided(){
     const [show,setshow] = useState(false)
     const [result,setresult] = useState()
 
-
+    
     function backwardoh(n,x,h,fx){
         let xi = [n]
         const keepx = x

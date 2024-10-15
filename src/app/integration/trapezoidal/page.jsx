@@ -35,10 +35,6 @@ export default function Trapezoidal(){
         seth(h)
         trapezoidal(fx,x0,x1,h)
         
-
-
-
-
     }
     
 
@@ -81,13 +77,6 @@ export default function Trapezoidal(){
 
 
         </div>
-
-
-
-
-
-
-
 
     </div>
     );
