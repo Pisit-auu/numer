@@ -46,22 +46,24 @@ const MathGraphmanypoint = ({ dataPoints }) => {
           name: 'g(x)', // ชื่อแสดงใน legend
         },
         {
-          x: onePointXData,
-          y: onePointYData,
+          x: xData,
+          y: xData,
           mode: 'lines+markers',
           type: 'scatter',
-          marker: { color: 'purple', size: 6 },
-          line: { color: 'orange', width: 2 },
-          name: 'One Point Iteration',
+          marker: { color: 'red', size: 6 },
+          line: { color: 'pink', width: 1 },
+          name: 'x=x', // ชื่อแสดงใน legend
         },
         {
-          x: [xstart, xend],
-          y: [xstart, xend],
-          mode: 'lines',
+          x: xData,
+          y: yData,
+          mode: 'lines+markers',
           type: 'scatter',
-          line: { color: 'green', width: 2 },
-          name: 'y = x',
+          marker: { color: 'red', size: 6 },
+          line: { color: 'red', width: 1, shape: 'hv' },
+          name: 'f(x)', // ชื่อแสดงใน legend
         },
+
       ]}
       layout={{
         title: 'Graph of Function',
