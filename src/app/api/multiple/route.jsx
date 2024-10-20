@@ -16,7 +16,6 @@ export async function POST(request) {
     
 }
 export async function GET(request) {
-    const multiple = await prisma.multiple.findMany()
-    return Response.json(multiple)
-    
+    const m = await prisma.multiple.findMany()
+    return Response.json(m)
 }

@@ -71,7 +71,7 @@ return(
                 
                <form onSubmit={handlesubmit}>
 
-               <div className=""> <InlineMath math={`\\int_${a}^${b} ${fx} \\,dx`}/></div>
+               <div className=""> <InlineMath math={`\\int_{${a}}^{${b}} ${fx} \\,dx`}/></div>
                 <div>
                     <BlockMath math="f(x)" />
                     <input type='text' className='' value={fx} onChange={(e)=>setfx(e.target.value)} />

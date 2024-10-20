@@ -54,4 +54,12 @@ model multiple{
   xi Json
 
 }
+model integration{
+  id    Int    @id @default(autoincrement())
+  fx String  @unique
+  a Float
+  b Float
+  n Int
+}
+
 

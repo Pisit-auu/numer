@@ -5,6 +5,8 @@ import { eliminate ,findXeliminate,insertB} from '@/app/components/matrix';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Multiple() {
   const [pointValue, setpointValue] = useState(2);
   const [Xnumber , setXnumber] = useState(1);
@@ -18,7 +20,9 @@ export default function Multiple() {
   const [matrixsetvaluefx,setmatrixvaluefx] = useState('');
   const [keepshow,setkeepshow] = useState(false);
   const [matrixX0, setMatrixX0] = useState([]);
-
+  const [equationapi,setEquationapi]= useState([]);
+  const [point,setpoint] = useState([])
+  const [number,setnumber] = useState([])
   const handleMatrixChange = (rowIndex, colIndex, value) => {
     const numericValue = parseFloat(value);
     const validValue = Number.isNaN(numericValue) ? 0 : numericValue; 
@@ -54,18 +58,102 @@ export default function Multiple() {
       setMatrixX0(newMatrixX0);
     }, [pointValue, Xnumber]);
     
-    const handleSubmit = (event) => {  
+    const handleSubmit = async(event) => {  
       event.preventDefault();
       if( pointValue<2){
         alert('โปรดกรอกค่า x หรือ point > 1')
         return
       }
-      const newmetrixX =matrixX
-      const newmetrixY =matrixY
-      const newmetrixx0 =matrixX0
-      const numx = parseInt(Xnumber);
-      multiple(newmetrixX,newmetrixY,newmetrixx0,numx)
+      const xvalue = parseFloat(Xnumber)
+      const xi = matrixX0
+      const X = matrixX;
+      const point = parseInt(pointValue);
+      const Y = matrixY
+      try{
+        await axios.post('/api/multiple',{
+          point,
+          xvalue,
+          X,
+          Y,
+          xi,
+        })
+        }catch(error){
+          console.log('error',error)
+        }
+      multiple(X,Y,xi,xvalue)
     };
+
+    const fetchpoint = async () => {
+      try{
+          const Response= await axios.get('/api/multiple')
+          let test = Response.data
+          let keeppoint =[]
+          let number=[]
+          for(let i=0;i< test.length;i++){
+            if(!keeppoint.some(item=>item.label===test[i].point)){
+              keeppoint.push({ value: test[i].point, label: test[i].point});
+              number.push({ value: test[i].xvalue, label: test[i].xvalue});
+            }
+          }
+          setpoint(keeppoint)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchenumber = async (value) => {
+      try{
+          const Response= await axios.get('/api/multiple')
+          let test = Response.data
+          let number=[]
+          for(let i=0;i< test.length;i++){
+            if(test[i].point === value){
+              number.push({value:test[i].xvalue, label:test[i].xvalue})
+            }
+          }
+          setnumber(number)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (xcheck,pointcheck) => {
+      try{
+          const Response= await axios.get('/api/multiple')
+          let test = Response.data
+          let eqution=[]
+          for(let i=0;i< test.length;i++){
+            if(test[i].xvalue === xcheck && test[i].point === pointcheck){
+              eqution.push({value:test[i].id, label:test[i].X})
+            }
+          }
+          setEquationapi(eqution)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchpoint()
+    },[])
+
+    const handlepoint = (value)=>{
+      setpointValue(value)
+      fetchenumber(value)
+    }
+    const handlenumber = (value)=>{
+      setXnumber(value)
+      fetchequation(value,pointValue)
+    }
+    const handleequation = async(value)=>{
+      const Response = await axios.get(`/api/multiple/${value}`)
+      console.log(Response)
+      const X = Response.data.X
+      const Y = Response.data.Y
+      const xi = Response.data.xi
+      setMatrixX(X)
+      setMatrixY(Y)
+      setMatrixX0(xi)
+    }
+    
+
     function findsumx(matrix,numx0,numx1){
       let sum=0;
       if(numx0==0&&numx1==1){
@@ -102,7 +190,6 @@ export default function Multiple() {
     return sum;
 }
     function multiple(matrixX,matrixY,x,numx){
-
       const newmatrix = Array.from({ length: numx+1 }, () => Array(numx+1).fill(0));
   
       for(let i=0;i<numx;i++){
@@ -120,7 +207,6 @@ export default function Multiple() {
             newmatrix[i][i]  = findsumx(matrixX,i,i);
           }
         }
-        console.log(newmatrix)
 
         const newmatrixsumy = []
         for(let i=0;i<=numx;i++){
@@ -239,7 +325,36 @@ export default function Multiple() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>  
+                              <div className='mt-4'>Multiple Equation History</div>
+                                      <Select
+                                defaultValue="Size"
+                                style={{ width: 200 }}
+                                onChange={handlepoint}
+                                options={point.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              />  <Select
+                              defaultValue="Number"
+                              style={{ width: 200 }}
+                              onChange={handlenumber}
+                              options={number.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />   <Select
+                            defaultValue="Xi value"
+                            style={{ width: 200 }}
+                            onChange={handleequation}
+                            options={equationapi.map(item => ({
+                              value: item.value,
+                              label: item.label,
+                            }))}
+                            className="ml-4"
+                          />         
 
                         </div>
 
