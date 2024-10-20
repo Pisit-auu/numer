@@ -22,4 +22,11 @@ model root {
   xl    Float
   xr    Float 
 }
+model linear {
+  id    Int    @id @default(autoincrement())
+  size Int 
+  A  String @unique
+  B    String
+  x0    String 
+}
 

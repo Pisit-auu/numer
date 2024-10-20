@@ -4,6 +4,8 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { findr,findd0,findlamda,findxconju,finda0,finderror,findd,caldet } from '@/app/components/matrix'
+import axios from 'axios'
+import {select,Space} from 'antd'
 export default function Seidel() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -65,16 +67,28 @@ export default function Seidel() {
 
 
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
       event.preventDefault(); // ย้ายการเรียกใช้ preventDefault ไปไว้ด้านบนสุด
     
       if (sizematrix < 1 || hasEmptyValueInMatrix(matrixA) || hasEmptyValue(matrixB) || hasEmptyValue(matrixX0)) {
         console.log("matrixA, matrixB, หรือ matrixX0 มีค่าว่างอย่างน้อย 1 index");
         return;
       }
-      console.log(matrixA)
-      console.log(matrixB)
-      console.log(matrixX0)
+      const size = sizematrix;
+      const A = matrixA
+      const B = matrixB
+      const x0 = matrixX
+      console.log(A)
+      try{
+        await axios.post('/api/linear',{
+          size,
+          A,
+          B,
+          x0
+        })
+        }catch(error){
+          console.log('error',error)
+        }
       const tolerance = parseFloat(toleranceinput);
       let r = findr(matrixA,matrixB,matrixX0);
       let d = findd0(r);
