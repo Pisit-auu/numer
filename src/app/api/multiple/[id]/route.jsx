@@ -17,5 +17,6 @@ export async function DELETE(request, {params}) {
             id:multipleid
         }
     })
+    return Response.json(deletemultiple)
     
 }
