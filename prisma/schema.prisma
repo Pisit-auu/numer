@@ -25,8 +25,15 @@ model root {
 model linear {
   id    Int    @id @default(autoincrement())
   size Int 
-  A  Float[] @unique
-  B    Float[]
-  x0    Float[] 
+  A   Json @unique
+  B    Json
+  x0    Json 
+}
+model inter {
+  id    Int    @id @default(autoincrement())
+  point Int 
+  X   Json @unique
+  Y    Json
+  x0    Json 
 }
 

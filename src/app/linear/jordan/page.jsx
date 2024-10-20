@@ -35,7 +35,6 @@ export default function jordan() {
                  m.map(row => row.join(' & ')).join(' \\\\\n') + 
                  '\n\\end{array}';
         };
-        // Convert each 2D slice of the n-dimensional matrix
         const latexChunks = matrix.map((slice, index) => (
           `\\text{Slice ${index + 1}}: \n` +
           `\\begin{bmatrix} \n` + 

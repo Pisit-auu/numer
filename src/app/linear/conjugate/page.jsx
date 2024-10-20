@@ -5,7 +5,7 @@ import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { findr,findd0,findlamda,findxconju,finda0,finderror,findd,caldet } from '@/app/components/matrix'
 import axios from 'axios'
-import {select,Space} from 'antd'
+import {Select,Space} from 'antd'
 export default function Seidel() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -15,6 +15,8 @@ export default function Seidel() {
   const [matrixX0, setMatrixX0] = useState([]);
   const [matrixX, setMatrixX] = useState([]);
   const [showsolution ,setsolution]= useState(false);
+  const [equation,setEquation]= useState([]);
+  const [size,setsize] = useState([])
 
     const handleMatrixChange = (rowIndex, colIndex, value) => {  //อัพเดตค่าA
       const numericValue = parseFloat(value);
@@ -78,7 +80,6 @@ export default function Seidel() {
       const A = matrixA
       const B = matrixB
       const x0 = matrixX0
-      console.log(x0)
       try{
         await axios.post('/api/linear',{
           size,
@@ -93,12 +94,55 @@ export default function Seidel() {
       let r = findr(matrixA,matrixB,matrixX0);
       let d = findd0(r);
       findX(r,d,matrixA,matrixX0,matrixB,tolerance)
-      
- 
-
     };
     
+    const fetchsize = async () => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepsize =[]
+          for(let i=0;i< test.length;i++){
+            if(!keepsize.some(item=>item.label===test[i].size)){
+              keepsize.push({ value: test[i].size, label: test[i].size});
+            }
+          }
+          setsize(keepsize)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].size === value){
+              keepequation.push({value:test[i].id, label:test[i].A})
+            }
+          }
+          setEquation(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchsize()
+    },[])
 
+    const handlesize = (value)=>{
+      setSizematrix(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/linear/${value}`)
+      const A = Response.data.A
+      const B = Response.data.B
+      const x0 = Response.data.x0
+      setmatrixA(A)
+      setMatrixB(B)
+      setMatrixX0(x0)
+    }
     useEffect(() => {
       const newMatrixA = Array.from({ length: sizematrix }, () =>
         Array.from({ length: sizematrix }, () => "")
@@ -135,7 +179,7 @@ export default function Seidel() {
 
                       <div className="text-center text-blue-500 text-3xl">conjugate Methods  {/*column2*/}
 
-                              <div> [A]=  {sizematrix}
+                              <div>
                                   {matrixA.length > 0 && (
                                           <div className="mt-4">
                                                   <h2 className="text-xl mb-4">กรอกข้อมูลใน Matrix</h2>
@@ -200,7 +244,28 @@ export default function Seidel() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+               
+                              </div> 
+                              <div className='mt-4'>Linear Equation History</div>
+                                      <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlesize}
+                                options={size.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equation.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />
 
                         </div>
 
@@ -246,14 +311,3 @@ export default function Seidel() {
     </div>
   );
 }
-// <InlineMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
-// <BlockMath math={' From Cramer’s Rule:x_i = \\frac{det(A_i)}{det(A)}'} />
-    //<InlineMath math={}>
-    
-        // setdetA0(`\\text{det}(A) = \\begin{bmatrix} ${parseFloat(DetAll[0])} \\end{bmatrix}`)
-       // setResult(newX);
-       // setEquation(mewequation);
-        //newX.push(...findX(matrixA)); 
-        //          DetAll.push(...findet(matrixA, matrixB));  
-      //newX.push({resultX: x[i-1],detA:parseFloat(DetAll[0])  ,detAi: parseFloat(DetAll[i])})
-       // setDetAn(newX); // ค่าDetA1-An

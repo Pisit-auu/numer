@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Inversion() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -12,6 +14,8 @@ export default function Inversion() {
   const [matrixX, setMatrixX] = useState([]);
   const [AI ,setAI] = useState([])
   const [Step , setStep] = useState('')
+  const [equation,setEquation]= useState([]);
+  const [size,setsize] = useState([])
 
     const handleMatrixChange = (rowIndex, colIndex, value) => {  //อัพเดตค่าA
       const numericValue = parseFloat(value);
@@ -47,12 +51,72 @@ export default function Inversion() {
         return latexChunks.join(' \\\\\n');
       };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
       event.preventDefault();
       const updatedMatrixAI = putAI(matrixA);
+      const A = matrixA;
+      const size = parseInt(sizematrix);
+      const B = matrixB
+      const x0 = new Array(size).fill(0)
+      
+      try{
+        await axios.post('/api/linear',{
+          size,
+          A,
+          B,
+          x0
+        })
+        }catch(error){
+          console.log('error',error)
+        }
       inverse(updatedMatrixAI)
       
     };
+    const fetchsize = async () => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepsize =[]
+          for(let i=0;i< test.length;i++){
+            if(!keepsize.some(item=>item.label===test[i].size)){
+              keepsize.push({ value: test[i].size, label: test[i].size});
+            }
+          }
+          setsize(keepsize)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].size === value){
+              keepequation.push({value:test[i].id, label:test[i].A})
+            }
+          }
+          setEquation(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchsize()
+    },[])
+
+    const handlesize = (value)=>{
+      setSizematrix(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/linear/${value}`)
+      const A = Response.data.A
+      const B = Response.data.B
+      setmatrixA(A)
+      setMatrixB(B)
+    }
 
     useEffect(() => {
       const newMatrixA = Array.from({ length: sizematrix }, () =>
@@ -247,7 +311,28 @@ function AXB(FAI, B) {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>
+                              <div className='mt-4'>Linear Equation History</div>
+                                      <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlesize}
+                                options={size.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equation.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />        
+           
 
                         </div>
 

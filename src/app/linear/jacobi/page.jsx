@@ -4,6 +4,8 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { caldet } from '@/app/components/matrix'
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Jacobi() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -13,6 +15,8 @@ export default function Jacobi() {
   const [matrixX0, setMatrixX0] = useState([]);
   const [matrixX, setMatrixX] = useState([]);
   const [showsolution ,setsolution]= useState(false);
+  const [equation,setEquation]= useState([]);
+  const [size,setsize] = useState([])
 
     const handleMatrixChange = (rowIndex, colIndex, value) => {  //อัพเดตค่าA
       const numericValue = parseFloat(value);
@@ -83,20 +87,79 @@ export default function Jacobi() {
 
 
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
       event.preventDefault(); // ย้ายการเรียกใช้ preventDefault ไปไว้ด้านบนสุด
     
       if (sizematrix < 1 || hasEmptyValueInMatrix(matrixA) || hasEmptyValue(matrixB) || hasEmptyValue(matrixX0)) {
         console.log("matrixA, matrixB, หรือ matrixX0 มีค่าว่างอย่างน้อย 1 index");
         return;
       }
+      const size = parseInt(sizematrix);
+      const A = matrixA
+      const B = matrixB
+      const x0 = matrixX0
+      try{
+        await axios.post('/api/linear',{
+          size,
+          A,
+          B,
+          x0
+        })
+        }catch(error){
+          console.log('error',error)
+        }
       const tolerance = parseFloat(toleranceinput);
       findX(matrixA,matrixB,matrixX0,tolerance)
  
 
     };
-    
+    const fetchsize = async () => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepsize =[]
+          for(let i=0;i< test.length;i++){
+            if(!keepsize.some(item=>item.label===test[i].size)){
+              keepsize.push({ value: test[i].size, label: test[i].size});
+            }
+          }
+          setsize(keepsize)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].size === value){
+              keepequation.push({value:test[i].id, label:test[i].A})
+            }
+          }
+          setEquation(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchsize()
+    },[])
 
+    const handlesize = (value)=>{
+      setSizematrix(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/linear/${value}`)
+      const A = Response.data.A
+      const B = Response.data.B
+      const x0 = Response.data.x0
+      setmatrixA(A)
+      setMatrixB(B)
+      setMatrixX0(x0)
+    }
     useEffect(() => {
       const newMatrixA = Array.from({ length: sizematrix }, () =>
         Array.from({ length: sizematrix }, () => "")
@@ -133,7 +196,7 @@ export default function Jacobi() {
 
                       <div className="text-center text-blue-500 text-3xl"> Jacobi Methods  {/*column2*/}
 
-                              <div> [A]=  {sizematrix}
+                              <div> 
                                   {matrixA.length > 0 && (
                                           <div className="mt-4">
                                                   <h2 className="text-xl mb-4">กรอกข้อมูลใน Matrix</h2>
@@ -198,7 +261,27 @@ export default function Jacobi() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>   
+                              <div className='mt-4'>Linear Equation History</div>        
+                              <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlesize}
+                                options={size.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equation.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />
 
                         </div>
 
