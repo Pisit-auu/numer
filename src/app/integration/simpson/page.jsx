@@ -8,10 +8,10 @@ import {Select,Space} from 'antd'
 
 
 export default function Simpson(){
-const [fx,setfx] = useState('2x+2');
-const [a,seta] = useState(1)
-const [b,setb] = useState(2)
-const [x1,setx1] = useState(2)
+const [fx,setfx] = useState();
+const [a,seta] = useState()
+const [b,setb] = useState()
+const [x1,setx1] = useState()
 const [h,seth] = useState()
 const [xi,setxi] = useState([])
 const [fxpushx0,setfxpushx0] = useState()

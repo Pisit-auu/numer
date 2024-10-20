@@ -6,10 +6,10 @@ import { evaluate } from 'mathjs';
 import axios from 'axios'
 import {Select,Space} from 'antd'
 export default function Composite(){
-    const [fx,setfx] = useState('2x+2')
-    const [a,seta] = useState(2)
-    const [b,setb] = useState(4)
-    const [n,setn] = useState(3)
+    const [fx,setfx] = useState()
+    const [a,seta] = useState()
+    const [b,setb] = useState()
+    const [n,setn] = useState()
     const [h,seth] = useState()
     const [fxi,setfxi] = useState([])
     const [show,setshow] = useState(false)

@@ -7,10 +7,10 @@ import axios from 'axios'
 import {Select,Space} from 'antd'
 
 export default function Compositesimpson(){
-    const [fx,setfx] = useState('2x+2')
-    const [a ,seta] = useState(-1)
-    const [b,setb] =useState(2)
-    const [n,setn] = useState(2)
+    const [fx,setfx] = useState()
+    const [a ,seta] = useState()
+    const [b,setb] =useState()
+    const [n,setn] = useState()
     const [h,seth] = useState()
     const [xi,setxi] = useState([])
     const [fxi,setfxi] = useState([])

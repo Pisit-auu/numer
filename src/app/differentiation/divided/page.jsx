@@ -7,9 +7,9 @@ import { evaluate,derivative  } from 'mathjs';
 import axios from 'axios'
 
 export default function Divided(){
-    const [x,setx] = useState(2)
-    const [h,seth] = useState(0.25)
-    const [fx,setfx] = useState('e^x')
+    const [x,setx] = useState()
+    const [h,seth] = useState()
+    const [fx,setfx] = useState()
     const [fdiff,setfdiff] = useState()
     const [showfx,setshowfx] = useState()
     const [pushxfx,setpushxfx] = useState()

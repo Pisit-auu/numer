@@ -6,14 +6,14 @@ import { evaluate } from 'mathjs';
 import axios from 'axios'
 import {Select,Space} from 'antd'
 export default function Trapezoidal(){
-    const [fx,setfx] = useState('2x+2')
-    const [a,seta] = useState(0)
-    const [b,setb] = useState(1)
+    const [fx,setfx] = useState()
+    const [a,seta] = useState()
+    const [b,setb] = useState()
     const [h,seth] = useState()
     const [calfxx0 ,setcalfxx0] = useState()
     const [calfxx1 ,setcalfxx1] =useState()
-    const [fxpushx0,setfxpushx0] = useState(fx)
-    const [fxpushx1,setfxpushx1] = useState(fx)
+    const [fxpushx0,setfxpushx0] = useState()
+    const [fxpushx1,setfxpushx1] = useState()
     const [result,setResult] = useState()
     const [show,setshow] = useState(false)
     const [equation,setEquation]= useState([]);
