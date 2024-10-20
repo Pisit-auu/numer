@@ -4,6 +4,7 @@ import { useEffect,useState } from 'react';
 import { InlineMath,BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { evaluate,derivative  } from 'mathjs';
+import axios from 'axios'
 
 export default function Divided(){
     const [x,setx] = useState(2)
@@ -19,7 +20,7 @@ export default function Divided(){
     const [selectO ,setselectO] = useState()
     const [show,setshow] = useState(false)
     const [result,setresult] = useState()
-
+    const [equation,setEquation]= useState([]);
     
     function backwardoh(n,x,h,fx){
         let xi = [n]
@@ -944,7 +945,7 @@ export default function Divided(){
 
     }
 
-    const handlesubmit = (event)=>{
+    const handlesubmit = async(event)=>{
         event.preventDefault();
         if(!selectoperation||!derivativenumer||!selectO){
             alert('please select')
@@ -963,6 +964,16 @@ export default function Divided(){
         
         const newx = parseFloat(x)
         const newh = parseFloat(h)
+        try{
+            await axios.post('/api/diff',{
+              fx,
+              x,
+              h
+            })
+            }catch(error){
+              console.log('error',error)
+            }
+            
         if(selectO =='O(h)'&& selectoperation =='Forward'){
             forwardOh(n,newx,newh,fx)
         }else if(selectO =='O(h^2)'&& selectoperation =='Forward'){
@@ -976,7 +987,33 @@ export default function Divided(){
          }else if(selectO =='O(h^4)'&& selectoperation =='Centered'){
             Centeredoh4(n,newx,newh,fx)
          }
+
     }
+
+    const fetchequation = async () => {
+        try{
+            const Response= await axios.get('/api/diff')
+            let test = Response.data
+            let keepequation = []
+            for(let i=0;i< test.length;i++){
+              keepequation.push({ value: test[i].id, label: test[i].fx});
+            }
+            setEquation(keepequation)
+        }catch(error){
+          console.log('error',error)
+        }
+      }
+      useEffect(()=>{
+        fetchequation()
+      },[])
+      const handleeuation = async (value)=>{
+        const Response = await axios.get(`/api/diff/${value}`)
+        setx(Response.data.x)
+        seth(Response.data.h)
+        setfx(Response.data.fx)
+      }
+
+
     const handlecount = (value) =>{
         setderivativenumer(value)
     }
@@ -1059,7 +1096,17 @@ export default function Divided(){
                                     </div>
                                 </form>
 
-
+                                <div className='mt-4'>Differentiation Equation History</div>
+                                <Select
+                          defaultValue="-"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
 
                             </div>
                         </div>
