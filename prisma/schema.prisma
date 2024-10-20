@@ -45,4 +45,13 @@ model simple{
   Y Json
 
 }
+model multiple{
+  id    Int    @id @default(autoincrement())
+  point Int
+  xvalue Int
+  X Json @unique
+  Y Json
+  xi Json
+
+}
 

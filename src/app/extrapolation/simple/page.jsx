@@ -5,6 +5,8 @@ import { eliminate ,findXeliminate,insertB} from '@/app/components/matrix';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Simple() {
   const [pointValue, setpointValue] = useState([]);
   const [Xinput , setXinput] = useState('');
@@ -18,6 +20,9 @@ export default function Simple() {
   const [matrixnewA, setMatrixnewA] = useState([]);  
   const [matrixsetvaluefx,setmatrixvaluefx] = useState('');
   const [keepshow,setkeepshow] = useState(false);
+  const [equationapi,setEquationapi]= useState([]);
+  const [point,setpoint] = useState([])
+
     const handleMatrixChange = (rowIndex, value) => {  
       const numericValue = parseFloat(value);
       const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix X
@@ -42,22 +47,85 @@ export default function Simple() {
       setMatrixY(newMatrixY);
     }, [pointValue]);  //กำหนดขนาดของ matrix
     
-    const handleSubmit = (event) => {  
+    const handleSubmit = async(event) => {  
       event.preventDefault();
       if(Xinput ===''||pointValue<2){
         alert('โปรดกรอกค่า x หรือ point > 1')
         return
       }
-      const newmetrixX =matrixX
-      const newmetrixY =matrixY
-      const X = parseFloat(Xinput);
       const m = parseInt(minput);
+      const X = matrixX;
+      const point = parseInt(pointValue);
+      const Y = matrixY
+      const xvalue = parseFloat(Xinput)
+      try{
+        await axios.post('/api/simple',{
+          point,
+          xvalue,
+          m,
+          X,
+          Y,
+        })
+        }catch(error){
+          console.log('error',error)
+        }
       if(m>=2 &&pointValue==2){
         alert('m>1 pointต้อง >2')
         return
       }
-      simple(newmetrixX,newmetrixY,X,m)
+      simple(X,Y,xvalue,m)
     };
+    const fetchpoint = async () => {
+      try{
+          const Response= await axios.get('/api/simple')
+          let test = Response.data
+          let keeppoint =[]
+          for(let i=0;i< test.length;i++){
+            if(!keeppoint.some(item=>item.label===test[i].point)){
+              keeppoint.push({ value: test[i].point, label: test[i].point});
+            }
+          }
+          setpoint(keeppoint)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/simple')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].point === value){
+              keepequation.push({value:test[i].id, label:test[i].X})
+            }
+          }
+          setEquationapi(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchpoint()
+    },[])
+
+    const handlepoint = (value)=>{
+      setpointValue(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/simple/${value}`)
+      const X = Response.data.X
+      const Y = Response.data.Y
+      const xvalue = Response.data.xvalue
+      const m = Response.data.m
+      setmatrixX(X)
+      setMatrixY(Y)
+      setXinput(xvalue)
+      setMinput(m)
+    }
+
+
     function findsumx(matrix,n){
         let sum=0;
         for(let i=0;i<pointValue;i++){
@@ -160,7 +228,7 @@ export default function Simple() {
 
                       <div className="text-center text-blue-500 text-3xl"> simple {/*column2*/}
 
-                              <div> points=  {pointValue}
+                              <div>
                                   {matrixX.length > 0 && (  //แสดงเมื่อ matrix >0
                                           <div className="mt-4">
                                                   <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
@@ -199,7 +267,27 @@ export default function Simple() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>  
+                              <div className='mt-4'>Simple Equation History</div>
+                                      <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlepoint}
+                                options={point.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equationapi.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />             
 
                         </div>
 
