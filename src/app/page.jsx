@@ -9,13 +9,38 @@ export default function Home() {
   const [pathproblem,setpathproblem] = useState('')
   const [solution,setsolution] = useState([])
   const router = useRouter()
-  const [equation,setEquation]= useState([]);
-  
+  const [equationroot,setEquationroot]= useState([]);
+  const [equationlinear,setEquationlinear]= useState([]);
+  const [equationinter,setEquationinter]= useState([]);
+  const [equationdiff,setEquationdiff]= useState([]);
+  const [equationintegrate,setEquationintegrate]= useState([]);
+  const [equationmultiple,setEquationmultiple]= useState([]);
+  const [equationsimple,setEquationsimple]= useState([]);
+  const [checkroot,setroot] = useState(false)
+  const [checklinear,setlinear] = useState(false)
+  const [checkinter,setinter] = useState(false)
+  const [checkdiff,setdiff ]= useState(false)
+  const [checkintegrate,setintegrate] = useState(false)
+  const [checkexter,setexter] = useState(false)
+
   const fetchequation = async () => {
     try{
-        const Response= await axios.get('/api/root')
-        setEquation(Response.data)
-        console.log(Response)
+      const [root, linear, inter, diff, integrate, simple, multiple] = await Promise.all([
+        axios.get('/api/root'),
+        axios.get('/api/linear'),
+        axios.get('/api/inter'),
+        axios.get('/api/diff'),
+        axios.get('/api/integrate'),
+        axios.get('/api/simple'),
+        axios.get('/api/multiple'),
+      ]);
+      setEquationroot(root.data.slice(-5));  
+      setEquationlinear(linear.data.slice(-5));
+      setEquationinter(inter.data.slice(-5));
+      setEquationdiff(diff.data.slice(-5));
+      setEquationintegrate(integrate.data.slice(-5));
+      setEquationsimple(simple.data.slice(-5));
+      setEquationmultiple(multiple.data.slice(-5));
     }catch(error){
       console.log('error',error)
     }
@@ -25,9 +50,9 @@ export default function Home() {
     fetchequation()
   },[])
 
-  const deleteequation = async (id) => {
+  const deleteequation = async (id,name) => {
     try {
-      await axios.delete(`/api/root/${id}`);
+      await axios.delete(`/api/${name}/${id}`);
       alert('Delete Successful!');
       fetchequation();
       window.location.reload();
@@ -84,16 +109,52 @@ export default function Home() {
     setpathproblem(value)
     if(value =='root'){
       setsolution(root)
+      setroot(true)
+      setlinear(false)
+      setinter(false)
+      setexter(false)
+      setintegrate(false)
+      setdiff(false)
     }else if(value =='linear'){
       setsolution(linear)
+      setlinear(true)
+      setinter(false)
+      setexter(false)
+      setintegrate(false)
+      setdiff(false)
+      setroot(false)
     }else if(value =='inter'){
       setsolution(Interpolition)
+      setinter(true)
+      setexter(false)
+      setintegrate(false)
+      setdiff(false)
+      setlinear(false)
+      setroot(false)
     }else if(value == 'extrapolation'){
       setsolution(extrapolation)
+      setexter(true)
+      setintegrate(false)
+      setdiff(false)
+      setlinear(false)
+      setinter(false)
+      setroot(false)
     }else if(value == 'integration'){
       setsolution(integration)
+      setintegrate(true)
+      setdiff(false)
+      setroot(false)
+      setlinear(false)
+      setinter(false)
+      setexter(false)
     }else if(value == 'differentiation'){
       setsolution(differentiation)
+      setdiff(true)
+      setroot(false)
+      setlinear(false)
+      setinter(false)
+      setintegrate(false)
+      setexter(false)
     }
   };
   const handleSolution = (value) => {
@@ -123,6 +184,7 @@ export default function Home() {
                     { value: 'differentiation', label: 'Differentiation' },
                   ]}
                 />
+                
                 <span className="ml-4">Choose Method</span>
                 <Select
                   defaultValue="-"
@@ -137,24 +199,109 @@ export default function Home() {
               </div>
             </div>
             
-            
             <div className="max-w-5xl mt-4 mx-auto bg-white shadow-md rounded-lg p-8">
           <div className="grid grid-cols-1 border-b-2 border-gray-300 pb-4">
           <header className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Equation History</h2>
             </header>
-            <div className="grid grid-cols-1 gap-4">
-              {equation.map((cat) => (
+           {checkroot &&(
+             <div className="grid grid-cols-1 gap-4"> Root Equation
+             {equationroot.map((cat) => (
+               <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                 <button className="font-bold">{cat.name}</button>
+                 <div className="space-x-4">
+                   <button onClick={() => deleteequation(cat.id,'root')} className="text-red-600 hover:text-red-900">
+                     Delete
+                   </button>
+                 </div>
+               </div>
+             ))}
+           </div>
+           )}
+            {checklinear&&(
+              <div className="grid grid-cols-1 gap-4 mt-4"> Linear
+              {equationlinear.map((cat) => (
                 <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                  <button className="font-bold">{cat.name}</button>
+                  <button className="font-bold">{cat.A}</button>
                   <div className="space-x-4">
-                    <button onClick={() => deleteequation(cat.id)} className="text-red-600 hover:text-red-900">
+                    <button onClick={() => deleteequation(cat.id,'linear')} className="text-red-600 hover:text-red-900">
                       Delete
                     </button>
                   </div>
                 </div>
               ))}
             </div>
+            )}
+           {checkinter &&(
+            <div className="grid grid-cols-1 gap-4 mt-4"> Interpolation
+            {equationinter.map((cat) => (
+              <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                <button className="font-bold">{cat.X}</button>
+                <div className="space-x-4">
+                  <button onClick={() => deleteequation(cat.id,'inter')} className="text-red-600 hover:text-red-900">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+           )}
+            {checkexter&&(
+                          <div className="grid grid-cols-1 gap-4 mt-4"> Extrapolation
+                          {equationsimple.map((cat) => (
+                            <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                              <button className="font-bold">{cat.X}</button>
+                              <div className="space-x-4">
+                                <button onClick={() => deleteequation(cat.id,'simple')} className="text-red-600 hover:text-red-900">
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                           {equationmultiple.map((cat) => (
+                            <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                              <button className="font-bold">{cat.X}</button>
+                              <div className="space-x-4">
+                                <button onClick={() => deleteequation(cat.id,'multiple')} className="text-red-600 hover:text-red-900">
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+            )}
+
+           {checkintegrate && (
+             <div className="grid grid-cols-1 gap-4 mt-4"> Integration
+             {equationintegrate.map((cat) => (
+               <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                 <button className="font-bold">{cat.fx}</button>
+                 <div className="space-x-4">
+                   <button onClick={() => deleteequation(cat.id,'integration')} className="text-red-600 hover:text-red-900">
+                     Delete
+                   </button>
+                 </div>
+               </div>
+             ))}
+           </div>
+           )}
+
+
+            {checkdiff && (
+              <div className="grid grid-cols-1 gap-4 mt-4"> Differentiation
+              {equationdiff.map((cat) => (
+                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
+                  <button className="font-bold">{cat.fx}</button>
+                  <div className="space-x-4">
+                    <button onClick={() => deleteequation(cat.id,'diff')} className="text-red-600 hover:text-red-900">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            )}
+
 
           </div>
           </div>
