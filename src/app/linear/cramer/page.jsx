@@ -37,6 +37,10 @@ export default function Carmer() {
     
     const handleSubmit = async(event) => {
       event.preventDefault();
+      const A = matrixA;
+      const size = parseInt(sizematrix);
+      const B = matrixB
+      const x0 = new Array(size).fill(0)
       try{
         await axios.post('/api/linear',{
           size,

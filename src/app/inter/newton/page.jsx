@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { evaluate, re } from 'mathjs';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Newton() {
   const [pointValue, setpointValue] = useState([]);
   const [Xinput , setXinput] = useState('');
@@ -10,6 +12,8 @@ export default function Newton() {
   const [matrixY, setMatrixY] = useState([]);  
   const [arrayCn,setarrayCn] =useState([]);   //เก็บค่า cn , xn
   const [result,setresult]= useState('');  //เก็บ result
+  const [equation,setEquation]= useState([]);
+  const [point,setpoint] = useState([])
 
     const handleMatrixChange = (rowIndex, value) => {  
       const numericValue = parseFloat(value);
@@ -35,16 +39,76 @@ export default function Newton() {
       setMatrixY(newMatrixY);
     }, [pointValue]);  //กำหนดขนาดของ matrix
     
-    const handleSubmit = (event) => {  
+    const handleSubmit = async(event) => {  
       event.preventDefault();
       if(Xinput ===''){
         alert('โปรดกรอกค่า x')
         return
       }
-      const newmetrixX =matrixX
-      const newmetrixY =matrixY
-      newton(newmetrixX,newmetrixY,parseFloat(Xinput))
+      const X = matrixX;
+      const point = parseInt(pointValue);
+      const Y = matrixY
+      const x0 = parseFloat(Xinput)
+      try{
+        await axios.post('/api/inter',{
+          point,
+          X,
+          Y,
+          x0
+        })
+        }catch(error){
+          console.log('error',error)
+        }
+      newton(X,Y,parseFloat(Xinput))
     };
+
+    const fetchpoint = async () => {
+      try{
+          const Response= await axios.get('/api/inter')
+          let test = Response.data
+          let keeppoint =[]
+          for(let i=0;i< test.length;i++){
+            if(!keeppoint.some(item=>item.label===test[i].point)){
+              keeppoint.push({ value: test[i].point, label: test[i].point});
+            }
+          }
+          setpoint(keeppoint)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/inter')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].point === value){
+              keepequation.push({value:test[i].id, label:test[i].X})
+            }
+          }
+          setEquation(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchpoint()
+    },[])
+
+    const handlepoint = (value)=>{
+      setpointValue(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/inter/${value}`)
+      const X = Response.data.X
+      const Y = Response.data.Y
+      const x0 = Response.data.x0
+      setmatrixX(X)
+      setMatrixY(Y)
+      setXinput(x0)
+    }
     
     function findCn(x, y, i, j) {  
       if (i === j) {
@@ -158,7 +222,27 @@ export default function Newton() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>  
+                              <div className='mt-4'>Inter Equation History</div>
+                                      <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlepoint}
+                                options={point.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equation.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />               
 
                         </div>
 

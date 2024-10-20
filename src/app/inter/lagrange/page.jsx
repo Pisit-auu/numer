@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { evaluate, re } from 'mathjs';
+import { evaluate} from 'mathjs';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Lagrange() {
   const [pointValue, setpointValue] = useState([]);
   const [Xinput , setXinput] = useState('');
@@ -12,7 +14,8 @@ export default function Lagrange() {
   const [eqution,seteqution]=useState('')
   const [Li,setLi]=useState([]) 
   const [result,setresult]= useState('');  //เก็บ result
-
+  const [equationapi,setEquationapi]= useState([]);
+  const [point,setpoint] = useState([])
     const handleMatrixChange = (rowIndex, value) => {  
       const numericValue = parseFloat(value);
       const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix X
@@ -37,18 +40,76 @@ export default function Lagrange() {
       setMatrixY(newMatrixY);
     }, [pointValue]);  //กำหนดขนาดของ matrix
     
-    const handleSubmit = (event) => {  
+    const handleSubmit = async(event) => {  
       event.preventDefault();
       if(Xinput ===''||pointValue<2){
         alert('โปรดกรอกค่า x หรือ point > 1')
         return
       }
-      const newmetrixX =matrixX
-      const newmetrixY =matrixY
-      const X = parseFloat(Xinput);
-      lagrange(newmetrixX,newmetrixY,X)
+      const X = matrixX;
+      const point = parseInt(pointValue);
+      const Y = matrixY
+      const x0 = parseFloat(Xinput)
+      try{
+        await axios.post('/api/inter',{
+          point,
+          X,
+          Y,
+          x0
+        })
+        }catch(error){
+          console.log('error',error)
+        }
+      lagrange(X,Y,x0)
       
     };
+    const fetchpoint = async () => {
+      try{
+          const Response= await axios.get('/api/inter')
+          let test = Response.data
+          let keeppoint =[]
+          for(let i=0;i< test.length;i++){
+            if(!keeppoint.some(item=>item.label===test[i].point)){
+              keeppoint.push({ value: test[i].point, label: test[i].point});
+            }
+          }
+          setpoint(keeppoint)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/inter')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].point === value){
+              keepequation.push({value:test[i].id, label:test[i].X})
+            }
+          }
+          setEquationapi(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchpoint()
+    },[])
+
+    const handlepoint = (value)=>{
+      setpointValue(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/inter/${value}`)
+      const X = Response.data.X
+      const Y = Response.data.Y
+      const x0 = Response.data.x0
+      setmatrixX(X)
+      setMatrixY(Y)
+      setXinput(x0)
+    }
 
     
     function lagrange(xi, yi, x) {
@@ -155,7 +216,27 @@ export default function Lagrange() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>     
+                              <div className='mt-4'>Inter Equation History</div>
+                                      <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlepoint}
+                                options={point.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equationapi.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />           
 
                         </div>
 

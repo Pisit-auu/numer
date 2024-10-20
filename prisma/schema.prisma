@@ -36,4 +36,13 @@ model inter {
   Y    Json
   x0    Json 
 }
+model simple{
+  id    Int    @id @default(autoincrement())
+  point Int
+  xvalue Int
+  m Int
+  X Json @unique
+  Y Json
+
+}
 
