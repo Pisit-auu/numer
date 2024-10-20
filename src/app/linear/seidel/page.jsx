@@ -44,7 +44,6 @@ export default function Seidel() {
       const savexi = [];
       savexi.push({ x: Array.from(X), e: Array.from(newmatrixx0) });
       setResult(savexi)
-      console.log(savexi)
       while (!check) {
         let Xnew = new Array(X.length).fill(0);
         let error = new Array(X.length).fill(0);

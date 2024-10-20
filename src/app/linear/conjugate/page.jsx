@@ -44,7 +44,6 @@ export default function Seidel() {
       let error=1
       const savexi = [];
       setResult(savexi)
-      console.log(savexi)
 
       while(error>tolerance){
         lamda = findlamda(d,r,matrixA);
@@ -73,24 +72,9 @@ export default function Seidel() {
         console.log("matrixA, matrixB, หรือ matrixX0 มีค่าว่างอย่างน้อย 1 index");
         return;
       }
-   /*   if(matrixA[0][0]>0){
-          for(let i=2;i<=sizematrix;i++){
-            let detcheck = Array.from({ length: i }, () => Array(i).fill(0));
-            for(let j=0;j<i;j++){
-              for(let k=0;k<i;k++){
-                detcheck[j][k] = matrixA[j][k]
-              }
-              if(caldet(detcheck) <= 0){
-                alert("det ต้อง >0")
-                return
-              }
-            }
-          }
-      }else{
-        alert("det ต้อง >0")
-        return
-      }*/
-      
+      console.log(matrixA)
+      console.log(matrixB)
+      console.log(matrixX0)
       const tolerance = parseFloat(toleranceinput);
       let r = findr(matrixA,matrixB,matrixX0);
       let d = findd0(r);
