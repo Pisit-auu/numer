@@ -3,6 +3,8 @@ import { InlineMath,BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { useEffect,useState } from 'react';
 import { evaluate } from 'mathjs';
+import axios from 'axios'
+import {Select,Space} from 'antd'
 
 export default function Compositesimpson(){
     const [fx,setfx] = useState('2x+2')
@@ -18,6 +20,7 @@ export default function Compositesimpson(){
     const [sumeven,Setsumeven] = useState()
     const [sumodd,Setsumodd] = useState()
     const [result,setresult] = useState()
+    const [equation,setEquation]= useState([]);
     function compositesimpson(fx,xi,h,n){
         let calxi =[] 
         for(let i=0;i<=n*2;i++){
@@ -72,7 +75,7 @@ export default function Compositesimpson(){
         setresult(sum)
         setshow(true)
     }
-    const handlesubmit = (event) =>{
+    const handlesubmit = async(event) =>{
         event.preventDefault();
         let h = (b-a)/(2*n)
         let newn = n
@@ -93,8 +96,6 @@ export default function Compositesimpson(){
         }
         setsumodd += `}^{${n*2-1}}f(x_i)`
         Setsumodd(setsumodd)
-
-
         let setsumeven =`\\sum_{i=2`
         for(let i=4;i<n*2;i++){
             if(i%2===0){
@@ -103,10 +104,44 @@ export default function Compositesimpson(){
 
         }   
         setsumeven+= `}^{${n*2-2}}f(x_i)`
+
+        try{
+            await axios.post('/api/integrate',{
+              fx,
+              a,
+              b,
+              n,
+            })
+            }catch(error){
+              console.log('error',error)
+            }
         Setsumeven(setsumeven)
         seth(h)
         compositesimpson(fx,xi,h,n)
     }
+    const fetchequation = async () => {
+        try{
+            const Response= await axios.get('/api/integrate')
+            let test = Response.data
+            let keepequation = []
+            for(let i=0;i< test.length;i++){
+              keepequation.push({ value: test[i].id, label: test[i].fx});
+            }
+            setEquation(keepequation)
+        }catch(error){
+          console.log('error',error)
+        }
+      }
+      useEffect(()=>{
+        fetchequation()
+      },[])
+      const handleeuation = async (value)=>{
+        const Response = await axios.get(`/api/integrate/${value}`)
+        seta(Response.data.a)
+        setb(Response.data.b)
+        setn(Response.data.n)
+        setfx(Response.data.fx)
+      }
     return(
             <div>
                         <div className="text-2xl text-blue-500 text-center pt-4">Composite Trapezoidal
@@ -126,7 +161,17 @@ export default function Compositesimpson(){
                                         <div><button className='bg-blue-500 text-white px-4 py-2 rounded my-5'>submit</button></div>
                                     </div>
                                 </form>
-
+                                <div className='mt-4'>Integration Equation History</div>
+                                <Select
+                          defaultValue="fx"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
 
 
                             </div>

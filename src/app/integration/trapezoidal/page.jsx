@@ -3,7 +3,8 @@ import { InlineMath,BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { useEffect,useState } from 'react';
 import { evaluate } from 'mathjs';
-
+import axios from 'axios'
+import {Select,Space} from 'antd'
 export default function Trapezoidal(){
     const [fx,setfx] = useState('2x+2')
     const [a,seta] = useState(0)
@@ -15,6 +16,7 @@ export default function Trapezoidal(){
     const [fxpushx1,setfxpushx1] = useState(fx)
     const [result,setResult] = useState()
     const [show,setshow] = useState(false)
+    const [equation,setEquation]= useState([]);
     function trapezoidal(fx,x0,x1,h){
             let calfxx1 = evaluate(fx,{x:x1})
             let calfxx0 = evaluate(fx,{x:x0})
@@ -26,17 +28,49 @@ export default function Trapezoidal(){
             setResult(calresult)
             setshow(true)
     }
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
         event.preventDefault();
         const x0 =a
         const x1 = b
         const h = b-a
 
+        const n=0;
+        try{
+            await axios.post('/api/integrate',{
+              fx,
+              a,
+              b,
+              n,
+            })
+            }catch(error){
+              console.log('error',error)
+            }
         seth(h)
         trapezoidal(fx,x0,x1,h)
         
     }
-    
+    const fetchequation = async () => {
+        try{
+            const Response= await axios.get('/api/integrate')
+            let test = Response.data
+            let keepequation = []
+            for(let i=0;i< test.length;i++){
+              keepequation.push({ value: test[i].id, label: test[i].fx});
+            }
+            setEquation(keepequation)
+        }catch(error){
+          console.log('error',error)
+        }
+      }
+      useEffect(()=>{
+        fetchequation()
+      },[])
+      const handleeuation = async (value)=>{
+        const Response = await axios.get(`/api/integrate/${value}`)
+        seta(Response.data.a)
+        setb(Response.data.b)
+        setfx(Response.data.fx)
+      }
 
     return(    
     <div className="">
@@ -53,6 +87,17 @@ export default function Trapezoidal(){
             </div>
             <div> <button className='bg-blue-500 text-white px-4 py-2 rounded mt-4'>submit</button></div>
             </form>
+            <div className='mt-4'>Integration Equation History</div>
+                                <Select
+                          defaultValue="fx"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
         </div>
         
         </div>

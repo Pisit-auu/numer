@@ -61,5 +61,12 @@ model integration{
   b Float
   n Int
 }
+model diff{
+  id    Int    @id @default(autoincrement())
+  fx String  @unique
+  x Float
+  h Float
+}
+
 
 

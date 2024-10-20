@@ -3,7 +3,8 @@ import { InlineMath,BlockMath } from 'react-katex';
 import {useState,useEffect} from 'react'
 import 'katex/dist/katex.min.css';
 import { evaluate } from 'mathjs';
-
+import axios from 'axios'
+import {Select,Space} from 'antd'
 
 
 export default function Simpson(){
@@ -18,6 +19,7 @@ const [fxpushx1,setfxpushx1] = useState()
 const [fxpushx2,setfxpushx2] = useState()
 const [show,setshow] = useState(false)
 const [result,setresult] = useState()
+const [equation,setEquation]= useState([]);
 function simpson(x0,x1,x2,h,fx){
     let xi=[]
     xi[0] = evaluate(fx,{x:x0})
@@ -27,7 +29,7 @@ function simpson(x0,x1,x2,h,fx){
     let result = (1/3)*(h)*(xi[0]+(4*xi[1])+(xi[2]))
     setresult(result)
 }
-const handlesubmit = (event)=>{
+const handlesubmit = async(event) => {
     event.preventDefault();
     const x0 =a;
     const x2 =b;
@@ -35,6 +37,18 @@ const handlesubmit = (event)=>{
     setx1(x1)
     const h =  x1-x0
     seth(h)
+
+    const n=0;
+    try{
+        await axios.post('/api/integrate',{
+          fx,
+          a,
+          b,
+          n,
+        })
+        }catch(error){
+          console.log('error',error)
+        }
     setfxpushx0(fx.replace(/x/g, `(${x0})`))
     setfxpushx1(fx.replace(/x/g, `(${x1})`))
     setfxpushx2(fx.replace(/x/g, `(${x2})`))
@@ -43,6 +57,28 @@ const handlesubmit = (event)=>{
     setshow(true)
 
 }
+const fetchequation = async () => {
+    try{
+        const Response= await axios.get('/api/integrate')
+        let test = Response.data
+        let keepequation = []
+        for(let i=0;i< test.length;i++){
+          keepequation.push({ value: test[i].id, label: test[i].fx});
+        }
+        setEquation(keepequation)
+    }catch(error){
+      console.log('error',error)
+    }
+  }
+  useEffect(()=>{
+    fetchequation()
+  },[])
+  const handleeuation = async (value)=>{
+    const Response = await axios.get(`/api/integrate/${value}`)
+    seta(Response.data.a)
+    setb(Response.data.b)
+    setfx(Response.data.fx)
+  }
 return(
     <div>
             <div>
@@ -57,7 +93,17 @@ return(
                                     </div>
                                     <div><button className='bg-blue-500 text-white px-4 py-2 rounded my-5'>submit</button></div>
                                 </form>
-
+                                <div className='mt-4'>Integration Equation History</div>
+                                <Select
+                          defaultValue="fx"
+                          style={{ width: 200 }}
+                          onChange={handleeuation}
+                          options={equation.map(item => ({
+                            value: item.value,
+                            label: item.label,
+                          }))}
+                          className="ml-4"
+                        />
 
                         </div>
                     </div>

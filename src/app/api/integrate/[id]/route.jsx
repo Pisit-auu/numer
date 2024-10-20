@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 export async function GET(request,{params}){
     const integrateid = Number(params.id)
-    const findequation = await prisma.simple.findUnique({
+    const findequation = await prisma.integration.findUnique({
         where:{
             id:integrateid
         }
