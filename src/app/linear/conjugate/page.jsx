@@ -74,11 +74,11 @@ export default function Seidel() {
         console.log("matrixA, matrixB, หรือ matrixX0 มีค่าว่างอย่างน้อย 1 index");
         return;
       }
-      const size = sizematrix;
+      const size = parseInt(sizematrix);
       const A = matrixA
       const B = matrixB
-      const x0 = matrixX
-      console.log(A)
+      const x0 = matrixX0
+      console.log(x0)
       try{
         await axios.post('/api/linear',{
           size,
