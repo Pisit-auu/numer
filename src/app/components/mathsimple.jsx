@@ -1,6 +1,6 @@
 import Plot from 'react-plotly.js';
 
-const MathGraph = ({ dataPoints }) => {
+const Mathsimple = ({ dataPoints }) => {
   let xstart, xend, ystart, yend;
 
   if (dataPoints && dataPoints.length > 0) {
@@ -17,19 +17,19 @@ const MathGraph = ({ dataPoints }) => {
 
   const xData = dataPoints.map(point => point.x);
   const yData = dataPoints.map(point => point.y);
-
+  console.log(xData)
   return (
     <div className="w-full h-96 md:h-[600px] "> 
       <Plot
         data={[
-          {
-            x: xData,
-            y: yData,
-            mode: 'lines+markers',
-            type: 'scatter',
-            marker: { color: 'red', size: 6 },
-            line: { color: 'blue', width: 1, shape: 'spline' },
-          }
+            {
+                x: xData,
+                y: yData,
+                mode: 'markers',
+                type: 'scatter',
+                marker: { color: 'red', size: 10 },
+                name: 'point', 
+              },    
         ]}
         layout={{
           title: 'Graph of Function',
@@ -45,7 +45,7 @@ const MathGraph = ({ dataPoints }) => {
             zeroline: true,
             zerolinecolor: 'black',
           },
-          showlegend: false,
+          showlegend: true,
           plot_bgcolor: 'rgba(255, 255, 255, 0.8)',
           margin: { t: 80, b: 80, l: 80, r: 80 },
         }}
@@ -57,4 +57,4 @@ const MathGraph = ({ dataPoints }) => {
   );
 };
 
-export default MathGraph;
+export default Mathsimple;

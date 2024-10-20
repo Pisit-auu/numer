@@ -5,11 +5,11 @@ import dynamic from 'next/dynamic';
 import { findx, roundToSignificantDecimals } from '../../components/function'; 
 import axios from 'axios'
 import { Select, Space } from 'antd';
-const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export default function Newton() {
+    const Mathnewtonroot = dynamic(() => import('../../components/mathnewtonroot'), { ssr: false });
     const [fx, setInputValue] = useState('');
     const [x0 , setX0] = useState('');
     const [toleranceinput , setTolerance] = useState('0.000001');
@@ -45,7 +45,6 @@ export default function Newton() {
             x: iter.xk,
             y: iter.result
           }));
-          graphPoints.sort((a, b) => a.x - b.x);
         setIterations(newIterations);
         setGraphData(graphPoints);
     }
@@ -136,7 +135,7 @@ export default function Newton() {
                       <div className="text-blue-500 text-3xl mb-4">Graph</div>
                       <div className="flex justify-center">
                         <div className="max-w-full ">
-                          <MathGraph dataPoints={graphData} />
+                          <Mathnewtonroot dataPoints={graphData} />
                         </div>
                       </div>
                     </div>

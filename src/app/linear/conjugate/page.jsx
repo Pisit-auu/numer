@@ -6,6 +6,7 @@ import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { findr,findd0,findlamda,findxconju,finda0,finderror,findd,caldet } from '@/app/components/matrix'
 import axios from 'axios'
 import {Select,Space} from 'antd'
+import Plot from 'react-plotly.js';
 export default function Seidel() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -157,8 +158,26 @@ export default function Seidel() {
     }, [sizematrix],);
 
     
-
- 
+    
+      const data = [{
+        z: matrixA,
+        type: 'contour',
+        colorscale: 'Jet',
+        contours: {
+          start: 0,
+          end: 10,
+          size: 0.5
+        }
+      }];
+      const layout = {
+        title: 'Contour Plot',
+        xaxis: { title: 'X Axis' },
+        yaxis: { title: 'Y Axis' },
+        height: 600,
+        width: '100%', 
+      }
+      
+    
 
     return (
     <div>
@@ -271,6 +290,24 @@ export default function Seidel() {
 
                 <div className="text-center text-blue-500 text-3xl"></div>  {/*column3*/}
               </div >
+
+
+             <div className='bg-slate-200 font-bold m-10 p-8 h-auto'>
+
+             <div className="text-blue-500 text-3xl p-4 ">contour graph</div>
+                <div className="flex justify-center">
+                    <div className="max-w-full  m-4">
+                    <Plot data={data}  layout={layout}  config={{  scrollZoom: true,   }} />
+                    </div>
+                </div>
+
+             </div>
+        
+                        
+              
+              
+             
+
 
 
               <div className='bg-slate-200 font-bold m-10 p-8 h-auto'> {/* กรอบแสดงผล */}

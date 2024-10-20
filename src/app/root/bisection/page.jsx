@@ -56,9 +56,10 @@ export default function Bisection() {
             x: iter.xk,
             y: iter.result
           }));
+          setGraphData(graphPoints);
           graphPoints.sort((a, b) => a.x - b.x);
         setIterations(newIterations);
-        setGraphData(graphPoints);
+        
     }
     const handleSubmit = async(event) => {
         event.preventDefault();

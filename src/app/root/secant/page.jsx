@@ -4,12 +4,12 @@ import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import dynamic from 'next/dynamic';
 import {findx, roundToSignificantDecimals } from '../../components/function'; 
-const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 import axios from 'axios'
 import { Select, Space } from 'antd';
 
 
 export default function Secant() {
+  const Mathsecant = dynamic(() => import('../../components/mathsecant'), { ssr: false });
     const [fx, setInputValue] = useState('x^2 - 7');
     const [x0 , setX0] = useState('');
     const [x1 , setX1] = useState('');
@@ -51,7 +51,7 @@ export default function Secant() {
         }
 
         const graphPoints = newIterations.map(iter => ({ x: iter.xk, y: iter.result }));
-        graphPoints.sort((a, b) => a.x - b.x);
+        console.log(graphPoints)
         setIterations(newIterations);
         setGraphData(graphPoints);
     }
@@ -141,7 +141,7 @@ export default function Secant() {
                 <div className="text-blue-500 text-3xl mb-4">Graph</div>
                 <div className="flex justify-center">
                     <div className="max-w-full ">
-                        <MathGraph dataPoints={graphData} />
+                        <Mathsecant dataPoints={graphData} />
                     </div>
                 </div>
             </div>

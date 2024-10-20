@@ -7,7 +7,12 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import axios from 'axios'
 import {Select,Space} from 'antd'
+import dynamic from 'next/dynamic';
+
 export default function Simple() {
+  const Mathsimple = dynamic(() => import('../../components/mathsimple'), { ssr: false });
+
+  
   const [pointValue, setpointValue] = useState([]);
   const [Xinput , setXinput] = useState('');
   const [minput , setMinput] = useState('1');
@@ -22,7 +27,7 @@ export default function Simple() {
   const [keepshow,setkeepshow] = useState(false);
   const [equationapi,setEquationapi]= useState([]);
   const [point,setpoint] = useState([])
-
+  const [graph,setgraph] = useState([])
     const handleMatrixChange = (rowIndex, value) => {  
       const numericValue = parseFloat(value);
       const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix X
@@ -73,6 +78,12 @@ export default function Simple() {
         alert('m>1 pointต้อง >2')
         return
       }
+      const graphPoints=[]
+      for(let i=0;i<X.length;i++){
+        graphPoints.push({x:X[i],y:Y[i]})
+      }
+
+      setgraph(graphPoints);
       simple(X,Y,xvalue,m)
     };
     const fetchpoint = async () => {
@@ -293,7 +304,15 @@ export default function Simple() {
 
                 <div className="text-center text-blue-500 text-3xl"></div>  {/*column3  */}
               </div >
+              <div className='bg-slate-200 font-bold m-10 p-8 h-auto'>
 
+                <div className="text-blue-500 text-3xl p-4 "> graph</div>
+                  <div className="flex justify-center">
+                      <div className="max-w-full  m-4">
+                      <Mathsimple dataPoints={graph} />
+                      </div>
+                  </div>
+                  </div>
 
               <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
                     
