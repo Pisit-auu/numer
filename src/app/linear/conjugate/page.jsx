@@ -6,7 +6,8 @@ import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { findr,findd0,findlamda,findxconju,finda0,finderror,findd,caldet } from '@/app/components/matrix'
 import axios from 'axios'
 import {Select,Space} from 'antd'
-import Plot from 'react-plotly.js';
+import dynamic from 'next/dynamic';
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 export default function Seidel() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -331,13 +332,12 @@ export default function Seidel() {
           <div className='text-center'>{<ArrayDisplay matrix={iteration.Dk} />}
           </div>
           <div className='text-center'>{<ArrayDisplay matrix={iteration.Xk} />}
-          </div> {/* แสดงค่า Xk  savexi.push({yk:lamda,Dk:d,Xk:x,Rk:r,er:error})   {<ArrayDisplay matrix={iteration.Rk} />}*/ }
+          </div> 
           <div className='text-center'> {<ArrayDisplay matrix={iteration.Rk} />}
           </div>
           <div className='text-center'>
             {<BlockMath key={iteration} math={`${iteration.er.toFixed(6)}`} />}
-          </div> {/* แสดงค่า error */}
-
+          </div> 
 
         </div>
       ))}
