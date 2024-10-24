@@ -144,7 +144,6 @@ export default function Multiple() {
     }
     const handleequation = async(value)=>{
       const Response = await axios.get(`/api/multiple/${value}`)
-      console.log(Response)
       const X = Response.data.X
       const Y = Response.data.Y
       const xi = Response.data.xi
@@ -216,7 +215,6 @@ export default function Multiple() {
         let ab = insertB(newmatrix,newmatrixsumy)
         let eliminateab = eliminate(ab)
         let findxab = findXeliminate(eliminateab)
-        console.log("findxab",findxab)
 
         let equation= 'a_0'
         for(let i = 1; i <= numx; i++) {
