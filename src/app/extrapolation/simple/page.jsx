@@ -170,7 +170,6 @@ export default function Simple() {
           }
           
         }
-        console.log(newmatrix)
         
         const newmatrixsumy = []
         for(let i=0;i<=m;i++){
@@ -178,11 +177,9 @@ export default function Simple() {
         }
         setMatrixnewA(newmatrix)
         setMatrixnewB(newmatrixsumy)
-        console.log(newmatrix)
         let ab = insertB(newmatrix,newmatrixsumy)
         let eliminateab = eliminate(ab)
         let findxab = findXeliminate(eliminateab)
-        console.log(findxab)
         
         let equation= 'a_0'
         for(let i = 1; i <= m; i++) {
@@ -207,7 +204,6 @@ export default function Simple() {
         setshowfxresult(result)
         setmatrixa(an)
         setshowfx(equation)
-        console.log(equation)
 
         let findvalue=0;
         for(let i=0;i<=m;i++){
