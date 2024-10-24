@@ -26,9 +26,8 @@ export default function Compositesimpson(){
         for(let i=0;i<=n*2;i++){
             calxi[i] = evaluate(fx,{x: xi[i]})
         }
-        console.log(calxi)
-        setxi(calxi)
 
+        setxi(calxi)
         let fxpushxi =[]
         let settext =''
         for(let i=0;i<=n*2;i++){

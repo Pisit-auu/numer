@@ -23,6 +23,7 @@ export default function Composite(){
         for(let i=0;i<=n;i++){
             calx[i] = evaluate(fx,{x:x[i]})
         }
+        
         let fxpushxi =[]
         let settext =''
         for(let i=0;i<=n;i++){
@@ -54,19 +55,19 @@ const handlesubmit = async(event)=>{
 
     const newn = n
     const h = (b-a)/newn
-    let xstart = a;
+    let xstart = parseFloat(a);
     let  x = [] 
     seth(h)
     for(let i=0;i<=n;i++){
-        x[i] = xstart;
+        x[i] = parseFloat(xstart);
         xstart+=h
     }
     try{
         await axios.post('/api/integrate',{
           fx,
-          a,
-          b,
-          n,
+          a:parseFloat(a),
+          b:parseFloat(b),
+          n:parseFloat(n),
         })
         }catch(error){
           console.log('error',error)
