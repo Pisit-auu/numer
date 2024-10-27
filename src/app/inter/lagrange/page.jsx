@@ -146,7 +146,7 @@ export default function Lagrange() {
       }
       let equation = ''; // เริ่มต้นเป็น string ว่าง
       for(let i = 0; i < pointValue; i++) {
-        equation += `L_{${i}}f(x_{${i}}) + `;
+        equation += `L_{${i}}(${Xinput})f(x_{${i}}) + `;
       }
       // ลบ "+" ตัวสุดท้ายออก
       equation = equation.slice(0, -3);
@@ -251,7 +251,7 @@ export default function Lagrange() {
                                       <div>
                                       {Li.map((iteration, index) => (
                                           <div key={index}>
-                                            <BlockMath math={`L_{${index}} = ${iteration}`} />
+                                            <BlockMath math={`L_{${index}}(${Xinput}) = ${iteration}`} />
                                           </div>
                                         ))}
                                     <div className='text-center'>  <InlineMath math =  {`f(${Xinput})=`}/> <InlineMath math =  {`${eqution}`}/> 

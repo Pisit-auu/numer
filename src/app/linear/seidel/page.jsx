@@ -68,7 +68,7 @@ export default function Seidel() {
               check=false;
           } 
         }   
-        savexi.push({ x: Array.from(X), e: Array.from(error) }); // ใช้ Array.from เพื่อให้แน่ใจว่าเป็นอาเรย์
+        savexi.push({ x: Array.from(X), e: Array.from(error) }); 
 
         
 

@@ -765,10 +765,10 @@ export default function Divided(){
                             sum+= fxi[count]*start*8
                             fxical[count] = fxi[count]*start*8
                             if(i>0){
-                                showfx +=`+(8)f(x_{i-${i}})`
+                                showfx +=`+(8)f(x_{i+${i}})`
                                 pushxfx +=`+${fxical[count].toFixed(6)}`
                             }else{
-                                showfx +=`-(8)f(x_{i-${i}})`
+                                showfx +=`-(8)f(x_{i${i}})`
                                 pushxfx +=`${fxical[count].toFixed(6)}`
                             }                   
                         }
@@ -848,20 +848,20 @@ export default function Divided(){
                                 sum+= fxi[count]*start*8
                                 fxical[count] = fxi[count]*start*8
                                 if(i>0){
-                                    showfx +=`+(8)f(x_{i-${i}})`
+                                    showfx +=`+(8)f(x_{i+${i}})`
                                     pushxfx +=`+${fxical[count].toFixed(6)}`
                                 }else{
-                                    showfx +=`-(8)f(x_{i-${i}})`
+                                    showfx +=`-(8)f(x_{i${i}})`
                                     pushxfx +=`+${fxical[count].toFixed(6)}`
                                 }                   
                             }else{
                                 sum+= fxi[count]*start*13
                                 fxical[count] = fxi[count]*start*13
                                 if(i>0){
-                                    showfx +=`+(13)f(x_{i-${i}})`
-                                    pushxfx +=`+${fxical[count].toFixed(6)}`
+                                    showfx +=`-(13)f(x_{i+${i}})`
+                                    pushxfx +=`${fxical[count].toFixed(6)}`
                                 }else{
-                                    showfx +=`-(13)f(x_{i-${i}})`
+                                    showfx +=`+(13)f(x_{i${i}})`
                                     pushxfx +=`+${fxical[count].toFixed(6)}`
                                 }                   
                             }
@@ -896,27 +896,27 @@ export default function Divided(){
                         if(i==0){
                             sum+= fxi[count]*start*56
                             fxical[count] = fxi[count]*start*56
-                            showfx +=`-(56)f(x_{i})`
-                            pushxfx +=`${fxical[count].toFixed(6)}`
+                            showfx +=`+(56)f(x_{i})`
+                            pushxfx +=`+${fxical[count].toFixed(6)}`
                         }else{
                             if(i==2||i==-2){
                                 sum+= fxi[count]*start*12
                                 fxical[count] = fxi[count]*start*12
-                                pushxfx +=`+${fxical[count].toFixed(6)}`
                                 if(i>0){
                                     showfx +=`+(12)f(x_{i+${i}})`
+                                    pushxfx +=`+${fxical[count].toFixed(6)}`
                                 }else{
                                     showfx +=`+(12)f(x_{i${i}})`
-    
+                                    pushxfx +=`+${fxical[count].toFixed(6)}`
                                 }
                             }else{
                                 sum+= fxi[count]*start*39
                             fxical[count] = fxi[count]*start*39
-                            pushxfx +=`+${fxical[count].toFixed(6)}`
+                            pushxfx +=`${fxical[count].toFixed(6)}`
                             if(i>0){
-                                showfx +=`+(39)f(x_{i+${i}})`
+                                showfx +=`-(39)f(x_{i+${i}})`
                             }else{
-                                showfx +=`+(39)f(x_{i${i}})`
+                                showfx +=`-(39)f(x_{i${i}})`
 
                             }
                             }
