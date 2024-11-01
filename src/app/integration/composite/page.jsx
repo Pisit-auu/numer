@@ -6,10 +6,10 @@ import { evaluate } from 'mathjs';
 import axios from 'axios'
 import {Select,Space} from 'antd'
 export default function Composite(){
-    const [fx,setfx] = useState()
-    const [a,seta] = useState()
-    const [b,setb] = useState()
-    const [n,setn] = useState()
+    const [fx,setfx] = useState('x^2-3')
+    const [a,seta] = useState(2)
+    const [b,setb] = useState(6)
+    const [n,setn] = useState(3)
     const [h,seth] = useState()
     const [fxi,setfxi] = useState([])
     const [show,setshow] = useState(false)
@@ -62,12 +62,24 @@ const handlesubmit = async(event)=>{
         x[i] = parseFloat(xstart);
         xstart+=h
     }
+    const now = new Date();
+    const formattedDateTime = now.toLocaleString('th-TH', {
+      timeZone: 'Asia/Bangkok',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
     try{
         await axios.post('/api/integrate',{
+          proublem:"Composite Trapezoidal",
           fx,
           a:parseFloat(a),
           b:parseFloat(b),
           n:parseFloat(n),
+          Date:formattedDateTime 
         })
         }catch(error){
           console.log('error',error)

@@ -1,14 +1,40 @@
 
 import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 export async function POST(request){
-    const{name,xl,xr} = await request.json()
+    const{name,proublem,xl,xr,Date} = await request.json()
+
+    const existingPost = await prisma.root.findUnique({
+        where: {
+            name, 
+        },
+    });
+
+    if (existingPost) {
+        const updatepost = await prisma.root.update({
+            where:{
+                name,
+            },
+            data:{
+                name,
+                proublem,
+                xl,
+                xr,
+                Date
+            }
+        })
+        return Response.json(updatepost)
+    }
+
     const newPost = await prisma.root.create({
         data:{
             name,
+            proublem,
             xl,
-            xr
+            xr,
+            Date
         }
     })
     return Response.json(newPost)

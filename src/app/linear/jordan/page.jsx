@@ -1,15 +1,18 @@
 'use client'
 import { useState, useEffect } from 'react';
 import 'katex/dist/katex.min.css';
+import axios from 'axios'
 import { InlineMath, BlockMath } from 'react-katex';
+import {Select,Space} from 'antd'
 export default function jordan() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
-  const [Result, setResult] = useState([]);  // ค่าDetA1-An
+  const [Result, setResult] = useState([]);  
   const [matrixA, setmatrixA] = useState([]);
   const [matrixB, setMatrixB] = useState([]);
   const [matrixX, setMatrixX] = useState([]);
-
+  const [equation,setEquation]= useState([]);
+  const [size,setsize] = useState([])
   const [Step , setStep] = useState('')
 
     const handleMatrixChange = (rowIndex, colIndex, value) => {  //อัพเดตค่าA
@@ -45,12 +48,84 @@ export default function jordan() {
         return latexChunks.join(' \\\\\n');
       };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
       event.preventDefault();
       const updatedMatrixAB = insertB(matrixA, matrixB);
+      const A = matrixA;
+      const size = parseInt(sizematrix);
+      const B = matrixB
+      const x0 = new Array(size).fill(0)
+      const now = new Date();
+      const formattedDateTime = now.toLocaleString('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      try{
+        await axios.post('/api/linear',{
+          proublem:"Jordan",
+          size,
+          A,
+          B,
+          x0,
+          Date:formattedDateTime 
+        })
+        }catch(error){
+          console.log('error',error)
+        }
       guass(updatedMatrixAB)
     };
-
+    const fetchequation = async (value) => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepequation = []
+          for(let i=0;i< test.length;i++){
+            if(test[i].size === value){
+              keepequation.push({value:test[i].id, label:test[i].A})
+            }
+          }
+          setEquation(keepequation)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    useEffect(()=>{
+      fetchsize()
+    },[])
+    const fetchsize = async () => {
+      try{
+          const Response= await axios.get('/api/linear')
+          let test = Response.data
+          let keepsize =[]
+          for(let i=0;i< test.length;i++){
+            if(!keepsize.some(item=>item.label===test[i].size)){
+              keepsize.push({ value: test[i].size, label: test[i].size});
+            }
+          }
+          setsize(keepsize)
+      }catch(error){
+        console.log('error',error)
+      }
+    }
+    
+    const handlesize = (value)=>{
+      setSizematrix(value)
+      fetchequation(value)
+    }
+    const handleeuation = async (value)=>{
+      const Response = await axios.get(`/api/linear/${value}`)
+      const A = Response.data.A
+      const B = Response.data.B
+      
+      setmatrixA(A)
+      setMatrixB(B)
+    }
     useEffect(() => {
       const newMatrixA = Array.from({ length: sizematrix }, () =>
         Array.from({ length: sizematrix }, () => "")
@@ -156,7 +231,7 @@ export default function jordan() {
 
     return (
     <div>
-              <div div className="grid grid-cols-3 gap-4 p-4">
+              <div className="grid grid-cols-3 gap-4 p-4">
 
                       <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}
                                   <form onSubmit={handleSubmit}>Matrix size (NxN) 
@@ -226,7 +301,27 @@ export default function jordan() {
                                                   </div>
                                           </div>
                                     )}
-                              </div>           
+                              </div>   
+                              <div className='mt-4'>Linear Equation History</div>
+                                      <Select
+                                defaultValue="size"
+                                style={{ width: 200 }}
+                                onChange={handlesize}
+                                options={size.map(item => ({
+                                  value: item.value,
+                                  label: item.label,
+                                }))}
+                                className="ml-4"
+                              /><Select
+                              defaultValue="data"
+                              style={{ width: 200 }}
+                              onChange={handleeuation}
+                              options={equation.map(item => ({
+                                value: item.value,
+                                label: item.label,
+                              }))}
+                              className="ml-4"
+                            />         
 
                         </div>
 
@@ -264,14 +359,3 @@ export default function jordan() {
     </div>
   );
 }
-// <BlockMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
-// <BlockMath math={' From Cramer’s Rule:x_i = \\frac{det(A_i)}{det(A)}'} />
-    
-    
-        // setdetA0(`\\text{det}(A) = \\begin{bmatrix} ${parseFloat(DetAll[0])} \\end{bmatrix}`)
-       // setResult(newX);
-       // setEquation(mewequation);
-        //newX.push(...findX(matrixA)); 
-        //          DetAll.push(...findet(matrixA, matrixB));  
-      //newX.push({resultX: x[i-1],detA:parseFloat(DetAll[0])  ,detAi: parseFloat(DetAll[i])})
-       // setDetAn(newX); // ค่าDetA1-An

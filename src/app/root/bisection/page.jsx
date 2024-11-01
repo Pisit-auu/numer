@@ -68,11 +68,23 @@ export default function Bisection() {
         let xrNum = parseFloat(xr);
         const tolerance = parseFloat(toleranceinput)
         bisection(newEquation,xlnum,xrNum,tolerance)
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('th-TH', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
         try{
           await axios.post('/api/root',{
             name:fx,
+            proublem:"bisection",
             xl:xlnum,
-            xr:xrNum
+            xr:xrNum,
+            Date:formattedDateTime 
           })
           }catch(error){
             console.log('error',error)

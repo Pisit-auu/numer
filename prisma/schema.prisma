@@ -19,53 +19,68 @@ model Equation {
 model root {
   id    Int    @id @default(autoincrement())
   name  String @unique
+  proublem String?
   xl    Float
   xr    Float 
+  Date String?
 }
 model linear {
   id    Int    @id @default(autoincrement())
+  proublem String?
   size Int 
   A   Json @unique
   B    Json
   x0    Json 
+  Date String?
 }
 model inter {
   id    Int    @id @default(autoincrement())
+  proublem String?
   point Int 
   X   Json @unique
   Y    Json
   x0    Json 
+  Date String?
+  
 }
 model simple{
   id    Int    @id @default(autoincrement())
+  proublem String?
   point Int
   xvalue Int
   m Int
   X Json @unique
   Y Json
+  Date String?
 
 }
 model multiple{
   id    Int    @id @default(autoincrement())
+  proublem String?
   point Int
   xvalue Int
   X Json @unique
   Y Json
   xi Json
+  Date String?
 
 }
 model integration{
   id    Int    @id @default(autoincrement())
+  proublem String?
   fx String  @unique
   a Float
   b Float
   n Int
+  Date String?
 }
 model diff{
   id    Int    @id @default(autoincrement())
+  proublem String?
   fx String  @unique
   x Float
   h Float
+  Date String?
 }
 
 

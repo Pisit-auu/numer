@@ -36,7 +36,7 @@ export default function Secant() {
 
         while (Error > tolerance) {
             if (findx(fx, x1) - findx(fx, x0) === 0) {
-                alert('Error: Division by zero detected in Secant method.');
+                alert('เกิด 0/0');
                 return;
             }
             x2 = x1 - (findx(fx, x1) * (x1 - x0) / (findx(fx, x1) - findx(fx, x0)));
@@ -62,11 +62,23 @@ export default function Secant() {
         let x1num = parseFloat(x1);
         const tolerance = parseFloat(toleranceinput);
         secant(newEquation, x0num, tolerance, x1num);
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('th-TH', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
         try{
             await axios.post('/api/root',{
               name:fx,
+              proublem:"Secant",
               xl:x0num,
-              xr:x1num
+              xr:x1num,
+              Date:formattedDateTime 
             })
         }catch(error){
           console.log('error',error)

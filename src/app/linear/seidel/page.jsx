@@ -52,6 +52,7 @@ export default function Seidel() {
       while (!check) {
         let Xnew = new Array(X.length).fill(0);
         let error = new Array(X.length).fill(0);
+        
         check = true;
 
         for(let i=0;i<A.length;i++){
@@ -94,12 +95,24 @@ export default function Seidel() {
       const A = matrixA
       const B = matrixB
       const x0 = matrixX0
+      const now = new Date();
+      const formattedDateTime = now.toLocaleString('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
       try{
         await axios.post('/api/linear',{
+          proublem:"Guass seidel",
           size,
           A,
           B,
-          x0
+          x0,
+          Date:formattedDateTime 
         })
         }catch(error){
           console.log('error',error)

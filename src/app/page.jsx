@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import Navbar from  "./components/header";
 import axios from 'axios'
+import 'katex/dist/katex.min.css';
+import { InlineMath, BlockMath } from 'react-katex';
 export default function Home() {
   const [pathproblem,setpathproblem] = useState('')
   const [solution,setsolution] = useState([])
@@ -208,7 +210,7 @@ export default function Home() {
              <div className="grid grid-cols-1 gap-4"> Root Equation
              {equationroot.map((cat) => (
                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                 <button className="font-bold">{cat.name}</button>
+                 <button className="font-bold">{cat.proublem} fx = {cat.name} Xl = {cat.xl} Xr = {cat.xr}  [{cat.Date}]</button>
                  <div className="space-x-4">
                    <button onClick={() => deleteequation(cat.id,'root')} className="text-red-600 hover:text-red-900">
                      Delete
@@ -222,7 +224,12 @@ export default function Home() {
               <div className="grid grid-cols-1 gap-4 mt-4"> Linear
               {equationlinear.map((cat) => (
                 <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                  <button className="font-bold">{cat.A}</button>
+                  <button className="font-bold">{cat.proublem} : <InlineMath math={`A=  \\begin{bmatrix} ${cat.A.map(row => row.join(' & ')).join(' \\\\ ')}\\end{bmatrix}`}/>
+                    <InlineMath math={`B= \\begin{Bmatrix} ${cat.B.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                    
+                    <InlineMath math={`X_0= \\begin{Bmatrix} ${cat.x0.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                    <div className="mt-4"> Time: {cat.Date}</div>
+                    </button>
                   <div className="space-x-4">
                     <button onClick={() => deleteequation(cat.id,'linear')} className="text-red-600 hover:text-red-900">
                       Delete
@@ -236,7 +243,11 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-4 mt-4"> Interpolation
             {equationinter.map((cat) => (
               <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                <button className="font-bold">{cat.X}</button>
+                <button className="font-bold">{cat.proublem} : <InlineMath math={`X= \\begin{Bmatrix} ${cat.X.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                <InlineMath math={`Y= \\begin{Bmatrix} ${cat.Y.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                <InlineMath math={`X_0= ${cat.x0}`}/>
+                <div className="mt-4"> Time: {cat.Date}</div>
+                </button>
                 <div className="space-x-4">
                   <button onClick={() => deleteequation(cat.id,'inter')} className="text-red-600 hover:text-red-900">
                     Delete
@@ -250,7 +261,10 @@ export default function Home() {
                           <div className="grid grid-cols-1 gap-4 mt-4"> Extrapolation
                           {equationsimple.map((cat) => (
                             <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                              <button className="font-bold">{cat.X}</button>
+                              <button className="font-bold">{cat.proublem} : <InlineMath math={`X= \\begin{Bmatrix} ${cat.X.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                <InlineMath math={`Y= \\begin{Bmatrix} ${cat.Y.join(' \\\\ ')} \\end{Bmatrix}`}/> <InlineMath math={`m= ${cat.m}`}/>
+                <div className="mt-4"> Time: {cat.Date}</div>
+                </button>
                               <div className="space-x-4">
                                 <button onClick={() => deleteequation(cat.id,'simple')} className="text-red-600 hover:text-red-900">
                                   Delete
@@ -260,7 +274,11 @@ export default function Home() {
                           ))}
                            {equationmultiple.map((cat) => (
                             <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                              <button className="font-bold">{cat.X}</button>
+                              <button className="font-bold">{cat.proublem} : <InlineMath math={`X= \\begin{Bmatrix} ${cat.X.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                  <InlineMath math={`Y= \\begin{Bmatrix} ${cat.Y.join(' \\\\ ')} \\end{Bmatrix}`}/>
+                  <InlineMath math={`Xi= ${cat.xi}`}/>  
+                <div className="mt-4"> Time: {cat.Date}</div>
+                </button>
                               <div className="space-x-4">
                                 <button onClick={() => deleteequation(cat.id,'multiple')} className="text-red-600 hover:text-red-900">
                                   Delete
@@ -275,9 +293,12 @@ export default function Home() {
              <div className="grid grid-cols-1 gap-4 mt-4"> Integration
              {equationintegrate.map((cat) => (
                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                 <button className="font-bold">{cat.fx}</button>
+                 <button className="font-bold">{cat.proublem} : {cat.fx} a = {cat.a} b = {cat.b} n = {cat.n}
+                 <div className="mt-4"> Time: {cat.Date}</div>
+
+                 </button>
                  <div className="space-x-4">
-                   <button onClick={() => deleteequation(cat.id,'integration')} className="text-red-600 hover:text-red-900">
+                   <button onClick={() => deleteequation(cat.id,'integrate')} className="text-red-600 hover:text-red-900">
                      Delete
                    </button>
                  </div>
@@ -291,7 +312,9 @@ export default function Home() {
               <div className="grid grid-cols-1 gap-4 mt-4"> Differentiation
               {equationdiff.map((cat) => (
                 <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                  <button className="font-bold">{cat.fx}</button>
+                  <button className="font-bold">{cat.proublem} : {<InlineMath math = {`f(x) = ${cat.fx }`} />}<InlineMath math = {`\\ x = ${cat.x} `} /> <InlineMath math = {` h = ${cat.h} `} />
+                  <div className="mt-4"> Time: {cat.Date}</div>
+                  </button>
                   <div className="space-x-4">
                     <button onClick={() => deleteequation(cat.id,'diff')} className="text-red-600 hover:text-red-900">
                       Delete

@@ -46,13 +46,24 @@ export default function Inversion() {
       const size = parseInt(sizematrix);
       const B = matrixB
       const x0 = new Array(size).fill(0)
-      
+      const now = new Date();
+      const formattedDateTime = now.toLocaleString('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
       try{
         await axios.post('/api/linear',{
+          proublem:"LU",
           size,
           A,
           B,
-          x0
+          x0,
+          Date:formattedDateTime 
         })
         }catch(error){
           console.log('error',error)

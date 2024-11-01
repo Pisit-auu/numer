@@ -56,11 +56,23 @@ export default function Newton() {
         let x0num = parseFloat(x0);
         const tolerance = parseFloat(toleranceinput)
         newton(newEquation,x0num,tolerance,divfx)
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('th-TH', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
         try{
           await axios.post('/api/root',{
             name:fx,
+            proublem:"Newton",
             xl:x0num,
             xr:0,
+           Date:formattedDateTime 
           })
       }catch(error){
         console.log('error',error)

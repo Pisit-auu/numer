@@ -61,7 +61,15 @@ export default function Multiple() {
     const handleSubmit = async(event) => {  
       event.preventDefault();
       if( pointValue<2){
-        alert('โปรดกรอกค่า x หรือ point > 1')
+        alert('point > 1')
+        return
+      }
+      if( Xnumber<1){
+        alert('number x >0')
+        return
+      }
+      if(!matrixX||!matrixY||!matrixX0){
+        alert('โปรดกรอกค่า X,Y,x0')
         return
       }
       const xvalue = parseFloat(Xnumber)
@@ -69,13 +77,25 @@ export default function Multiple() {
       const X = matrixX;
       const point = parseInt(pointValue);
       const Y = matrixY
+      const now = new Date();
+      const formattedDateTime = now.toLocaleString('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
       try{
         await axios.post('/api/multiple',{
+          proublem:"Multiplle",
           point,
           xvalue,
           X,
           Y,
           xi,
+          Date:formattedDateTime 
         })
         }catch(error){
           console.log('error',error)
@@ -214,6 +234,7 @@ export default function Multiple() {
 
         let ab = insertB(newmatrix,newmatrixsumy)
         let eliminateab = eliminate(ab)
+        
         let findxab = findXeliminate(eliminateab)
 
         let equation= 'a_0'

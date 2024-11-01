@@ -6,9 +6,9 @@ import { evaluate } from 'mathjs';
 import axios from 'axios'
 import {Select,Space} from 'antd'
 export default function Trapezoidal(){
-    const [fx,setfx] = useState()
-    const [a,seta] = useState()
-    const [b,setb] = useState()
+    const [fx,setfx] = useState("5x-1")
+    const [a,seta] = useState(0)
+    const [b,setb] = useState(6)
     const [h,seth] = useState()
     const [calfxx0 ,setcalfxx0] = useState()
     const [calfxx1 ,setcalfxx1] =useState()
@@ -30,17 +30,28 @@ export default function Trapezoidal(){
     }
     const handleSubmit = async(event) => {
         event.preventDefault();
-        const x0 =a
-        const x1 = b
+        const x0 = parseFloat(a)
+        const x1 = parseFloat(b)
         const h = b-a
-
-        const n=0;
+        const n= 0;
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('th-TH', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
         try{
             await axios.post('/api/integrate',{
+              proublem:"Trapzoidal",
               fx,
-              a,
-              b,
+              a:x0,
+              b:x1,
               n,
+              Date:formattedDateTime 
             })
             }catch(error){
               console.log('error',error)

@@ -39,12 +39,24 @@ const handlesubmit = async(event) => {
     seth(h)
 
     const n=0;
+    const now = new Date();
+    const formattedDateTime = now.toLocaleString('th-TH', {
+      timeZone: 'Asia/Bangkok',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
     try{
         await axios.post('/api/integrate',{
+          proublem:"Simpson",
           fx,
           a,
           b,
           n,
+          Date:formattedDateTime 
         })
         }catch(error){
           console.log('error',error)

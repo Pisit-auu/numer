@@ -58,18 +58,31 @@ export default function Simple() {
         alert('โปรดกรอกค่า x หรือ point > 1')
         return
       }
+      
       const m = parseInt(minput);
       const X = matrixX;
       const point = parseInt(pointValue);
       const Y = matrixY
       const xvalue = parseFloat(Xinput)
+      const now = new Date();
+      const formattedDateTime = now.toLocaleString('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
       try{
         await axios.post('/api/simple',{
+          proublem:"Simple",
           point,
           xvalue,
           m,
           X,
           Y,
+          Date:formattedDateTime 
         })
         }catch(error){
           console.log('error',error)

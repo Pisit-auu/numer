@@ -25,11 +25,23 @@ export default function Graphical() {
       let xlassNum = parseFloat(xlass);
       const tolerance = parseFloat(toleranceinput)
       graphical(newEquation,x0Num,xlassNum,tolerance)
+      const now = new Date();
+        const formattedDateTime = now.toLocaleString('th-TH', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
       try{
         await axios.post('/api/root',{
           name:fx,
+          proublem:"graphical",
           xl:x0Num,
-          xr:xlassNum
+          xr:xlassNum,
+          Date:formattedDateTime 
         })
     }catch(error){
       console.log('error',error)
