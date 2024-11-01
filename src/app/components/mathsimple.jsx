@@ -1,12 +1,11 @@
 import Plot from 'react-plotly.js';
 
-const Mathsimple = ({ dataPoints }) => {
+const Mathsimple = ({ dataPoints,ytrue, xtrue }) => {
   let xstart, xend, ystart, yend;
-
   if (dataPoints && dataPoints.length > 0) {
-    xstart = dataPoints[0].x - 0.5;
+    xstart = xtrue - 0.5;
     xend = dataPoints[dataPoints.length - 1].x + 1;
-    ystart = dataPoints[0].y - 1;
+    ystart = ytrue - 1;
     yend = dataPoints[dataPoints.length - 1].y + 10;
   } else {
     xstart = 0;
@@ -15,9 +14,11 @@ const Mathsimple = ({ dataPoints }) => {
     yend = 7;
   }
 
-  const xData = dataPoints.map(point => point.x);
-  const yData = dataPoints.map(point => point.y);
-  console.log(xData)
+  const xData = Array.isArray(dataPoints) ? dataPoints.map(point => point.x) : [];
+  const yData = Array.isArray(dataPoints) ? dataPoints.map(point => point.y) : [];
+
+  const xTrueData = Array.isArray(xtrue) ? xtrue : [xtrue];
+  const yTrueData = Array.isArray(ytrue) ? ytrue : [ytrue];
   return (
     <div className="w-full h-96 md:h-[600px] "> 
       <Plot
@@ -29,7 +30,21 @@ const Mathsimple = ({ dataPoints }) => {
                 type: 'scatter',
                 marker: { color: 'red', size: 10 },
                 name: 'point', 
-              },    
+              }, {
+                x: xTrueData,
+                y: yTrueData,
+                mode: 'markers',
+                type: 'scatter',
+                marker: { color: 'blue', size: 10 },
+                name: 'result', 
+              },{
+                x: xData,
+                y: yData,
+                mode: 'lines',
+                type: 'scatter',
+                marker: { color: 'black', size: 10 },
+                name: 'regression', 
+              },
         ]}
         layout={{
           title: 'Graph of Function',

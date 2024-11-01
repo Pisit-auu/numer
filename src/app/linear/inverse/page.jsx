@@ -5,6 +5,8 @@ import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import axios from 'axios'
 import {Select,Space} from 'antd'
+import Navbar from  "../../components/header";
+
 export default function Inversion() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -16,6 +18,7 @@ export default function Inversion() {
   const [Step , setStep] = useState('')
   const [equation,setEquation]= useState([]);
   const [size,setsize] = useState([])
+  const [show,setshow] = useState(false)
 
     const handleMatrixChange = (rowIndex, colIndex, value) => {  //อัพเดตค่าA
       const numericValue = parseFloat(value);
@@ -41,10 +44,10 @@ export default function Inversion() {
                  '\n\\end{array}';
         };
 
-        const latexChunks = matrix.map((slice, index) => (
-          `\\text{Slice ${index + 1}}: \n` +
+        const latexChunks = matrix.map((Step, index) => (
+          `\\text{Stept ${index + 1}}: \n` +
           `\\begin{bmatrix} \n` + 
-          formatMatrix(slice) + 
+          formatMatrix(Step) + 
           `\n\\end{bmatrix}`
         ));
         
@@ -244,7 +247,7 @@ function AXB(FAI, B) {
         if (allNumbersInMatrix) {
             newStep =eliminate(updatedMatrixAI); 
             setStep(matrixToLaTeX(newStep))
-            console.log(newStep)
+            setshow(true);
             
         } else {
             alert('Matrix contains non-numeric values.');
@@ -252,151 +255,137 @@ function AXB(FAI, B) {
     }
 
     return (
-    <div>
-              <div className="grid grid-cols-3 gap-4 p-4">
-
-                      <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}
-                                  <form onSubmit={handleSubmit}>Matrix size (NxN) 
-                                        <input type="number" value={sizematrix} onChange={(e) => setSizematrix(e.target.value)}/>
-
-                                        <div className="pt-4">tolerance
-                                            <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
-                                        </div>
-
-                                        <button type="submit">Submit</button>
-
-                                  </form>
-                        </div>
-
-                      <div className="text-center text-blue-500 text-3xl"> Inversion Methods  {/*column2*/}
-
-                              <div> [A]=  {sizematrix}
-                                  {matrixA.length > 0 && (
-                                          <div className="mt-4">
-                                                  <h2 className="text-xl mb-4">กรอกข้อมูลใน Matrix</h2>
-                                                      <div className='grid grid-cols-3 gap-4 p-4'>
-                                                        <div>  {'{A}'}   </div>
-                                                        <div> {'{X}'} </div>
-                                                        <div> {'{B}'}  </div>
-                                                      </div>
-
-                                                  <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  
-                                                                <div className="grid" style={{ gridTemplateColumns: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
-                                                                          {matrixA.map((row, rowIndex) =>
-                                                                            row.map((value, colIndex) => (
-                                                                              <input
-                                                                                key={`${rowIndex}-${colIndex}`}
-                                                                                type="number"
-                                                                                value={matrixA[rowIndex][colIndex]}
-                                                                                onChange={(e) =>
-                                                                                  handleMatrixChange(rowIndex, colIndex, e.target.value)
-                                                                                }
-                                                                                className="border p-2 w-full text-center"
-                                                                              />
-                                                                            )))}
-                                                                </div>
-
-                                                                <div className="grid" style={{ gridTemplateRows: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixX.map((value, rowIndex) => (
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="text"
-                                                                      value={`x${rowIndex+1}`}readOnly 
-                                                                      onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-20 text-center"
-                                                                    />
-                                                                  ))}
-                                                                </div>
-
-                                                              <div className="grid" style={{ gridTemplateRows: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixB.map((value, rowIndex) => (
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="number"
-                                                                      value={value}
-                                                                      onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-20 text-center"
-                                                                    />
-                                                                  ))}
-                                                              </div>
-                                                  </div>
-                                          </div>
-                                    )}
-                              </div>
-                              <div className='mt-4'>Linear Equation History</div>
-                                      <Select
-                                defaultValue="size"
-                                style={{ width: 200 }}
-                                onChange={handlesize}
-                                options={size.map(item => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))}
-                                className="ml-4"
-                              /><Select
-                              defaultValue="data"
-                              style={{ width: 200 }}
-                              onChange={handleeuation}
-                              options={equation.map(item => ({
-                                value: item.value,
-                                label: item.label,
-                              }))}
-                              className="ml-4"
-                            />        
-           
-
-                        </div>
-
-                <div className="text-center text-blue-500 text-3xl"></div>  {/*column3*/}
-              </div >
-
-
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
-              solution  
-                       <BlockMath math="From  Ax = B" />
-                      <BlockMath math="A^{-1} B = x" />      
-
-                            <div className='text-center	'> Forward Elimination
-                                        <div className="grid grid-cols-1 gap-0 p-4">      
-                                        <div>
-                                        <BlockMath math={Step} />
-                                          </div> 
-
-                                          <div>AI
-                                          <div>
-                                              <ArrayDisplay matrix={AI} />
-                                            </div>
-                            </div>
-
-                            <div>Back Subtiution
-                            
-                                                          {/*แสดง x แต่ละตัว*/}
-                                                          <div className="text-xl" style={{ gridTemplateColumns: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
-                                                                {Result.map((Result, index) => (
-                                                                <div key={index} className="">
-                                                                    <div>X{Result.iteration+1}={Result.result }</div>
-                                                                </div>
-                                                                ))}
-                                                                </div>    
-                                
-  
-                            </div> 
-                           
-                           </div>
-                     </div>
+      <div>
+        <Navbar />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+          <div className="text-center text-blue-500 text-3xl"></div>
+    
+          <div className="text-center text-blue-500 text-3xl">
+            Inversion Methods
+    
+            {matrixA.length > 0 && (
+              <div className="mt-4">
+                <h2 className="text-xl mb-4">กรอกข้อมูลใน Matrix</h2>
+                <div className='grid grid-cols-3 gap-4 p-4 text-center'>
+                  <div>{'[A]'}</div>
+                  <div>{'{x}'}</div>
+                  <div>{'{B}'}</div>
                 </div>
-    </div>
-  );
+    
+                <div className='grid grid-cols-1 sm:grid-cols-3 gap-2 p-1'>
+                  <div className="grid" style={{ gridTemplateColumns: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
+                    {matrixA.map((row, rowIndex) => 
+                      row.map((value, colIndex) => (
+                        <input
+                          key={`${rowIndex}-${colIndex}`}
+                          type="number"
+                          value={matrixA[rowIndex][colIndex]}
+                          onChange={(e) => handleMatrixChange(rowIndex, colIndex, e.target.value)}
+                          className="border p-2 w-full text-center"
+                        />
+                      ))
+                    )}
+                  </div>
+    
+                  <div className="grid" style={{ gridTemplateRows: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
+                    {matrixX.map((_, rowIndex) => (
+                      <input
+                        key={rowIndex}
+                        type="text"
+                        value={`x${rowIndex + 1}`}
+                        readOnly
+                        className="border p-2 w-full text-center"
+                      />
+                    ))}
+                  </div>
+    
+                  <div className="grid" style={{ gridTemplateRows: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
+                    {matrixB.map((value, rowIndex) => (
+                      <input
+                        key={rowIndex}
+                        type="number"
+                        value={value}
+                        onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
+                        className="border p-2 w-full text-center"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+    
+          <div className='mt-4'>
+                    <form onSubmit={handleSubmit}>
+                      Matrix size (NxN)
+                      <input
+                        type="number"
+                        value={sizematrix}
+                        onChange={(e) => setSizematrix(e.target.value)}
+                        className="border p-2 ml-2"
+                      />
+                      <button type="submit" className="p-2 bg-blue-500 text-white ml-2">Submit</button>
+                    </form>
+                  </div>
+            
+            <div className='mt-4'>Linear Equation History</div>
+            <Select
+              defaultValue="size"
+              style={{ width: '100%' }}
+              onChange={handlesize}
+              options={size.map(item => ({
+                value: item.value,
+                label: item.label,
+              }))}
+              className="ml-4"
+            />
+            <Select
+              defaultValue="data"
+              style={{ width: '100%' }}
+              onChange={handleeuation}
+              options={equation.map(item => ({
+                value: item.value,
+                label: item.label,
+              }))}
+              className="ml-4"
+            />
+          </div>
+    
+          <div className="text-center text-blue-500 text-3xl"></div>
+        </div>
+    
+        <div className='bg-slate-200 font-bold m-10 p-8 h-auto'>
+          <h3>Solution</h3>
+          {show && (
+            <div>
+              <BlockMath math="From  Ax = B" />
+              <BlockMath math="A^{-1} B = x" />
+              <div className='text-center'>
+                <h4>Forward Elimination</h4>
+                <div className="grid grid-cols-1 gap-0 p-4">
+                  <div>
+                    <BlockMath math={Step} />
+                  </div>
+                  <div>AI
+                    <div>
+                      <ArrayDisplay matrix={AI} />
+                    </div>
+                  </div>
+                  <div>Back Substitution
+                    <div className="text-xl" style={{ gridTemplateColumns: `repeat(${sizematrix}, minmax(0, 1fr))`, gap: '2px' }}>
+                      {Result.map((result, index) => (
+                        <div key={index}>
+                          <div>X{result.iteration + 1} = {result.result}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+    
+    
 }
-// <BlockMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
-// <BlockMath math={' From Cramer’s Rule:x_i = \\frac{det(A_i)}{det(A)}'} />
-    
-    
-        // setdetA0(`\\text{det}(A) = \\begin{bmatrix} ${parseFloat(DetAll[0])} \\end{bmatrix}`)
-       // setResult(newX);
-       // setEquation(mewequation);
-        //newX.push(...findX(matrixA)); 
-        //          DetAll.push(...findet(matrixA, matrixB));  
-      //newX.push({resultX: x[i-1],detA:parseFloat(DetAll[0])  ,detAi: parseFloat(DetAll[i])})
-       // setDetAn(newX); // ค่าDetA1-An

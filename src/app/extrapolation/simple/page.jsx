@@ -24,6 +24,7 @@ export default function Simple() {
   const [matrixnewB, setMatrixnewB] = useState([]);  
   const [matrixnewA, setMatrixnewA] = useState([]);  
   const [matrixsetvaluefx,setmatrixvaluefx] = useState('');
+  const [truey,settruey] = useState()
   const [keepshow,setkeepshow] = useState(false);
   const [equationapi,setEquationapi]= useState([]);
   const [point,setpoint] = useState([])
@@ -223,6 +224,7 @@ export default function Simple() {
             findvalue+= findxab[i].result*Math.pow(x,i)  
         }
         setmatrixvaluefx(`f(${x})= ${findvalue}`)
+        settruey(findvalue)
         setkeepshow(true);
         
     }
@@ -318,7 +320,7 @@ export default function Simple() {
                 <div className="text-blue-500 text-3xl p-4 "> graph</div>
                   <div className="flex justify-center">
                       <div className="max-w-full  m-4">
-                      <Mathsimple dataPoints={graph} />
+                      <Mathsimple dataPoints={graph} ytrue={parseFloat(truey) }  xtrue = {parseFloat(Xinput)}/>
                       </div>
                   </div>
                   </div>
@@ -354,5 +356,4 @@ export default function Simple() {
   );
 }
 
-//<BlockMath math={`C_{${index}}*X_{${index}}= ${iteration.cn.toExponential(4)}*${iteration.xi} matrixnewB  showfxresult` matrixsetvaluefx } <ArrayDisplay matrix={metexta} />/> 
 

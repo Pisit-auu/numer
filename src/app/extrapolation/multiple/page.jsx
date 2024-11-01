@@ -7,6 +7,7 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import axios from 'axios'
 import {Select,Space} from 'antd'
+
 export default function Multiple() {
   const [pointValue, setpointValue] = useState(2);
   const [Xnumber , setXnumber] = useState(1);
@@ -100,6 +101,9 @@ export default function Multiple() {
         }catch(error){
           console.log('error',error)
         }
+      console.log(X)
+      console.log(Y)
+      console.log(xi)
       multiple(X,Y,xi,xvalue)
     };
 
