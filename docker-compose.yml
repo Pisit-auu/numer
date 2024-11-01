@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: default
+      POSTGRES_PASSWORD: ZDQ7EjAIXY0U
+      POSTGRES_DB: verceldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgres://default:ZDQ7EjAIXY0U@db:5432/verceldb?sslmode=require"
+    volumes:
+      - .:/app
+    command: npm run dev  # ใช้สำหรับการพัฒนา
+
+volumes:
+  postgres_data:
