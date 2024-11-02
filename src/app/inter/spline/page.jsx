@@ -589,14 +589,7 @@ export default function Spline() {
   return (
     <div>
               <div className="grid grid-cols-3 gap-4 p-4">
-                      <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}        
-                                  <form onSubmit={handleSubmit}>Number of points 
-                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
-                                        <div className="pt-4">X value
-                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
-                                        </div>
-                                        <button type="submit">Submit</button>
-                                  </form>
+                      <div className="text-center text-blue-500 text-3xl">
                         </div>
 
                       <div className="text-center text-blue-500 text-3xl"> Spline  {/*column2*/}
@@ -605,13 +598,12 @@ export default function Spline() {
                                           <div className="mt-4">
                                                   <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
                                                       <div className='grid grid-cols-3 gap-4 p-4'>
+                                                      <div>  {'X'}   </div>
                                                         <div>  </div>
-                                                        <div>  {'X'}   </div>
                                                         <div> {'Y'}  </div>
                                                       </div>
                                                   <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  <div>  </div>
-                                                        <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
+                                                  <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
                                                                         {matrixX.map((value, rowIndex) => (  // รับค่าmatrix x
                                                                           <input
                                                                             key={rowIndex}
@@ -622,6 +614,8 @@ export default function Spline() {
                                                                           />
                                                                         ))}
                                                                     </div>
+                                                  <div>  </div>
+                                                       
 
                                                               <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
                                                                   {matrixY.map((value, rowIndex) => (  // รับค่าmatrix y
@@ -638,6 +632,16 @@ export default function Spline() {
                                           </div>
                                     )}
                               </div>  
+                              <div>
+                              input  Number of points        
+                                  <form onSubmit={handleSubmit}>
+                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
+                                        <div className="pt-4">X value
+                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
+                                        </div>
+                                        <button type="submit">Submit</button>
+                                  </form>
+                              </div>
                               <div className='mt-4'>Inter Equation History</div>
                                       <Select
                                 defaultValue="size"

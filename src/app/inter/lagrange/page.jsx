@@ -16,6 +16,7 @@ export default function Lagrange() {
   const [result,setresult]= useState('');  //เก็บ result
   const [equationapi,setEquationapi]= useState([]);
   const [point,setpoint] = useState([])
+  const [show,setshow] = useState(false)
     const handleMatrixChange = (rowIndex, value) => {  
       const numericValue = parseFloat(value);
       const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix X
@@ -167,6 +168,7 @@ export default function Lagrange() {
       console.log(newIterations)
       setequtionli(newIterations)
       setresult(result.toString())
+      setshow(true)
     }
     
     
@@ -175,16 +177,7 @@ export default function Lagrange() {
     <div>
               <div className="grid grid-cols-3 gap-4 p-4">
 
-                      <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}
-                                  <form onSubmit={handleSubmit}>Number of points 
-                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
-                                        <div className="pt-4">X value
-                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
-                                        </div>
-
-                                        <button type="submit">Submit</button>
-
-                                  </form>
+                      <div className="text-center text-blue-500 text-3xl">
                         </div>
 
                       <div className="text-center text-blue-500 text-3xl"> Lagrange Interpolation  {/*column2*/}
@@ -194,15 +187,15 @@ export default function Lagrange() {
                                           <div className="mt-4">
                                                   <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
                                                       <div className='grid grid-cols-3 gap-4 p-4'>
+                                                      <div>  {'X'}   </div>
                                                         <div>  </div>
 
-                                                        <div>  {'X'}   </div>
+                                                        
                                                         <div> {'Y'}  </div>
                                                       </div>
 
                                                   <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  <div>  </div>
-                                                        <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
+                                                  <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
                                                                         {matrixX.map((value, rowIndex) => (  // รับค่าmatrix x
                                                                           <input
                                                                             key={rowIndex}
@@ -213,6 +206,8 @@ export default function Lagrange() {
                                                                           />
                                                                         ))}
                                                                     </div>
+                                                  <div>  </div>
+                                                        
 
                                                               <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
                                                                   {matrixY.map((value, rowIndex) => (  // รับค่าmatrix y
@@ -229,6 +224,18 @@ export default function Lagrange() {
                                           </div>
                                     )}
                               </div>     
+                              <div>
+                              input Number of points 
+                                  <form onSubmit={handleSubmit}>
+                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
+                                        <div className="pt-4">X value
+                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
+                                        </div>
+
+                                        <button type="submit">Submit</button>
+
+                                  </form>   
+                              </div>
                               <div className='mt-4'>Inter Equation History</div>
                                       <Select
                                 defaultValue="size"
@@ -260,21 +267,25 @@ export default function Lagrange() {
                     
 
                           <div className="grid grid-cols-1 gap-0 p-4">     solution
-                                      <div>
-                                      {Li.map((iteration, index) => (
-                                          <div key={index}>
-                                            <BlockMath math={`L_{${index}}(${Xinput}) = ${iteration}`} />
-                                          </div>
-                                        ))}
-                                    <div className='text-center'>  <InlineMath math =  {`f(${Xinput})=`}/> <InlineMath math =  {`${eqution}`}/> 
-                                    {equtionli.map((iteration, index) => (
-                                          <div key={index}>
-                                             <InlineMath math={`${iteration.equa}(${iteration.li})(${iteration.yi})${iteration.plus}`} />
-                                          </div>
-                                        ))}
-                                     <InlineMath math =  {"="}/>  <InlineMath math =  {result}/> </div>
-                                      
+                            {show &&(
+                                    <div>
+                                    {Li.map((iteration, index) => (
+                                        <div key={index}>
+                                          <BlockMath math={`L_{${index}}(${Xinput}) = ${iteration}`} />
+                                        </div>
+                                      ))}
+                                  <div className='text-center'>  <InlineMath math =  {`f(${Xinput})=`}/> <InlineMath math =  {`${eqution}`}/> 
+                                  {equtionli.map((iteration, index) => (
+                                        <div key={index}>
+                                          <InlineMath math={`${iteration.equa}(${iteration.li})(${iteration.yi})${iteration.plus}`} />
+                                        </div>
+                                      ))}
+                                  <InlineMath math =  {"="}/>  <InlineMath math =  {result}/> </div>
+                                    
                                   </div>
+
+                            )}
+                                    
                         
                        
 

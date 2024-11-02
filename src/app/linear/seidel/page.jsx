@@ -191,17 +191,7 @@ export default function Seidel() {
     <div>
               <div className="grid grid-cols-3 gap-4 p-4">
 
-                      <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}
-                                  <form onSubmit={handleSubmit}>Matrix size (NxN) 
-                                        <input type="number" value={sizematrix} onChange={(e) => setSizematrix(e.target.value)}/>
-
-                                        <div className="pt-4">tolerance
-                                            <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
-                                        </div>
-
-                                        <button type="submit">Submit</button>
-
-                                  </form>
+                      <div className="text-center text-blue-500 text-3xl">
                         </div>
 
                       <div className="text-center text-blue-500 text-3xl"> guass seidel Methods  {/*column2*/}
@@ -211,8 +201,8 @@ export default function Seidel() {
                                           <div className="mt-4">
                                                   <h2 className="text-xl mb-4">กรอกข้อมูลใน Matrix</h2>
                                                       <div className='grid grid-cols-3 gap-4 p-4'>
-                                                        <div>  {'{A}'}   </div>
-                                                        <div> {'{X}'} </div>
+                                                        <div>  {'[A]'}   </div>
+                                                        <div> {'{x}'} </div>
                                                         <div> {'{B}'}  </div>
                                                       </div>
 
@@ -272,10 +262,22 @@ export default function Seidel() {
                                           </div>
                                     )}
                               </div>  
+                              <div>input   Matrix size (NxN) 
+                                  <form onSubmit={handleSubmit}>
+                                        <input type="number" value={sizematrix} onChange={(e) => setSizematrix(e.target.value)}/>
+
+                                        <div className="pt-4">tolerance
+                                            <input type="number"  value={toleranceinput}  onChange={(e) => setTolerance(e.target.value)}  ></input>
+                                        </div>
+
+                                        <button type="submit">Submit</button>
+
+                                  </form>
+                                </div>
                               <div className='mt-4'>Linear Equation History</div>
                                       <Select
                                 defaultValue="size"
-                                style={{ width: 200 }}
+                                style={{ width: '100%' }}
                                 onChange={handlesize}
                                 options={size.map(item => ({
                                   value: item.value,
@@ -284,7 +286,7 @@ export default function Seidel() {
                                 className="ml-4"
                               /><Select
                               defaultValue="data"
-                              style={{ width: 200 }}
+                              style={{ width: '100%' }}
                               onChange={handleeuation}
                               options={equation.map(item => ({
                                 value: item.value,
@@ -330,14 +332,3 @@ export default function Seidel() {
     </div>
   );
 }
-// <InlineMath math={`x_{1} = \\frac{b_{1} - a_{11} x_{1}}{a_{11}} = \\frac{1 - a_{11} x_{1}}{a_{11}} = 1`} />
-// <BlockMath math={' From Cramer’s Rule:x_i = \\frac{det(A_i)}{det(A)}'} />
-    //<InlineMath math={}>
-    
-        // setdetA0(`\\text{det}(A) = \\begin{bmatrix} ${parseFloat(DetAll[0])} \\end{bmatrix}`)
-       // setResult(newX);
-       // setEquation(mewequation);
-        //newX.push(...findX(matrixA)); 
-        //          DetAll.push(...findet(matrixA, matrixB));  
-      //newX.push({resultX: x[i-1],detA:parseFloat(DetAll[0])  ,detAi: parseFloat(DetAll[i])})
-       // setDetAn(newX); // ค่าDetA1-An

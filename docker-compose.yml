@@ -1,28 +1,20 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: default
-      POSTGRES_PASSWORD: ZDQ7EjAIXY0U
-      POSTGRES_DB: verceldb
+  app:
+    build:
+      context: .
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - '3000:3000' 
+    environment:
+      DATABASE_URL: "postgres://default:ZDQ7EjAIXY0U@ep-flat-morning-a1efwc0r.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
 
-  web:
-    build: .
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: "postgres://default:ZDQ7EjAIXY0U@db:5432/verceldb?sslmode=require"
+  prisma:
+    image: node:18-alpine
+    working_dir: /app
     volumes:
       - .:/app
-    command: npm run dev  # ใช้สำหรับการพัฒนา
-
-volumes:
-  postgres_data:
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgres://default:ZDQ7EjAIXY0U@ep-flat-morning-a1efwc0r.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+    command: npx prisma studio
+    ports:
+      - '5555:5555' 

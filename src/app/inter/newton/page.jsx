@@ -177,114 +177,114 @@ export default function Newton() {
     
     
   
-  return (
-    <div>
-              <div className="grid grid-cols-3 gap-4 p-4">
-
-                      <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}
-                                  <form onSubmit={handleSubmit}>Number of points 
-                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
-                                        <div className="pt-4">X value
-                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
-                                        </div>
-
-                                        <button type="submit">Submit</button>
-
-                                  </form>
-                        </div>
-
-                      <div className="text-center text-blue-500 text-3xl"> Newton  {/*column2*/}
-
-                              <div> points=  {pointValue}
-                                  {matrixX.length > 0 && (  //แสดงเมื่อ matrix >0
-                                          <div className="mt-4">
-                                                  <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
-                                                      <div className='grid grid-cols-3 gap-4 p-4'>
-                                                        <div>  </div>
-
-                                                        <div>  {'X'}   </div>
-                                                        <div> {'Y'}  </div>
-                                                      </div>
-
-                                                  <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  <div>  </div>
-                                                        <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                        {matrixX.map((value, rowIndex) => (  // รับค่าmatrix x
-                                                                          <input
-                                                                            key={rowIndex}
-                                                                            type="number"
-                                                                            value={value}
-                                                                            onChange={(e) => handleMatrixChange(rowIndex, e.target.value)}
-                                                                            className="border p-2 w-full text-center"
-                                                                          />
-                                                                        ))}
-                                                                    </div>
-
-                                                              <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixY.map((value, rowIndex) => (  // รับค่าmatrix y
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="number"
-                                                                      value={value}
-                                                                      onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-full text-center"
-                                                                    />
-                                                                  ))}
-                                                              </div>
-                                                  </div>
-                                          </div>
-                                    )}
-                              </div>  
-                              <div className='mt-4'>Inter Equation History</div>
-                                      <Select
-                                defaultValue="size"
-                                style={{ width: 200 }}
-                                onChange={handlepoint}
-                                options={point.map(item => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))}
-                                className="ml-4"
-                              /><Select
-                              defaultValue="data"
-                              style={{ width: 200 }}
-                              onChange={handleeuation}
-                              options={equation.map(item => ({
-                                value: item.value,
-                                label: item.label,
-                              }))}
-                              className="ml-4"
-                            />               
-
-                        </div>
-
-                <div className="text-center text-blue-500 text-3xl"></div>  {/*column3*/}
-              </div >
-
-
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
+    return (
+      <div className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Column 1 */}
+          <div className="text-center text-blue-500 text-3xl"></div>
+    
+          {/* Column 2 */}
+          <div className="text-center text-blue-500 text-3xl">
+            Newton
+            <div>
+              <span>Points = {pointValue}</span>
+              {matrixX.length > 0 && (
+                <div className="mt-4">
+                  <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
+                  <div className="grid grid-cols-3 gap-4 p-4">
+                  <div>{'X'}</div>
+                    <div></div>
                     
-
-                          <div className="grid grid-cols-1 gap-0 p-4">     solution
-                                      <div>
-                                      {arrayCn.map((iteration, index) => (
-                                          <div key={index}>
-                                            <BlockMath math={`C_{${index}} = ${Number(iteration.cn).toExponential(4)}`} />
-                                            <BlockMath math={`X_{${index}} = ${iteration.xi}`} />
-                                          </div>
-                                        ))}
-                                     <BlockMath math =  {result}/> 
-                                      
-                                  </div>
-                        
-                       
-
-
-
-                          </div>
+                    <div>{'Y'}</div>
+                  </div>
+    
+                  <div className="grid grid-cols-3 gap-4 p-4">
+                  <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}>
+                      {matrixX.map((value, rowIndex) => (
+                        <input
+                          key={rowIndex}
+                          type="number"
+                          value={value}
+                          onChange={(e) => handleMatrixChange(rowIndex, e.target.value)}
+                          className="border p-2 w-full text-center"
+                        />
+                      ))}
+                    </div>
+                    <div></div>
+                   
+    
+                    <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}>
+                      {matrixY.map((value, rowIndex) => (
+                        <input
+                          key={rowIndex}
+                          type="number"
+                          value={value}
+                          onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
+                          className="border p-2 w-full text-center"
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-    </div>
-  );
+              )}
+            </div>
+    
+            <div>
+              <span>Input Number of Points</span>
+              <form onSubmit={handleSubmit} className="mt-4">
+                <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)} />
+                <div className="pt-4">
+                  X value
+                  <input type="number" value={Xinput} onChange={(e) => setXinput(e.target.value)} />
+                </div>
+                <button type="submit" className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Submit</button>
+              </form>
+            </div>
+    
+            <div className="mt-4">Inter Equation History</div>
+            <div className="flex justify-center gap-4 mt-4">
+              <Select
+                defaultValue="size"
+                style={{ width: 200 }}
+                onChange={handlepoint}
+                options={point.map(item => ({
+                  value: item.value,
+                  label: item.label,
+                }))}
+                className="ml-4"
+              />
+              <Select
+                defaultValue="data"
+                style={{ width: 200 }}
+                onChange={handleeuation}
+                options={equation.map(item => ({
+                  value: item.value,
+                  label: item.label,
+                }))}
+                className="ml-4"
+              />
+            </div>
+          </div>
+    
+          {/* Column 3 */}
+          <div className="text-center text-blue-500 text-3xl"></div>
+        </div>
+    
+        {/* Solution Box */}
+        <div className="bg-slate-200 font-bold m-10 p-8 h-auto">
+          <div className="grid grid-cols-1 gap-0 p-4">
+            <div>Solution</div>
+            <div>
+              {arrayCn.map((iteration, index) => (
+                <div key={index}>
+                  <BlockMath math={`C_{${index}} = ${Number(iteration.cn).toExponential(4)}`} />
+                  <BlockMath math={`X_{${index}} = ${iteration.xi}`} />
+                </div>
+              ))}
+              <BlockMath math={result} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
 }
-
-//<BlockMath math={`C_{${index}}*X_{${index}}= ${iteration.cn.toExponential(4)}*${iteration.xi}`} />
