@@ -31,7 +31,8 @@ const prisma = new PrismaClient();
  *         description: Internal server error.
  */
 export async function DELETE(request, { params }) {
-    const equationId = Number(params.id);
+    const { id } = await params;
+    const equationId = Number(id);
     const deleedequation = await prisma.equation.delete({
         where: { id: equationId }
     });

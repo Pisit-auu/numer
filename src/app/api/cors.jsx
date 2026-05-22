@@ -1,27 +1,22 @@
-// Add this to your API handler
-import Cors from 'cors';
+export const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
 
-// Initialize the cors middleware
-const cors = Cors({
-    methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
-    origin: '*', // Adjust this to restrict origins if needed
-});
-
-// Helper method to wait for middleware to run before returning a response
-function runMiddleware(req, res, fn) {
-    return new Promise((resolve, reject) => {
-        fn(req, res, result => {
-            if (result instanceof Error) {
-                return reject(result);
-            }
-            return resolve(result);
-        });
+export function jsonWithCors(data, init = {}) {
+    return Response.json(data, {
+        ...init,
+        headers: {
+            ...corsHeaders,
+            ...(init.headers || {}),
+        },
     });
 }
 
-// Example API route
-export async function POST(request, res) {
-    await runMiddleware(request, res, cors);
-    
-    // Your existing code...
+export function optionsWithCors() {
+    return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+    });
 }

@@ -1,12 +1,11 @@
 'use client'
-import Link from "next/link";
-import { Select, Space } from 'antd';
+import StationSelect from './components/StationSelect';
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import Navbar from  "./components/header";
 import axios from 'axios'
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
+import { InlineMath } from 'react-katex';
 export default function Home() {
   const [pathproblem,setpathproblem] = useState('')
   const [solution,setsolution] = useState([])
@@ -57,7 +56,6 @@ export default function Home() {
       await axios.delete(`/api/${name}/${id}`);
       alert('Delete Successful!');
       fetchequation();
-      window.location.reload();
     } catch (error) {
       console.error('Error deleting post:', error);
       alert('Something went wrong');
@@ -106,233 +104,255 @@ export default function Home() {
     
 
   ]
+  const methodsByProblem = {
+    root,
+    linear,
+    inter: Interpolition,
+    extrapolation,
+    integration,
+    differentiation,
+  };
 
   const handleproublem = (value) => {
     setpathproblem(value)
-    if(value =='root'){
-      setsolution(root)
-      setroot(true)
-      setlinear(false)
-      setinter(false)
-      setexter(false)
-      setintegrate(false)
-      setdiff(false)
-    }else if(value =='linear'){
-      setsolution(linear)
-      setlinear(true)
-      setinter(false)
-      setexter(false)
-      setintegrate(false)
-      setdiff(false)
-      setroot(false)
-    }else if(value =='inter'){
-      setsolution(Interpolition)
-      setinter(true)
-      setexter(false)
-      setintegrate(false)
-      setdiff(false)
-      setlinear(false)
-      setroot(false)
-    }else if(value == 'extrapolation'){
-      setsolution(extrapolation)
-      setexter(true)
-      setintegrate(false)
-      setdiff(false)
-      setlinear(false)
-      setinter(false)
-      setroot(false)
-    }else if(value == 'integration'){
-      setsolution(integration)
-      setintegrate(true)
-      setdiff(false)
-      setroot(false)
-      setlinear(false)
-      setinter(false)
-      setexter(false)
-    }else if(value == 'differentiation'){
-      setsolution(differentiation)
-      setdiff(true)
-      setroot(false)
-      setlinear(false)
-      setinter(false)
-      setintegrate(false)
-      setexter(false)
-    }
+    setsolution(methodsByProblem[value] || [])
+    setroot(value === 'root')
+    setlinear(value === 'linear')
+    setinter(value === 'inter')
+    setexter(value === 'extrapolation')
+    setintegrate(value === 'integration')
+    setdiff(value === 'differentiation')
   };
   const handleSolution = (value) => {
+    if (!pathproblem) {
+      alert('Please choose a problem first');
+      return;
+    }
     router.push(`/${pathproblem}/${value}`); 
   };
+
+  const problemOptions = [
+    { value: 'root', label: 'Root' },
+    { value: 'linear', label: 'Linear' },
+    { value: 'inter', label: 'Interpolation' },
+    { value: 'extrapolation', label: 'Extrapolation' },
+    { value: 'integration', label: 'Integration' },
+    { value: 'differentiation', label: 'Differentiation' },
+  ];
+  const currentProblem = problemOptions.find((item) => item.value === pathproblem);
+  const selectedMethods = methodsByProblem[pathproblem] || [];
+  const totalMethods = Object.values(methodsByProblem).reduce((sum, rows) => sum + rows.length, 0);
+  const toRows = (value) => Array.isArray(value) ? value : [];
+  const formatVector = (value) => toRows(value).join(' \\\\ ');
+  const formatMatrix = (value) => toRows(value)
+    .map((row) => Array.isArray(row) ? row.join(' & ') : row)
+    .join(' \\\\ ');
+  const countActiveHistory = () => {
+    if (checkroot) return equationroot.length;
+    if (checklinear) return equationlinear.length;
+    if (checkinter) return equationinter.length;
+    if (checkintegrate) return equationintegrate.length;
+    if (checkdiff) return equationdiff.length;
+    if (checkexter) return equationsimple.length + equationmultiple.length;
+    return 0;
+  };
+  const renderHistorySection = (title, resource, rows, renderDetails) => (
+    <section className="station-history-section">
+      <div className="station-section-title">
+        <span>{title}</span>
+        <small>{rows.length} REC</small>
+      </div>
+      {rows.length === 0 ? (
+        <div className="station-empty">No saved telemetry in this module.</div>
+      ) : rows.map((cat) => (
+        <article key={`${resource}-${cat.id}`} className="station-record">
+          <div className="station-record__content">
+            <div className="station-record__meta">
+              <span><i className="status-dot status-dot--blue"></i>{cat.proublem || title}</span>
+              <time>{cat.Date || 'No timestamp'}</time>
+            </div>
+            <div className="station-record__data">{renderDetails(cat)}</div>
+          </div>
+          <button onClick={() => deleteequation(cat.id, resource)} className="station-delete">
+            Delete
+          </button>
+        </article>
+      ))}
+    </section>
+  );
+
   return (
-        <div className="bg-gray-100 min-h-screen">
-          <Navbar />
-          <h1 className="text-4xl font-bold text-center text-blue-500 mt-16">
-            Numerical Methods
-          </h1>
-
-          <div className="m-8 text-center text-2xl font-bold text-blue-500">
-            <div className="flex flex-col items-center">
-              <div className="flex flex-col md:flex-row items-center justify-center m-4">
-              <span className="mr-4">Choose Problem</span>
-                <Select
-                  defaultValue="-"
-                  style={{ width: 200 }}
-                  onChange={handleproublem}
-                  options={[
-                    { value: 'root', label: 'Root' },
-                    { value: 'linear', label: 'Linear' },
-                    { value: 'inter', label: 'Inter' },
-                    { value: 'extrapolation', label: 'Extrapolation' },
-                    { value: 'integration', label: 'Integration' },
-                    { value: 'differentiation', label: 'Differentiation' },
-                  ]}
-                />
-                
-                <span className="ml-4">Choose Method</span>
-                <Select
-                  defaultValue="-"
-                  style={{ width: 200 }}
-                  onChange={handleSolution}
-                  options={solution.map(item => ({
-                    value: item.value,
-                    label: item.label,
-                  }))}
-                  className="ml-4"
-                />
+    <div className="station-shell station-home">
+      <Navbar />
+      <main className="station-main station-home-main">
+        <div className="station-dashboard">
+          <section className="station-hero" id="hero">
+            <div className="scan-line"></div>
+            <div className="station-hero__panel">
+              <div className="station-eyebrow">MODULE::NUMERICAL // STATUS: ACTIVE</div>
+              <h1>Numerical <span>Station</span></h1>
+              <p>Command-grade calculator for root finding, linear systems, interpolation, regression, integration, and differentiation.</p>
+              <div className="station-status-bar">
+                <span><i className="status-dot"></i>Systems Online</span>
+                <span><i className="status-dot status-dot--blue"></i>{selectedMethods.length || totalMethods} Methods Ready</span>
+                <span><i className="status-dot status-dot--amber"></i>{countActiveHistory()} Records</span>
               </div>
             </div>
-            
-            <div className="max-w-5xl mt-4 mx-auto bg-white shadow-md rounded-lg p-8">
-          <div className="grid grid-cols-1 border-b-2 border-gray-300 pb-4">
-          <header className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Equation History</h2>
-            </header>
-           {checkroot &&(
-             <div className="grid grid-cols-1 gap-4"> Root Equation
-             {equationroot.map((cat) => (
-               <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                 <button className="font-bold">{cat.proublem} fx = {cat.name} Xl = {cat.xl} Xr = {cat.xr}  [{cat.Date}]</button>
-                 <div className="space-x-4">
-                   <button onClick={() => deleteequation(cat.id,'root')} className="text-red-600 hover:text-red-900">
-                     Delete
-                   </button>
-                 </div>
-               </div>
-             ))}
-           </div>
-           )}
-            {checklinear&&(
-              <div className="grid grid-cols-1 gap-4 mt-4"> Linear
-              {equationlinear.map((cat) => (
-                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                  <button className="font-bold">{cat.proublem} : <InlineMath math={`A=  \\begin{bmatrix} ${cat.A.map(row => row.join(' & ')).join(' \\\\ ')}\\end{bmatrix}`}/>
-                    <InlineMath math={`B= \\begin{Bmatrix} ${cat.B.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                    
-                    <InlineMath math={`X_0= \\begin{Bmatrix} ${cat.x0.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                    <div className="mt-4"> Time: {cat.Date}</div>
-                    </button>
-                  <div className="space-x-4">
-                    <button onClick={() => deleteequation(cat.id,'linear')} className="text-red-600 hover:text-red-900">
-                      Delete
-                    </button>
-                  </div>
+          </section>
+
+          <aside className="station-dock" aria-label="Mission control dock">
+            <section className="station-console" aria-label="Numerical method selector">
+              <div className="station-console__header">
+                <div>
+                  <span className="station-label">Mission Control</span>
+                  <h2>Access Systems</h2>
                 </div>
-              ))}
-            </div>
-            )}
-           {checkinter &&(
-            <div className="grid grid-cols-1 gap-4 mt-4"> Interpolation
-            {equationinter.map((cat) => (
-              <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                <button className="font-bold">{cat.proublem} : <InlineMath math={`X= \\begin{Bmatrix} ${cat.X.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                <InlineMath math={`Y= \\begin{Bmatrix} ${cat.Y.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                <InlineMath math={`X_0= ${cat.x0}`}/>
-                <div className="mt-4"> Time: {cat.Date}</div>
-                </button>
-                <div className="space-x-4">
-                  <button onClick={() => deleteequation(cat.id,'inter')} className="text-red-600 hover:text-red-900">
-                    Delete
-                  </button>
-                </div>
+                <span className="station-console__state">{currentProblem?.label || 'Awaiting module'}</span>
               </div>
-            ))}
-          </div>
-           )}
-            {checkexter&&(
-                          <div className="grid grid-cols-1 gap-4 mt-4"> Extrapolation
-                          {equationsimple.map((cat) => (
-                            <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                              <button className="font-bold">{cat.proublem} : <InlineMath math={`X= \\begin{Bmatrix} ${cat.X.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                <InlineMath math={`Y= \\begin{Bmatrix} ${cat.Y.join(' \\\\ ')} \\end{Bmatrix}`}/> <InlineMath math={`m= ${cat.m}`}/>
-                <div className="mt-4"> Time: {cat.Date}</div>
-                </button>
-                              <div className="space-x-4">
-                                <button onClick={() => deleteequation(cat.id,'simple')} className="text-red-600 hover:text-red-900">
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                           {equationmultiple.map((cat) => (
-                            <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                              <button className="font-bold">{cat.proublem} : <InlineMath math={`X= \\begin{Bmatrix} ${cat.X.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                  <InlineMath math={`Y= \\begin{Bmatrix} ${cat.Y.join(' \\\\ ')} \\end{Bmatrix}`}/>
-                  <InlineMath math={`Xi= ${cat.xi}`}/>  
-                <div className="mt-4"> Time: {cat.Date}</div>
-                </button>
-                              <div className="space-x-4">
-                                <button onClick={() => deleteequation(cat.id,'multiple')} className="text-red-600 hover:text-red-900">
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-            )}
 
-           {checkintegrate && (
-             <div className="grid grid-cols-1 gap-4 mt-4"> Integration
-             {equationintegrate.map((cat) => (
-               <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                 <button className="font-bold">{cat.proublem} : {cat.fx} a = {cat.a} b = {cat.b} n = {cat.n}
-                 <div className="mt-4"> Time: {cat.Date}</div>
+              <div className="station-controls">
+                <label>
+                  <span>Choose Problem</span>
+                  <StationSelect
+                    placeholder="Select problem"
+                    value={pathproblem || undefined}
+                    onChange={handleproublem}
+                    options={problemOptions}
+                    className="station-select"
+                  />
+                </label>
+                <label>
+                  <span>Choose Method</span>
+                  <StationSelect
+                    placeholder={pathproblem ? 'Select method' : 'Choose problem first'}
+                    onChange={handleSolution}
+                    disabled={!pathproblem}
+                    options={selectedMethods.map(item => ({
+                      value: item.value,
+                      label: item.label,
+                    }))}
+                    className="station-select"
+                  />
+                </label>
+              </div>
+            </section>
 
-                 </button>
-                 <div className="space-x-4">
-                   <button onClick={() => deleteequation(cat.id,'integrate')} className="text-red-600 hover:text-red-900">
-                     Delete
-                   </button>
-                 </div>
-               </div>
-             ))}
-           </div>
-           )}
-
-
-            {checkdiff && (
-              <div className="grid grid-cols-1 gap-4 mt-4"> Differentiation
-              {equationdiff.map((cat) => (
-                <div key={cat.id} className="border border-gray-300 p-4 rounded-md flex justify-between items-center">
-                  <button className="font-bold">{cat.proublem} : {<InlineMath math = {`f(x) = ${cat.fx }`} />}<InlineMath math = {`\\ x = ${cat.x} `} /> <InlineMath math = {` h = ${cat.h} `} />
-                  <div className="mt-4"> Time: {cat.Date}</div>
+            <section className="station-module-board" aria-label="Problem modules">
+              <div className="station-section-title station-section-title--compact">
+                <span>Module Grid</span>
+                <small>{problemOptions.length} BAY</small>
+              </div>
+              <div className="station-module-grid">
+                {problemOptions.map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    className={`station-module-card${pathproblem === item.value ? ' is-active' : ''}`}
+                    onClick={() => handleproublem(item.value)}
+                    aria-pressed={pathproblem === item.value}
+                  >
+                    <span>{item.label}</span>
+                    <small>{(methodsByProblem[item.value] || []).length} methods</small>
                   </button>
-                  <div className="space-x-4">
-                    <button onClick={() => deleteequation(cat.id,'diff')} className="text-red-600 hover:text-red-900">
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            )}
+                ))}
+              </div>
+            </section>
 
-
-          </div>
-          </div>
-
-
-          
-          </div>
+            <section className="station-readout" aria-label="Station summary">
+              <div>
+                <span className="station-readout__value">{totalMethods}</span>
+                <span className="station-readout__label">Methods</span>
+              </div>
+              <div>
+                <span className="station-readout__value">{problemOptions.length}</span>
+                <span className="station-readout__label">Systems</span>
+              </div>
+              <div>
+                <span className="station-readout__value">{countActiveHistory()}</span>
+                <span className="station-readout__label">Records</span>
+              </div>
+            </section>
+          </aside>
         </div>
 
+        <div className="airlock">
+          <span>Airlock B-02 // Telemetry Archive</span>
+        </div>
+
+        <section className="station-history">
+          <div className="station-console__header">
+            <div>
+              <span className="station-label">Equation History</span>
+              <h2>Saved Telemetry</h2>
+            </div>
+            <span className="station-console__state">{countActiveHistory()} REC</span>
+          </div>
+
+          {!pathproblem && (
+            <div className="station-empty station-empty--large">Select a problem module to inspect the latest saved equations.</div>
+          )}
+
+          {checkroot && renderHistorySection('Root Equation', 'root', equationroot, (cat) => (
+            <>
+              <InlineMath math={`f(x)=${cat.name}`} />
+              <span>Xl = {cat.xl}</span>
+              <span>Xr = {cat.xr}</span>
+            </>
+          ))}
+
+          {checklinear && renderHistorySection('Linear System', 'linear', equationlinear, (cat) => (
+            <>
+              <InlineMath math={`A=\\begin{bmatrix} ${formatMatrix(cat.A)} \\end{bmatrix}`} />
+              <InlineMath math={`B=\\begin{Bmatrix} ${formatVector(cat.B)} \\end{Bmatrix}`} />
+              {toRows(cat.x0).length > 0 && <InlineMath math={`X_0=\\begin{Bmatrix} ${formatVector(cat.x0)} \\end{Bmatrix}`} />}
+            </>
+          ))}
+
+          {checkinter && renderHistorySection('Interpolation', 'inter', equationinter, (cat) => (
+            <>
+              <InlineMath math={`X=\\begin{Bmatrix} ${formatVector(cat.X)} \\end{Bmatrix}`} />
+              <InlineMath math={`Y=\\begin{Bmatrix} ${formatVector(cat.Y)} \\end{Bmatrix}`} />
+              <InlineMath math={`X_0=${cat.x0}`} />
+            </>
+          ))}
+
+          {checkexter && (
+            <>
+              {renderHistorySection('Simple Regression', 'simple', equationsimple, (cat) => (
+                <>
+                  <InlineMath math={`X=\\begin{Bmatrix} ${formatVector(cat.X)} \\end{Bmatrix}`} />
+                  <InlineMath math={`Y=\\begin{Bmatrix} ${formatVector(cat.Y)} \\end{Bmatrix}`} />
+                  <InlineMath math={`m=${cat.m}`} />
+                </>
+              ))}
+              {renderHistorySection('Multiple Regression', 'multiple', equationmultiple, (cat) => (
+                <>
+                  <InlineMath math={`X=\\begin{Bmatrix} ${formatVector(cat.X)} \\end{Bmatrix}`} />
+                  <InlineMath math={`Y=\\begin{Bmatrix} ${formatVector(cat.Y)} \\end{Bmatrix}`} />
+                  <InlineMath math={`X_i=${cat.xi}`} />
+                </>
+              ))}
+            </>
+          )}
+
+          {checkintegrate && renderHistorySection('Integration', 'integrate', equationintegrate, (cat) => (
+            <>
+              <InlineMath math={`f(x)=${cat.fx}`} />
+              <span>a = {cat.a}</span>
+              <span>b = {cat.b}</span>
+              <span>n = {cat.n}</span>
+            </>
+          ))}
+
+          {checkdiff && renderHistorySection('Differentiation', 'diff', equationdiff, (cat) => (
+            <>
+              <InlineMath math={`f(x)=${cat.fx}`} />
+              <span>x = {cat.x}</span>
+              <span>h = {cat.h}</span>
+            </>
+          ))}
+        </section>
+      </main>
+    </div>
   );
 }

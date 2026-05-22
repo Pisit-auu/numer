@@ -1,5 +1,5 @@
 'use client'
-import { Select, Space } from 'antd';
+import StationSelect from '../../components/StationSelect';
 import { useEffect,useState } from 'react';
 import { InlineMath,BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
@@ -1054,7 +1054,8 @@ export default function Divided(){
 
     return(
 
-        <div>
+        <div className="station-shell">
+      <main className="station-main">
          <div className="text-2xl text-blue-500 text-center pt-4">Differentiation
                             <div>
                                     
@@ -1071,9 +1072,8 @@ export default function Divided(){
                                         </div>
                                         <div className=""> 
                                                           <div className="flex flex-col md:flex-row items-center justify-center m-4">
-                                                            <Select
+                                                            <StationSelect
                                                             defaultValue="-"
-                                                            style={{ width: 200 }}
                                                             onChange={handlecount}
                                                             options={[
                                                                 { value: 'first', label: 'first' },
@@ -1082,9 +1082,8 @@ export default function Divided(){
                                                                 { value: 'fourth', label: 'fourth' },
                                                             ]}
                                                             />
-                                                            <Select
+                                                            <StationSelect
                                                             defaultValue="-"
-                                                            style={{ width: 200 }}
                                                             onChange={handleoperation}
                                                             options={[
                                                                 { value: 'Forward', label: 'Forward' },
@@ -1092,9 +1091,8 @@ export default function Divided(){
                                                                 { value: 'Centered', label: 'Centered' },
                                                             ]}
                                                             />
-                                                             <Select
+                                                             <StationSelect
                                                             defaultValue="-"
-                                                            style={{ width: 200 }}
                                                             onChange={handleo}
                                                             options={O.map(item =>({
                                                                 value: item.value,
@@ -1110,15 +1108,13 @@ export default function Divided(){
                                 </form>
 
                                 <div className='mt-4'>Differentiation Equation History</div>
-                                <Select
+                                <StationSelect
                           defaultValue="-"
-                          style={{ width: 200 }}
                           onChange={handleeuation}
                           options={equation.map(item => ({
                             value: item.value,
                             label: item.label,
                           }))}
-                          className="ml-4"
                         />
 
                             </div>
@@ -1141,6 +1137,7 @@ export default function Divided(){
                 )}
         </div>
         
-        </div>
+              </main>
+    </div>
     )
 }

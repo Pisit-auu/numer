@@ -5,12 +5,12 @@ import { findx, roundToSignificantDecimals } from '../../components/function';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import axios from 'axios'
-import { Select, Space } from 'antd';
+import StationSelect from '../../components/StationSelect';
 import Navbar from  "../../components/header";
 
 const MathGraphmanypoint = dynamic(() => import('../../components/mathonepoint'), { ssr: false });
 
-export default function onepoint() {
+export default function Onepoint() {
     const [fx, setInputValue] = useState('');
     const [x0 , setX0] = useState('');
     const [toleranceinput , setTolerance] = useState('0.000001');
@@ -102,89 +102,89 @@ export default function onepoint() {
         fetchequation()
       },[])
       return (
-        <div>
+        <div className="station-shell">
           <Navbar />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 mt-4">
-            <div>{/*column 1*/}</div>
-      
-            <div className="text-center text-blue-500 text-3xl">
-              One-Point Iteration Methods
-              <div className='mt-4'>
-                <InlineMath math={`x_{n+1} = ${fx}`} />
-              </div>
-              <form onSubmit={handleSubmit}>
-                <div className="pt-4">
-                  <InlineMath math={`x_{n+1}`} />
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 p-2 rounded"
-                    value={fx}
-                    onChange={(e) => setInputValue(e.target.value)}
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="pt-2">
-                    <InlineMath math={`x_{start}`} />
-                    <input
-                      type="number"
-                      className="w-full border border-gray-300 p-2 rounded"
-                      value={x0}
-                      onChange={(e) => setX0(e.target.value)}
-                    />
+          <main className="station-main">
+            <div className="subpage-header">
+              <span className="station-label">Root Finding</span>
+              <h1>One-Point <span>Iteration</span></h1>
+              <div className="subpage-equation"><InlineMath math={`x_{n+1} = ${fx || '…'}`} /></div>
+            </div>
+
+            <div className="subpage-grid">
+              <section className="subpage-input-panel">
+                <div className="station-console__header">
+                  <div>
+                    <span className="station-label">Parameters</span>
+                    <h2>Input</h2>
                   </div>
                 </div>
-                <div className="pt-4 pb-4">
-                  Tolerance
-                  <input
-                    type="number"
-                    className="w-full border border-gray-300 p-2 rounded"
-                    value={toleranceinput}
-                    onChange={(e) => setTolerance(e.target.value)}
-                  />
+                <form onSubmit={handleSubmit} className="subpage-form">
+                  <label>
+                    <span><InlineMath math={`x_{n+1}`} /></span>
+                    <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)} placeholder="e.g. (x+1)^0.5" />
+                  </label>
+                  <label>
+                    <span><InlineMath math={`x_{start}`} /></span>
+                    <input type="number" value={x0} onChange={(e) => setX0(e.target.value)} />
+                  </label>
+                  <label>
+                    <span>Tolerance</span>
+                    <input type="number" value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                  </label>
+                  <button type="submit" className="bg-blue-500">Execute</button>
+                </form>
+              </section>
+
+              <section className="subpage-history-panel">
+                <div className="station-console__header">
+                  <div>
+                    <span className="station-label">Telemetry</span>
+                    <h2>History</h2>
+                  </div>
+                  <span className="station-console__state">{equation.length} REC</span>
                 </div>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
-              </form>
-              <div className='mt-4'>Root Equation History</div>
-              <Select
-                defaultValue="-"
-                style={{ width: 200 }}
-                onChange={handleeuation}
-                options={equation.map(item => ({
-                  value: item.value,
-                  label: item.label,
-                }))}
-                className="ml-4"
-              />
+                <StationSelect
+                  placeholder="Select equation…"
+                  onChange={handleeuation}
+                  options={equation.map(item => ({
+                    value: item.value,
+                    label: item.label,
+                  }))}
+                />
+              </section>
             </div>
-      
-            <div>{/*column 3*/}</div>
-          </div>
-      
-          <div className='bg-slate-200 m-10 p-8 h-auto'>
-            <div className="text-blue-500 text-3xl mb-4">Graph</div>
-            <div className="flex justify-center">
-              <div className="max-w-full overflow-hidden">
-                <MathGraphmanypoint dataPoints={graphData} />
+
+            {graphData.length > 0 && (
+            <div className='bg-slate-200 subpage-section'>
+              <div className="subpage-section-title">Graph</div>
+              <div className="flex justify-center">
+                <div className="max-w-full overflow-hidden">
+                  <MathGraphmanypoint dataPoints={graphData} />
+                </div>
               </div>
             </div>
-          </div>
-      
-          <div className='bg-slate-200 m-10 p-8 h-auto'>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-3 p-4'>
-              <div className="font-bold">Iter</div>
-              <div className="font-bold">Xk</div>
-              <div className="font-bold">Error</div>
+            )}
+
+            {iterations.length > 0 && (
+            <div className='bg-slate-200 subpage-section'>
+              <div className="subpage-table-header">
+                <span>Iter</span>
+                <span>Xk</span>
+                <span>Error</span>
+              </div>
+              <div className="subpage-table-body">
+                {iterations.map((iteration, index) => (
+                  <div key={index} className="subpage-table-row">
+                    <span>{index}</span>
+                    <span>{iteration.xk.toFixed(6)}</span>
+                    <span>{iteration.error.toFixed(6)}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-1 gap-3 p-4">
-              {iterations.map((iteration, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-300 rounded-md">
-                  <div>{index}</div>
-                  <div>{iteration.xk.toFixed(6)}</div>
-                  <div>{iteration.error.toFixed(6)}%</div>
-                </div>
-              ))}
-            </div>
-          </div>
+            )}
+          </main>
         </div>
       );
       

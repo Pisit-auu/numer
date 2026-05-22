@@ -5,7 +5,7 @@ import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { findLU,findL,findU,pushB,findY,findX } from '@/app/components/matrix'
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 import Navbar from  "../../components/header";
 
 export default function Inversion() {
@@ -174,8 +174,9 @@ export default function Inversion() {
  
 
     return (
-      <div>
-        <Navbar/>
+    <div className="station-shell">
+      <Navbar />
+      <main className="station-main">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
           <div className="text-center text-blue-500 text-3xl"></div>
     
@@ -247,9 +248,8 @@ export default function Inversion() {
             </div>
     
             <div className="mt-4">Linear Equation History</div>
-            <Select
+            <StationSelect
               defaultValue="size"
-              style={{ width: '100%' }}
               onChange={handlesize}
               options={size.map(item => ({
                 value: item.value,
@@ -257,9 +257,8 @@ export default function Inversion() {
               }))}
               className="mt-2"
             />
-            <Select
+            <StationSelect
               defaultValue="data"
-              style={{ width: '100%' }}
               onChange={handleeuation}
               options={equation.map(item => ({
                 value: item.value,
@@ -318,7 +317,6 @@ export default function Inversion() {
             </>
           )}
         </div>
-      </div>
-    );
-    
-}
+      </main>
+    </div>
+        );}

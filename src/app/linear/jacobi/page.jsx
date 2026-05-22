@@ -5,7 +5,7 @@ import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { caldet } from '@/app/components/matrix'
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 export default function Jacobi() {
   const [sizematrix, setSizematrix] = useState([]);
   const [toleranceinput , setTolerance] = useState('0.000001');
@@ -190,7 +190,8 @@ export default function Jacobi() {
  
 
     return (
-      <div className="container mx-auto p-4">
+      <div className="station-shell">
+      <main className="station-main">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center text-blue-500 text-3xl"></div>
     
@@ -289,15 +290,13 @@ export default function Jacobi() {
     
               <div className="mt-4">Linear Equation History</div>
               <div className="flex flex-wrap gap-4">
-                <Select
+                <StationSelect
                   defaultValue="size"
-                  style={{ width: 200 }}
                   onChange={handlesize}
                   options={size.map(item => ({ value: item.value, label: item.label }))}
                 />
-                <Select
+                <StationSelect
                   defaultValue="data"
-                  style={{ width: 200 }}
                   onChange={handleeuation}
                   options={equation.map(item => ({ value: item.value, label: item.label }))}
                 />
@@ -335,6 +334,6 @@ export default function Jacobi() {
             </div>
           </div>
         </div>
-      </div>
-    );
-}
+      </main>
+    </div>
+        );}

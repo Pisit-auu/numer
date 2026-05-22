@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
+    
 /**
  * @swagger
  * /api/inter/{id}:
@@ -40,7 +40,8 @@ const prisma = new PrismaClient();
  *         description: Intersection entry not found.
  */
 export async function GET(request, { params }) {
-    const iterId = Number(params.id);
+    const { id } = await params;
+    const iterId = Number(id);
     const findequation = await prisma.inter.findUnique({
         where: {
             id: iterId,
@@ -88,7 +89,8 @@ export async function GET(request, { params }) {
  *         description: Intersection entry not found.
  */
 export async function DELETE(request, { params }) {
-    const interId = Number(params.id);
+    const { id } = await params;
+    const interId = Number(id);
     const deleteinter = await prisma.inter.delete({
         where: { id: interId },
     });

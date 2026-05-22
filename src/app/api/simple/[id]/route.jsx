@@ -42,7 +42,8 @@ const prisma = new PrismaClient();
  *         description: Not found if no entry exists with the specified ID.
  */
 export async function GET(request, { params }) {
-    const simpleid = Number(params.id);
+    const { id } = await params;
+    const simpleid = Number(id);
     const findequation = await prisma.simple.findUnique({
         where: {
             id: simpleid,
@@ -97,7 +98,8 @@ export async function GET(request, { params }) {
  *         description: Not found if no entry exists with the specified ID.
  */
 export async function DELETE(request, { params }) {
-    const simpleid = Number(params.id);
+    const { id } = await params;
+    const simpleid = Number(id);
     const deletesimple = await prisma.simple.delete({
         where: { id: simpleid },
     });

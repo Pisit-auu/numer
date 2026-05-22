@@ -30,7 +30,8 @@ const prisma = new PrismaClient();
  *         description: Root entry not found.
  */
 export async function DELETE(request, { params }) {
-    const rootId = Number(params.id);
+    const { id } = await params;
+    const rootId = Number(id);
     const deleteroot = await prisma.root.delete({
         where: { id: rootId }
     });
@@ -74,7 +75,8 @@ export async function DELETE(request, { params }) {
  *         description: Root entry not found.
  */
 export async function GET(request, { params }) {
-    const rootId = Number(params.id);
+    const { id } = await params;
+    const rootId = Number(id);
     const findequation = await prisma.root.findUnique({
         where: {
             id: rootId

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import cors, { runMiddleware } from '../cors'; 
+import { jsonWithCors, optionsWithCors } from '../cors'; 
 const prisma = new PrismaClient();
 
 /**
@@ -74,9 +74,11 @@ const prisma = new PrismaClient();
 //     });
 //     return Response.json(newpost);
 // }
-export async function POST(request, res) {
-    await runMiddleware(request, res, cors);
-    
+export async function OPTIONS() {
+    return optionsWithCors();
+}
+
+export async function POST(request) {
     const { fx, x, h, proublem, Date } = await request.json();
     const existingPost = await prisma.diff.findUnique({
         where: {
@@ -96,7 +98,7 @@ export async function POST(request, res) {
                 Date
             }
         });
-        return Response.json(updatepost);
+        return jsonWithCors(updatepost);
     }
 
     const newpost = await prisma.diff.create({
@@ -108,7 +110,7 @@ export async function POST(request, res) {
             Date
         }
     });
-    return Response.json(newpost);
+    return jsonWithCors(newpost);
 }
 /**
  * @swagger
@@ -145,5 +147,5 @@ export async function POST(request, res) {
  */
 export async function GET(request) {
     const diff = await prisma.diff.findMany();
-    return Response.json(diff);
+    return jsonWithCors(diff);
 }

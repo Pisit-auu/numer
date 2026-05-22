@@ -5,7 +5,7 @@ import { InlineMath, BlockMath } from 'react-katex';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import { findr,findd0,findlamda,findxconju,finda0,finderror,findd,caldet } from '@/app/components/matrix'
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 import dynamic from 'next/dynamic';
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 export default function Seidel() {
@@ -193,7 +193,8 @@ export default function Seidel() {
     
 
       return (
-        <div className="p-4">
+        <div className="station-shell">
+      <main className="station-main">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Column 1 */}
             <div className="text-center text-blue-500 text-3xl md:col-span-1"></div>
@@ -318,9 +319,8 @@ export default function Seidel() {
       
               <div className="mt-4">
                 Linear Equation History
-                <Select
+                <StationSelect
                   defaultValue="size"
-                  style={{ width: '100%' }}
                   onChange={handlesize}
                   options={size.map((item) => ({
                     value: item.value,
@@ -328,9 +328,8 @@ export default function Seidel() {
                   }))}
                   className="mt-2"
                 />
-                <Select
+                <StationSelect
                   defaultValue="data"
-                  style={{ width: '100%' }}
                   onChange={handleeuation}
                   options={equation.map((item) => ({
                     value: item.value,
@@ -396,7 +395,6 @@ export default function Seidel() {
               </div>
             </div>
           </div>
-        </div>
-      );
-      
-}
+      </main>
+    </div>
+          );}

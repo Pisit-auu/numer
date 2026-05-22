@@ -5,7 +5,7 @@ import { findx, roundToSignificantDecimals } from '../../components/function';
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import axios from 'axios'
-import { Select, Space } from 'antd';
+import StationSelect from '../../components/StationSelect';
 import Navbar from  "../../components/header";
 
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
@@ -118,78 +118,97 @@ export default function Bisection() {
       }
 
       return (
-        <div>    
+        <div className="station-shell">    
             <Navbar  />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 mt-4">
-                <div>{/*column 1*/}</div>
-    
-                <div className="text-center text-blue-500 text-3xl">
-                    Bisection methods
-                    <div className='mt-4'> <InlineMath math={`f(x) = ${fx}`} /></div>
-                    <form onSubmit={handleSubmit}>
-                        <div className="pt-4 mt-4">
-                            <InlineMath math={`f(x)`} /> 
-                            <input type="text" className='w-full border rounded p-2' value={fx} onChange={(e) => setInputValue(e.target.value)} />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-4">
-                            <div className="pt-4">
-                                <InlineMath math={`X_L`} /> 
-                                <input type="number" className='w-full border rounded p-2' value={xl} onChange={(e) => setXl(e.target.value)} />
-                            </div>
-                            <div className="pt-4">
-                                <InlineMath math={`X_R`} /> 
-                                <input type="number" className='w-full border rounded p-2' value={xr} onChange={(e) => setXr(e.target.value)} />
-                            </div>
-                        </div>
-                        <div className="pt-4 pb-4">
-                            Tolerance <input type="number" className='w-full border rounded p-2' value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
-                        </div>
-                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
-                    </form>
-                    <div className='mt-4'>Root Equation History</div>
-                    <Select
-                        defaultValue="-"
-                        style={{ width: '100%', maxWidth: 200 }}
-                        onChange={handleeuation}
-                        options={equation.map(item => ({
-                            value: item.value,
-                            label: item.label,
-                        }))}
-                        className="ml-4"
-                    />
-                </div>
-    
-                <div>{/*column 2*/}</div>
-                <div>{/*column 3 (optional)*/}</div>
-            </div>
-    
-            <div className='bg-slate-200 m-10 p-8 h-auto'>
-                <div className="text-blue-500 text-3xl mb-4">Graph</div>
-                <div className="flex justify-center">
-                    <div className="max-w-full"> 
-                        <MathGraph dataPoints={graphData} />
+            <main className="station-main">
+              <div className="subpage-header">
+                <span className="station-label">Root Finding</span>
+                <h1>Bisection <span>Method</span></h1>
+                <div className="subpage-equation"><InlineMath math={`f(x) = ${fx || '…'}`} /></div>
+              </div>
+
+              <div className="subpage-grid">
+                <section className="subpage-input-panel">
+                  <div className="station-console__header">
+                    <div>
+                      <span className="station-label">Parameters</span>
+                      <h2>Input</h2>
                     </div>
-                </div>
-            </div>
-    
-            <div className='bg-slate-200 m-10 p-8 h-auto'>
-                <div className='grid grid-cols-4 gap-4 p-4'>
-                    <div>iter</div> 
-                    <div>Xk</div> 
-                    <div>yk</div>   
-                    <div>error</div>
-                </div>
-                <div className="grid grid-cols-1 gap-4 p-4">
-                    {iterations.map((iteration, index) => (
-                        <div key={index} className="grid grid-cols-4 gap-4 p-4">
-                            <div>{index}</div>
-                            <div>{iteration.xk.toFixed(6)}</div>
-                            <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
-                            <div>{iteration.error.toFixed(6)}%</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+                  </div>
+                  <form onSubmit={handleSubmit} className="subpage-form">
+                    <label>
+                      <span><InlineMath math={`f(x)`} /></span>
+                      <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)} placeholder="e.g. x^3 - x - 2" />
+                    </label>
+                    <div className="subpage-form-row">
+                      <label>
+                        <span><InlineMath math={`X_L`} /></span>
+                        <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} placeholder="0" />
+                      </label>
+                      <label>
+                        <span><InlineMath math={`X_R`} /></span>
+                        <input type="number" value={xr} onChange={(e) => setXr(e.target.value)} placeholder="1" />
+                      </label>
+                    </div>
+                    <label>
+                      <span>Tolerance</span>
+                      <input type="number" value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                    </label>
+                    <button type="submit" className="bg-blue-500">Execute</button>
+                  </form>
+                </section>
+
+                <section className="subpage-history-panel">
+                  <div className="station-console__header">
+                    <div>
+                      <span className="station-label">Telemetry</span>
+                      <h2>History</h2>
+                    </div>
+                    <span className="station-console__state">{equation.length} REC</span>
+                  </div>
+                  <StationSelect
+                      placeholder="Select equation…"
+                      onChange={handleeuation}
+                      options={equation.map(item => ({
+                          value: item.value,
+                          label: item.label,
+                      }))}
+                  />
+                </section>
+              </div>
+
+              {graphData.length > 0 && (
+              <div className='bg-slate-200 subpage-section'>
+                  <div className="subpage-section-title">Graph</div>
+                  <div className="flex justify-center">
+                      <div className="max-w-full"> 
+                          <MathGraph dataPoints={graphData} />
+                      </div>
+                  </div>
+              </div>
+              )}
+
+              {iterations.length > 0 && (
+              <div className='bg-slate-200 subpage-section'>
+                  <div className='subpage-table-header'>
+                      <span>iter</span> 
+                      <span>Xk</span> 
+                      <span>yk</span>   
+                      <span>error</span>
+                  </div>
+                  <div className="subpage-table-body">
+                      {iterations.map((iteration, index) => (
+                          <div key={index} className="subpage-table-row">
+                              <span>{index}</span>
+                              <span>{iteration.xk.toFixed(6)}</span>
+                              <span>{roundToSignificantDecimals(iteration.result).toFixed(6)}</span>
+                              <span>{iteration.error.toFixed(6)}%</span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+              )}
+            </main>
         </div>
     );
   }

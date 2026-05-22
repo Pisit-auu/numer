@@ -1,12 +1,14 @@
 import Plot from 'react-plotly.js';
+import { stationPlotColors, stationPlotLayout } from './plotTheme';
 
 const Mathsimple = ({ dataPoints,ytrue, xtrue }) => {
+  const points = Array.isArray(dataPoints) ? dataPoints : [];
   let xstart, xend, ystart, yend;
-  if (dataPoints && dataPoints.length > 0) {
+  if (points.length > 0) {
     xstart = xtrue - 0.5;
-    xend = dataPoints[dataPoints.length - 1].x + 1;
+    xend = points[points.length - 1].x + 1;
     ystart = ytrue - 1;
-    yend = dataPoints[dataPoints.length - 1].y + 10;
+    yend = points[points.length - 1].y + 10;
   } else {
     xstart = 0;
     xend = 7;
@@ -14,8 +16,8 @@ const Mathsimple = ({ dataPoints,ytrue, xtrue }) => {
     yend = 7;
   }
 
-  const xData = Array.isArray(dataPoints) ? dataPoints.map(point => point.x) : [];
-  const yData = Array.isArray(dataPoints) ? dataPoints.map(point => point.y) : [];
+  const xData = points.map(point => point.x);
+  const yData = points.map(point => point.y);
 
   const xTrueData = Array.isArray(xtrue) ? xtrue : [xtrue];
   const yTrueData = Array.isArray(ytrue) ? ytrue : [ytrue];
@@ -28,42 +30,34 @@ const Mathsimple = ({ dataPoints,ytrue, xtrue }) => {
                 y: yData,
                 mode: 'markers',
                 type: 'scatter',
-                marker: { color: 'red', size: 10 },
+                marker: { color: stationPlotColors.amber, size: 10 },
                 name: 'point', 
               }, {
                 x: xTrueData,
                 y: yTrueData,
                 mode: 'markers',
                 type: 'scatter',
-                marker: { color: 'blue', size: 10 },
+                marker: { color: stationPlotColors.blue, size: 10 },
                 name: 'result', 
               },{
                 x: xData,
                 y: yData,
                 mode: 'lines',
                 type: 'scatter',
-                marker: { color: 'black', size: 10 },
+                marker: { color: stationPlotColors.green, size: 10 },
+                line: { color: stationPlotColors.green, width: 2 },
                 name: 'regression', 
               },
         ]}
-        layout={{
-          title: 'Graph of Function',
-          height: 600, 
-          width: '100%', 
+        layout={stationPlotLayout({
           xaxis: {
             range: [xstart, xend],
-            zeroline: true,
-            zerolinecolor: 'black',
           },
           yaxis: {
             range: [ystart, yend],
-            zeroline: true,
-            zerolinecolor: 'black',
           },
           showlegend: true,
-          plot_bgcolor: 'rgba(255, 255, 255, 0.8)',
-          margin: { t: 80, b: 80, l: 80, r: 80 },
-        }}
+        })}
         config={{
           scrollZoom: true,
         }}

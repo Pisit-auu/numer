@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import 'katex/dist/katex.min.css';
 import axios from 'axios'
 import { InlineMath, BlockMath } from 'react-katex';
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 import Navbar from  "../../components/header";
 
-export default function jordan() {
+export default function Jordan() {
   const [sizematrix, setSizematrix] = useState([]);
   const [Result, setResult] = useState([]);  
   const [matrixA, setmatrixA] = useState([]);
@@ -96,9 +96,6 @@ export default function jordan() {
         console.log('error',error)
       }
     }
-    useEffect(()=>{
-      fetchsize()
-    },[])
     const fetchsize = async () => {
       try{
           const Response= await axios.get('/api/linear')
@@ -114,6 +111,9 @@ export default function jordan() {
         console.log('error',error)
       }
     }
+    useEffect(()=>{
+      fetchsize()
+    },[])
     
     const handlesize = (value)=>{
       setSizematrix(value)
@@ -231,8 +231,9 @@ export default function jordan() {
     }
 
     return (
-      <div>
-        <Navbar />
+    <div className="station-shell">
+      <Navbar />
+      <main className="station-main">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
           <div className="text-center text-blue-500 text-2xl md:text-3xl">
             {/* Additional content can go here if needed */}
@@ -307,25 +308,21 @@ export default function jordan() {
     
             {/* Linear Equation History */}
             <div className='mt-4'>Linear Equation History</div>
-            <Select
+            <StationSelect
               defaultValue="size"
-              style={{ width: '100%' }}
               onChange={handlesize}
               options={size.map(item => ({
                 value: item.value,
                 label: item.label,
               }))}
-              className="ml-4"
             />
-            <Select
+            <StationSelect
               defaultValue="data"
-              style={{ width: '100%' }}
               onChange={handleeuation}
               options={equation.map(item => ({
                 value: item.value,
                 label: item.label,
               }))}
-              className="ml-4"
             />
           </div>
     
@@ -352,8 +349,6 @@ export default function jordan() {
             </div>
           </div>
         </div>
-      </div>
-    );
-    
-    
-}
+      </main>
+    </div>
+        );}

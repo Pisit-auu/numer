@@ -6,7 +6,7 @@ import ArrayDisplay from '@/app/components/showmatrixnxn'
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 import dynamic from 'next/dynamic';
 
 export default function Simple() {
@@ -230,7 +230,8 @@ export default function Simple() {
     }
 
   return (
-    <div>
+    <div className="station-shell">
+      <main className="station-main">
               <div className="grid grid-cols-3 gap-4 p-4">
               
                       <div className="text-center text-blue-500 text-3xl">
@@ -296,24 +297,20 @@ export default function Simple() {
                                   </form>
                               </div>
                               <div className='mt-4'>Simple Equation History</div>
-                                      <Select
+                                      <StationSelect
                                 defaultValue="size"
-                                style={{ width: 200 }}
                                 onChange={handlepoint}
                                 options={point.map(item => ({
                                   value: item.value,
                                   label: item.label,
                                 }))}
-                                className="ml-4"
-                              /><Select
+                              /><StationSelect
                               defaultValue="data"
-                              style={{ width: 200 }}
                               onChange={handleeuation}
                               options={equationapi.map(item => ({
                                 value: item.value,
                                 label: item.label,
                               }))}
-                              className="ml-4"
                             />             
 
                         </div>
@@ -357,8 +354,8 @@ export default function Simple() {
                                           )}
                           </div>
                 </div>
+      </main>
     </div>
-  );
-}
+      );}
 
 

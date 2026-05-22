@@ -40,7 +40,8 @@ const prisma = new PrismaClient();
  *         description: Linear entry not found if the ID does not exist.
  */
 export async function GET(request, { params }) {
-    const linearId = Number(params.id);
+    const { id } = await params;
+    const linearId = Number(id);
     const findequation = await prisma.linear.findUnique({
         where: {
             id: linearId,
@@ -88,7 +89,8 @@ export async function GET(request, { params }) {
  *         description: Linear entry not found if the ID does not exist.
  */
 export async function DELETE(request, { params }) {
-    const linearId = Number(params.id);
+    const { id } = await params;
+    const linearId = Number(id);
     const deletelinear = await prisma.linear.delete({
         where: { id: linearId },
     });

@@ -4,7 +4,7 @@ import 'katex/dist/katex.min.css';
 import { useEffect,useState } from 'react'
 import { evaluate } from 'mathjs';
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 export default function Composite(){
     const [fx,setfx] = useState('x^2-3')
     const [a,seta] = useState(2)
@@ -112,7 +112,8 @@ const fetchequation = async () => {
   }
 return(
 
-<div>
+<div className="station-shell">
+      <main className="station-main">
     <div className="text-2xl text-blue-500 text-center pt-4">Composite Trapezoidal
         <div>
                 
@@ -131,15 +132,13 @@ return(
                 </div>
                </form>
                <div className='mt-4'>Integration Equation History</div>
-                                <Select
+                                <StationSelect
                           defaultValue="fx"
-                          style={{ width: 200 }}
                           onChange={handleeuation}
                           options={equation.map(item => ({
                             value: item.value,
                             label: item.label,
                           }))}
-                          className="ml-4"
                         />
 
 
@@ -167,6 +166,7 @@ return(
 
     </div>
 
-</div>
+      </main>
+    </div>
 )
 }

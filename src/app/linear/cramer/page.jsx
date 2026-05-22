@@ -5,7 +5,7 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import {findet } from '../../components/matrix'; 
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 import Navbar from  "../../components/header";
 
 export default function Carmer() {
@@ -175,8 +175,9 @@ export default function Carmer() {
     }
   
     return (
-      <div>
-        <Navbar />
+    <div className="station-shell">
+      <Navbar />
+      <main className="station-main">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4"> {/* Stacks on small screens, three columns on medium and up */}
           <div className="text-center text-blue-500 text-3xl"> {/* column 1 */}</div>
           <div className="text-center text-blue-500 text-3xl">Cramer {/* column 2 */}
@@ -242,25 +243,21 @@ export default function Carmer() {
               </form>
             </div>
             <div className='mt-4'>Linear Equation History</div>
-            <Select
+            <StationSelect
               defaultValue="size"
-              style={{ width: '100%' }}
               onChange={handlesize}
               options={size.map(item => ({
                 value: item.value,
                 label: item.label,
               }))}
-              className="ml-4"
             />
-            <Select
+            <StationSelect
               defaultValue="data"
-              style={{ width: '100%' }}
               onChange={handleeuation}
               options={equation.map(item => ({
                 value: item.value,
                 label: item.label,
               }))}
-              className="ml-4"
             />
           </div>
           <div className="text-center text-blue-500 text-3xl"></div>  {/* column 3 */}
@@ -294,8 +291,6 @@ export default function Carmer() {
 
 
         </div>
-      </div>
-    );
-    
-  
-}
+      </main>
+    </div>
+        );}

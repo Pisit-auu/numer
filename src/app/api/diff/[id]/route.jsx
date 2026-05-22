@@ -42,7 +42,8 @@ const prisma = new PrismaClient();
  *         description: Internal server error.
  */
 export async function GET(request, { params }) {
-    const diffid = Number(params.id);
+    const { id } = await params;
+    const diffid = Number(id);
     const findequation = await prisma.diff.findUnique({
         where: { id: diffid }
     });
@@ -90,7 +91,8 @@ export async function GET(request, { params }) {
  *         description: Internal server error.
  */
 export async function DELETE(request, { params }) {
-    const diffid = Number(params.id);
+    const { id } = await params;
+    const diffid = Number(id);
     const deletediff = await prisma.diff.delete({
         where: { id: diffid }
     });

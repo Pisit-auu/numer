@@ -4,7 +4,7 @@ import {useState,useEffect} from 'react'
 import 'katex/dist/katex.min.css';
 import { evaluate } from 'mathjs';
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 
 
 export default function Simpson(){
@@ -92,7 +92,8 @@ const fetchequation = async () => {
     setfx(Response.data.fx)
   }
 return(
-    <div>
+    <div className="station-shell">
+      <main className="station-main">
             <div>
                     <div className="text-2xl text-blue-500 text-center pt-4">Simpson Rule
                         <div> 
@@ -106,15 +107,13 @@ return(
                                     <div><button className='bg-blue-500 text-white px-4 py-2 rounded my-5'>submit</button></div>
                                 </form>
                                 <div className='mt-4'>Integration Equation History</div>
-                                <Select
+                                <StationSelect
                           defaultValue="fx"
-                          style={{ width: 200 }}
                           onChange={handleeuation}
                           options={equation.map(item => ({
                             value: item.value,
                             label: item.label,
                           }))}
-                          className="ml-4"
                         />
 
                         </div>
@@ -142,6 +141,7 @@ return(
 
 
 
+          </main>
     </div>
 )
 }

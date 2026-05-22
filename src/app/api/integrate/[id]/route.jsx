@@ -42,7 +42,8 @@ const prisma = new PrismaClient();
  *         description: Internal server error.
  */
 export async function GET(request, { params }) {
-    const integrateid = Number(params.id);
+    const { id } = await params;
+    const integrateid = Number(id);
     const findequation = await prisma.integration.findUnique({
         where: {
             id: integrateid,
@@ -92,7 +93,8 @@ export async function GET(request, { params }) {
  *         description: Internal server error.
  */
 export async function DELETE(request, { params }) {
-    const integrateid = Number(params.id);
+    const { id } = await params;
+    const integrateid = Number(id);
     const deleteintegrateid = await prisma.integration.delete({
         where: { id: integrateid },
     });

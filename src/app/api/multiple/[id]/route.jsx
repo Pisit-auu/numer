@@ -42,7 +42,8 @@ const prisma = new PrismaClient();
  *         description: Not found if no multiple entry exists with the specified ID.
  */
 export async function GET(request, { params }) {
-    const multipleid = Number(params.id);
+    const { id } = await params;
+    const multipleid = Number(id);
     const findequation = await prisma.multiple.findUnique({
         where: {
             id: multipleid,
@@ -92,7 +93,8 @@ export async function GET(request, { params }) {
  *         description: Not found if no multiple entry exists with the specified ID.
  */
 export async function DELETE(request, { params }) {
-    const multipleid = Number(params.id);
+    const { id } = await params;
+    const multipleid = Number(id);
     const deletemultiple = await prisma.multiple.delete({
         where: {
             id: multipleid,

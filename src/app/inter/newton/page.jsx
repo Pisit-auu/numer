@@ -4,7 +4,7 @@ import { evaluate, re } from 'mathjs';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 export default function Newton() {
   const [pointValue, setpointValue] = useState([]);
   const [Xinput , setXinput] = useState('');
@@ -178,7 +178,8 @@ export default function Newton() {
     
   
     return (
-      <div className="p-4">
+      <div className="station-shell">
+      <main className="station-main">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Column 1 */}
           <div className="text-center text-blue-500 text-3xl"></div>
@@ -243,25 +244,21 @@ export default function Newton() {
     
             <div className="mt-4">Inter Equation History</div>
             <div className="flex justify-center gap-4 mt-4">
-              <Select
+              <StationSelect
                 defaultValue="size"
-                style={{ width: 200 }}
                 onChange={handlepoint}
                 options={point.map(item => ({
                   value: item.value,
                   label: item.label,
                 }))}
-                className="ml-4"
               />
-              <Select
+              <StationSelect
                 defaultValue="data"
-                style={{ width: 200 }}
                 onChange={handleeuation}
                 options={equation.map(item => ({
                   value: item.value,
                   label: item.label,
                 }))}
-                className="ml-4"
               />
             </div>
           </div>
@@ -285,6 +282,6 @@ export default function Newton() {
             </div>
           </div>
         </div>
-      </div>
-    );
-}
+      </main>
+    </div>
+        );}

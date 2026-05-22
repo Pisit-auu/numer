@@ -1,15 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { findx, roundToSignificantDecimals } from '../../components/function'; 
+import { findx, roundToSignificantDecimals } from '../../components/function';
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import axios from 'axios'
-import { Select, Space } from 'antd';
+import StationSelect from '../../components/StationSelect';
 import Navbar from  "../../components/header";
 
-export default function falseposition() {
+export default function Falseposition() {
     const [fx, setInputValue] = useState('');
     const [xl , setXl] = useState('');
     const [xr , setXr] = useState('');
@@ -27,7 +27,7 @@ export default function falseposition() {
         let xr = xrNum
         let Error=1
         let i=0
-        if (isNaN(xlnum) || isNaN(xrNum) || xlnum >= xrNum||!isNaN(fx) ) {     
+        if (isNaN(xlnum) || isNaN(xrNum) || xlnum >= xrNum||!isNaN(fx) ) {
             alert('กรุณาใส่ค่า x0 และ xlass ที่ถูกต้อง และ fx');
             return;
         }
@@ -85,7 +85,7 @@ export default function falseposition() {
                 proublem:"falseposition",
                 xl:xlnum,
                 xr:xrNum,
-                Date:formattedDateTime 
+                Date:formattedDateTime
               })
           }catch(error){
             console.log('error',error)
@@ -110,87 +110,104 @@ export default function falseposition() {
             setXr(Response.data.xr)
             setInputValue(Response.data.name)
           }
-        
+
           useEffect(()=>{
             fetchequation()
           },[])
           return (
-            <div>
+            <div className="station-shell">
               <Navbar />
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-                <div>{/*column 1*/}</div>
-          
-                <div className="text-center text-blue-500 text-3xl">
-                  False Position Method
-                  <div className='mt-4 '>
-                    <InlineMath math={`f(x) = ${fx}`} />
-                  </div>
-                  <form onSubmit={handleSubmit}>
-                    <div className="pt-4">
-                      <InlineMath math={`f(x)`} />
-                      <input type="text" className='w-full' value={fx} onChange={(e) => setInputValue(e.target.value)} />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-4">
-                      <div className="pt-4">
-                        <InlineMath math={`X_L`} />
-                        <input type="number" className='w-full' value={xl} onChange={(e) => setXl(e.target.value)} />
-                      </div>
-                      <div className="pt-4">
-                        <InlineMath math={`X_R`} />
-                        <input type="number" className='w-full' value={xr} onChange={(e) => setXr(e.target.value)} />
+              <main className="station-main">
+                <div className="subpage-header">
+                  <span className="station-label">Root Finding</span>
+                  <h1>False Position <span>Method</span></h1>
+                  <div className="subpage-equation"><InlineMath math={`f(x) = ${fx || '…'}`} /></div>
+                </div>
+
+                <div className="subpage-grid">
+                  <section className="subpage-input-panel">
+                    <div className="station-console__header">
+                      <div>
+                        <span className="station-label">Parameters</span>
+                        <h2>Input</h2>
                       </div>
                     </div>
-                    <div className="pt-4 pb-4">
-                      Tolerance 
-                      <input type="number" className='w-full' value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                    <form onSubmit={handleSubmit} className="subpage-form">
+                      <label>
+                        <span><InlineMath math={`f(x)`} /></span>
+                        <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)} placeholder="e.g. x^3 - x - 2" />
+                      </label>
+                      <div className="subpage-form-row">
+                        <label>
+                          <span><InlineMath math={`X_L`} /></span>
+                          <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} />
+                        </label>
+                        <label>
+                          <span><InlineMath math={`X_R`} /></span>
+                          <input type="number" value={xr} onChange={(e) => setXr(e.target.value)} />
+                        </label>
+                      </div>
+                      <label>
+                        <span>Tolerance</span>
+                        <input type="number" value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
+                      </label>
+                      <button type="submit" className="bg-blue-500">Execute</button>
+                    </form>
+                  </section>
+
+                  <section className="subpage-history-panel">
+                    <div className="station-console__header">
+                      <div>
+                        <span className="station-label">Telemetry</span>
+                        <h2>History</h2>
+                      </div>
+                      <span className="station-console__state">{equation.length} REC</span>
                     </div>
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
-                  </form>
-                  <Select
-                    defaultValue="-"
-                    style={{ width: 200 }}
-                    onChange={handleeuation}
-                    options={equation.map(item => ({
-                      value: item.value,
-                      label: item.label,
-                    }))}
-                    className="ml-4"
-                  />
+                    <StationSelect
+                      placeholder="Select equation…"
+                      onChange={handleeuation}
+                      options={equation.map(item => ({
+                        value: item.value,
+                        label: item.label,
+                      }))}
+                    />
+                  </section>
                 </div>
-          
-                <div>{/*column 2*/}</div>
-              </div>
-          
-              <div className="bg-slate-200 m-10 p-8 h-auto">
-                <div className="text-blue-500 text-3xl mb-4">Graph</div>
-                <div className="flex justify-center">
-                  <div className="max-w-full">
-                    <MathGraph dataPoints={graphData} />
+
+                {graphData.length > 0 && (
+                <div className="bg-slate-200 subpage-section">
+                  <div className="subpage-section-title">Graph</div>
+                  <div className="flex justify-center">
+                    <div className="max-w-full">
+                      <MathGraph dataPoints={graphData} />
+                    </div>
                   </div>
                 </div>
-              </div>
-          
-              <div className="bg-slate-200 m-10 p-8 h-auto">
-                <div className="grid grid-cols-1 gap-4 p-4">
-                  <div className="grid grid-cols-4 gap-4 mb-4">
-                    <div className="font-bold">Iter</div>
-                    <div className="font-bold">Xk</div>
-                    <div className="font-bold">yk</div>
-                    <div className="font-bold">Error</div>
+                )}
+
+                {iterations.length > 0 && (
+                <div className="bg-slate-200 subpage-section">
+                  <div className="subpage-table-header">
+                    <span>Iter</span>
+                    <span>Xk</span>
+                    <span>yk</span>
+                    <span>Error</span>
                   </div>
-          
-                  {iterations.map((iteration, index) => (
-                    <div key={index} className="grid grid-cols-4 gap-4 p-4 border border-gray-300 rounded-md">
-                      <div>{index}</div>
-                      <div>{iteration.xk.toFixed(6)}</div>
-                      <div>{roundToSignificantDecimals(iteration.result).toFixed(6)}</div>
-                      <div>{iteration.error.toFixed(6)}%</div>
-                    </div>
-                  ))}
+                  <div className="subpage-table-body">
+                    {iterations.map((iteration, index) => (
+                      <div key={index} className="subpage-table-row">
+                        <span>{index}</span>
+                        <span>{iteration.xk.toFixed(6)}</span>
+                        <span>{roundToSignificantDecimals(iteration.result).toFixed(6)}</span>
+                        <span>{iteration.error.toFixed(6)}%</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                )}
+              </main>
             </div>
           );
-          
+
     }
-    
+

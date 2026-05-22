@@ -5,7 +5,7 @@ import { InlineMath, BlockMath } from 'react-katex';
 import { eliminate ,findXeliminate,insertB} from '@/app/components/matrix';
 import ArrayDisplay from '@/app/components/showmatrixnxn'
 import axios from 'axios'
-import {Select,Space} from 'antd'
+import StationSelect from '../../components/StationSelect';
 export default function Spline() {
   const [pointValue, setpointValue] = useState([]);
   const [Xinput , setXinput] = useState('');
@@ -587,7 +587,8 @@ export default function Spline() {
     
   
   return (
-    <div>
+    <div className="station-shell">
+      <main className="station-main">
               <div className="grid grid-cols-3 gap-4 p-4">
                       <div className="text-center text-blue-500 text-3xl">
                         </div>
@@ -643,24 +644,20 @@ export default function Spline() {
                                   </form>
                               </div>
                               <div className='mt-4'>Inter Equation History</div>
-                                      <Select
+                                      <StationSelect
                                 defaultValue="size"
-                                style={{ width: 200 }}
                                 onChange={handlepoint}
                                 options={point.map(item => ({
                                   value: item.value,
                                   label: item.label,
                                 }))}
-                                className="ml-4"
-                              /><Select
+                              /><StationSelect
                               defaultValue="data"
-                              style={{ width: 200 }}
                               onChange={handleeuation}
                               options={equation.map(item => ({
                                 value: item.value,
                                 label: item.label,
                               }))}
-                              className="ml-4"
                             />           
 
                         </div>
@@ -747,6 +744,7 @@ export default function Spline() {
 
                           </div>
                 </div>
+          </main>
     </div>
   );
 }
