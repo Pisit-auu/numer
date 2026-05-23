@@ -112,6 +112,10 @@ img {
   backdrop-filter: blur(14px);
 }
 
+.station-shell > .station-nav {
+  display: none;
+}
+
 .station-nav::after {
   content: "";
   position: absolute;
@@ -146,6 +150,33 @@ img {
   display: block;
   color: var(--station-blue);
   font-size: 0.72rem;
+}
+
+.station-nav__links {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.station-nav__links a {
+  border: 1px solid transparent;
+  color: var(--station-muted);
+  padding: 0.48rem 0.72rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.78rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.station-nav__links a:hover,
+.station-nav__links a.is-active {
+  border-color: var(--station-line-soft);
+  background: rgba(77, 184, 255, 0.075);
+  color: var(--station-blue);
 }
 
 .station-nav__status {
@@ -191,6 +222,55 @@ body > div:not(.station-shell):not([class*="ant-"]) > .text-2xl:first-child {
   width: min(1280px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 2rem 0 4rem;
+}
+
+.station-main > .grid:has(> .text-center.text-blue-500),
+.station-main > .grid:has(> .text-center.text-2xl),
+.station-main > .grid:has(> .text-center.text-3xl) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)) !important;
+  gap: 1.25rem !important;
+  align-items: start;
+  margin-bottom: 1.25rem;
+  padding: 0 !important;
+}
+
+.station-main > .grid:has(> .text-center.text-blue-500) > .text-center,
+.station-main > .grid:has(> .text-center.text-2xl) > .text-center,
+.station-main > .grid:has(> .text-center.text-3xl) > .text-center,
+.station-main > .text-center.text-blue-500,
+.station-main > .text-2xl.text-blue-500.text-center {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--station-line);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.045), transparent 16rem),
+    var(--station-panel);
+  box-shadow: inset 0 0 0 1px rgba(232, 238, 242, 0.035), 0 1.5rem 4rem rgba(0, 0, 0, 0.34);
+  padding: clamp(1.25rem, 3vw, 2rem) !important;
+  text-align: left !important;
+}
+
+.station-main > .grid:has(> .text-center.text-blue-500) > .text-center::before,
+.station-main > .grid:has(> .text-center.text-2xl) > .text-center::before,
+.station-main > .grid:has(> .text-center.text-3xl) > .text-center::before,
+.station-main > .text-center.text-blue-500::before,
+.station-main > .text-2xl.text-blue-500.text-center::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 2rem;
+  height: 2rem;
+  border-top: 2px solid var(--station-blue);
+  border-right: 2px solid var(--station-blue);
+  pointer-events: none;
+}
+
+.station-main > .grid:has(> .text-center.text-blue-500) > .text-center:empty,
+.station-main > .grid:has(> .text-center.text-2xl) > .text-center:empty,
+.station-main > .grid:has(> .text-center.text-3xl) > .text-center:empty {
+  display: none;
 }
 
 .station-home-main {
@@ -689,6 +769,59 @@ body > div:not(.station-shell):not([class*="ant-"]) > .text-2xl:first-child {
   overflow-x: auto;
 }
 
+.station-main > .bg-slate-200,
+.station-main > .bg-white,
+.station-main > .container {
+  margin: 0 0 1.25rem !important;
+  padding: clamp(1.25rem, 3vw, 2rem) !important;
+  color: var(--station-metal);
+}
+
+.station-main form {
+  display: grid;
+  gap: 1rem;
+}
+
+.station-main form .grid {
+  gap: 0.75rem;
+}
+
+.station-main form button,
+.station-main button.bg-blue-500 {
+  width: auto;
+  min-height: 2.65rem;
+  justify-self: start;
+  border: 1px solid var(--station-blue) !important;
+  padding: 0.62rem 1.1rem !important;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.84rem;
+  text-transform: uppercase;
+}
+
+.station-main h1,
+.station-main h2,
+.station-main h3 {
+  color: var(--station-metal);
+  font-family: var(--font-geist-mono), monospace;
+  letter-spacing: 0;
+}
+
+.station-main .font-bold {
+  font-weight: 600;
+}
+
+.station-main .text-center > div,
+.station-main .text-center > form,
+.station-main .text-2xl.text-blue-500.text-center > div,
+.station-main .text-2xl.text-blue-500.text-center > form {
+  margin-top: 1rem;
+}
+
+.station-main .text-center > .grid,
+.station-main .text-2xl.text-blue-500.text-center > .grid {
+  margin-top: 1.25rem;
+}
+
 .text-2xl,
 .text-3xl {
   letter-spacing: 0;
@@ -825,6 +958,71 @@ textarea::placeholder {
 .ant-select-item-option-selected {
   background: rgba(77, 184, 255, 0.14) !important;
   color: var(--station-blue) !important;
+}
+
+.swagger-ui {
+  color: var(--station-metal) !important;
+}
+
+.swagger-ui .info,
+.swagger-ui .scheme-container,
+.swagger-ui .opblock,
+.swagger-ui .models,
+.swagger-ui .model-box {
+  border-color: var(--station-line-soft) !important;
+  background: rgba(8, 11, 15, 0.72) !important;
+  box-shadow: none !important;
+}
+
+.swagger-ui .info .title,
+.swagger-ui h1,
+.swagger-ui h2,
+.swagger-ui h3,
+.swagger-ui h4,
+.swagger-ui h5,
+.swagger-ui .opblock-tag,
+.swagger-ui .opblock-summary-method,
+.swagger-ui .opblock-summary-path,
+.swagger-ui .opblock-summary-description,
+.swagger-ui .parameter__name,
+.swagger-ui .parameter__type,
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th,
+.swagger-ui .responses-inner h4,
+.swagger-ui .responses-inner h5 {
+  color: var(--station-metal) !important;
+  font-family: var(--font-geist-mono), monospace !important;
+}
+
+.swagger-ui p,
+.swagger-ui span,
+.swagger-ui li,
+.swagger-ui td,
+.swagger-ui th,
+.swagger-ui label,
+.swagger-ui .markdown p,
+.swagger-ui .model {
+  color: var(--station-muted) !important;
+}
+
+.swagger-ui .btn,
+.swagger-ui select {
+  border-color: var(--station-line-soft) !important;
+  background: rgba(8, 11, 15, 0.76) !important;
+  color: var(--station-metal) !important;
+  box-shadow: none !important;
+}
+
+.swagger-ui .opblock .opblock-summary {
+  border-color: var(--station-line-soft) !important;
+}
+
+.swagger-ui .opblock.opblock-get,
+.swagger-ui .opblock.opblock-post,
+.swagger-ui .opblock.opblock-put,
+.swagger-ui .opblock.opblock-delete {
+  border-color: var(--station-line-soft) !important;
+  background: rgba(77, 184, 255, 0.05) !important;
 }
 
 .katex {
@@ -1098,6 +1296,17 @@ textarea::placeholder {
     align-items: flex-start;
     flex-direction: column;
     padding: 0.9rem 1rem;
+  }
+
+  .station-nav__links {
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.1rem;
+  }
+
+  .station-nav__links a {
+    white-space: nowrap;
   }
 
   .station-nav__rail {
