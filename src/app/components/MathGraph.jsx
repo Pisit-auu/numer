@@ -1,27 +1,24 @@
+'use client';
 import Plot from 'react-plotly.js';
-import { stationPlotColors, stationPlotLayout } from './plotTheme';
+import { usePlotTheme, plotLayout, PLOT_CONFIG } from './plotTheme';
 
-const MathGraph = ({ dataPoints }) => {
+const MathGraph = ({ dataPoints, xTitle = 'x', yTitle = 'f(x)' }) => {
+  const theme = usePlotTheme();
   const points = Array.isArray(dataPoints) ? dataPoints : [];
-  let xstart, xend, ystart, yend;
 
-  if (points.length > 0) {
-    xstart = points[0].x - 0.5;
-    xend = points[points.length - 1].x + 1;
-    ystart = points[0].y - 1;
-    yend = points[points.length - 1].y + 10;
-  } else {
-    xstart = 0;
-    xend = 7;
-    ystart = 0;
-    yend = 7;
-  }
+  const xData = points.map((point) => point.x);
+  const yData = points.map((point) => point.y);
 
-  const xData = points.map(point => point.x);
-  const yData = points.map(point => point.y);
+  const pad = (values, fallback) => {
+    if (values.length === 0) return fallback;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const margin = (max - min || Math.abs(max) || 1) * 0.12;
+    return [min - margin, max + margin];
+  };
 
   return (
-    <div className="w-full h-96 md:h-[600px] "> 
+    <div className="h-80 w-full md:h-[26rem]">
       <Plot
         data={[
           {
@@ -29,21 +26,19 @@ const MathGraph = ({ dataPoints }) => {
             y: yData,
             mode: 'lines+markers',
             type: 'scatter',
-            marker: { color: stationPlotColors.amber, size: 7 },
-            line: { color: stationPlotColors.blue, width: 2, shape: 'spline' },
-          }
+            name: yTitle,
+            marker: { color: theme.series, size: 6 },
+            line: { color: theme.series, width: 2, shape: 'spline' },
+            hovertemplate: `${xTitle} = %{x}<br>${yTitle} = %{y}<extra></extra>`,
+          },
         ]}
-        layout={stationPlotLayout({
-          xaxis: {
-            range: [xstart, xend],
-          },
-          yaxis: {
-            range: [ystart, yend],
-          },
+        layout={plotLayout(theme, {
+          xaxis: { title: xTitle, range: pad(xData, [0, 7]) },
+          yaxis: { title: yTitle, range: pad(yData, [0, 7]) },
         })}
-        config={{
-          scrollZoom: true,
-        }}
+        config={PLOT_CONFIG}
+        style={{ width: '100%', height: '100%' }}
+        useResizeHandler
       />
     </div>
   );

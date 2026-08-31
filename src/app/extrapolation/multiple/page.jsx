@@ -1,416 +1,378 @@
-'use client'
-import { useState, useEffect } from 'react';
-import { evaluate } from 'mathjs';
-import { eliminate ,findXeliminate,insertB} from '@/app/components/matrix';
-import ArrayDisplay from '@/app/components/showmatrixnxn'
+'use client';
+import { useEffect, useId, useState } from 'react';
+import axios from 'axios';
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
-import axios from 'axios'
-import StationSelect from '../../components/StationSelect';
+import { BlockMath } from 'react-katex';
+import MethodShell from '../../components/MethodShell';
+import Select from '../../components/ui/Select';
+import Field from '../../components/ui/Field';
+import Alert from '../../components/ui/Alert';
+import ResultCard from '../../components/ui/ResultCard';
+import Readout from '../../components/ui/Readout';
+import IterationTable from '../../components/ui/IterationTable';
+import EmptyState from '../../components/ui/EmptyState';
+import { Play, Slope } from '../../components/ui/Icons';
 
-export default function Multiple() {
-  const [pointValue, setpointValue] = useState(2);
-  const [Xnumber , setXnumber] = useState(1);
-  const [matrixX, setMatrixX ] = useState([]);  
-  const [matrixY, setMatrixY] = useState([]);  
-  const [showfx , setshowfx] = useState('');
-  const [showfxresult , setshowfxresult] = useState('');
-  const [metexta,setmatrixa] = useState([])
-  const [matrixnewB, setMatrixnewB] = useState([]);  
-  const [matrixnewA, setMatrixnewA] = useState([]);  
-  const [matrixsetvaluefx,setmatrixvaluefx] = useState('');
-  const [keepshow,setkeepshow] = useState(false);
-  const [matrixX0, setMatrixX0] = useState([]);
-  const [equationapi,setEquationapi]= useState([]);
-  const [point,setpoint] = useState([])
-  const [number,setnumber] = useState([])
-  const handleMatrixChange = (rowIndex, colIndex, value) => {
-    const numericValue = parseFloat(value);
-    const validValue = Number.isNaN(numericValue) ? 0 : numericValue; 
-    const newMatrix = [...matrixX];
-    newMatrix[rowIndex][colIndex] = validValue;
-    setMatrixX(newMatrix);
+const MAX_POINTS = 20;
+const MAX_VARIABLES = 6;
+const round = (value) => Number(Number(value).toFixed(6));
+
+function solveSystem(M) {
+  const n = M.length;
+  for (let i = 0; i < n; i += 1) {
+    let pivot = i;
+    for (let r = i + 1; r < n; r += 1) if (Math.abs(M[r][i]) > Math.abs(M[pivot][i])) pivot = r;
+    if (Math.abs(M[pivot][i]) < 1e-12) return null;
+    [M[i], M[pivot]] = [M[pivot], M[i]];
+    for (let r = i + 1; r < n; r += 1) {
+      const factor = M[r][i] / M[i][i];
+      for (let c = i; c <= n; c += 1) M[r][c] -= factor * M[i][c];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i -= 1) {
+    x[i] = M[i][n];
+    for (let j = i + 1; j < n; j += 1) x[i] -= M[i][j] * x[j];
+    x[i] /= M[i][i];
+  }
+  return x;
+}
+
+export default function MultipleRegression() {
+  const [pointCount, setPointCount] = useState('');
+  const [variableCount, setVariableCount] = useState('2');
+  const [X, setX] = useState([]);
+  const [Y, setY] = useState([]);
+  const [query, setQuery] = useState([]);
+  const [result, setResult] = useState(null);
+  const [saved, setSaved] = useState([]);
+  const [error, setError] = useState('');
+  const [runId, setRunId] = useState(0);
+  const formId = useId();
+
+  const points = parseInt(pointCount, 10);
+  const variables = parseInt(variableCount, 10);
+
+  useEffect(() => {
+    if (!Number.isInteger(points) || points < 1 || !Number.isInteger(variables) || variables < 1) {
+      setX([]);
+      setY([]);
+      setQuery([]);
+      return;
+    }
+    setX(Array.from({ length: points }, () => Array.from({ length: variables }, () => 0)));
+    setY(Array.from({ length: points }, () => 0));
+    setQuery(Array.from({ length: variables }, () => 0));
+    setResult(null);
+  }, [points, variables]);
+
+  const fetchSaved = async () => {
+    try {
+      const { data } = await axios.get('/api/multiple');
+      setSaved(
+        data.map((row) => ({
+          value: row.id,
+          label: `${row.point} จุด${row.Date ? ` · ${row.Date}` : ''}`,
+        }))
+      );
+    } catch {
+      /* The history picker is a convenience; the page works without it. */
+    }
   };
 
-    const handleMatrixChangeB = (rowIndex, value) => {   
-      const numericValue = parseFloat(value);
-      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix Y
-      const newMatrix = [...matrixY];
-      newMatrix[rowIndex] = validValue;
-      setMatrixY(newMatrix);
-      
-    };
-    const handleMatrixChangeX0 = (rowIndex, value) => {   //อัพเดตค่าx0
-      const numericValue = parseFloat(value);
-      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; 
-      const newMatrix = [...matrixX0];
-      newMatrix[rowIndex] = validValue;
-      setMatrixX0(newMatrix);
-    };
-    useEffect(() => {    
-      const newMatrixX = Array.from({ length: pointValue }, () =>
-        Array.from({ length: Xnumber }, () => "")
-      );
-      setMatrixX(newMatrixX);
-      
-      const newMatrixY = Array.from({ length: pointValue }, () => "");
-      setMatrixY(newMatrixY);
-      const newMatrixX0 = Array.from({ length: Xnumber }, () => "");
-      setMatrixX0(newMatrixX0);
-    }, [pointValue, Xnumber]);
-    
-    const handleSubmit = async(event) => {  
-      event.preventDefault();
-      if( pointValue<2){
-        alert('point > 1')
-        return
-      }
-      if( Xnumber<1){
-        alert('number x >0')
-        return
-      }
-      if(!matrixX||!matrixY||!matrixX0){
-        alert('โปรดกรอกค่า X,Y,x0')
-        return
-      }
-      const xvalue = parseFloat(Xnumber)
-      const xi = matrixX0
-      const X = matrixX;
-      const point = parseInt(pointValue);
-      const Y = matrixY
-      const now = new Date();
-      const formattedDateTime = now.toLocaleString('th-TH', {
-        timeZone: 'Asia/Bangkok',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+  useEffect(() => {
+    fetchSaved();
+  }, []);
+
+  const loadSaved = async (id) => {
+    try {
+      const { data } = await axios.get(`/api/multiple/${id}`);
+      const rows = Array.isArray(data.X) ? data.X : [];
+      const width = Array.isArray(rows[0]) ? rows[0].length : 1;
+      setPointCount(String(data.point));
+      setVariableCount(String(width));
+      setTimeout(() => {
+        setX(rows);
+        setY(data.Y);
+        if (Array.isArray(data.xi)) setQuery(data.xi);
+        setResult(null);
+      }, 0);
+      setError('');
+    } catch {
+      setError('โหลดชุดข้อมูลที่บันทึกไว้ไม่สำเร็จ');
+    }
+  };
+
+  const number = (value) => {
+    const parsed = parseFloat(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  };
+
+  const changeX = (i, j, value) =>
+    setX((current) =>
+      current.map((row, ri) => (ri === i ? row.map((cell, ci) => (ci === j ? number(value) : cell)) : row))
+    );
+  const changeY = (i, value) => setY((current) => current.map((v, ci) => (ci === i ? number(value) : v)));
+  const changeQuery = (j, value) =>
+    setQuery((current) => current.map((v, ci) => (ci === j ? number(value) : v)));
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+
+    if (!Number.isInteger(points) || points < 2) {
+      setError('ต้องมีจุดข้อมูลอย่างน้อย 2 จุด');
+      return;
+    }
+    if (points > MAX_POINTS) {
+      setError(`รองรับสูงสุด ${MAX_POINTS} จุด`);
+      return;
+    }
+    if (!Number.isInteger(variables) || variables < 1 || variables > MAX_VARIABLES) {
+      setError(`จำนวนตัวแปรต้นต้องอยู่ระหว่าง 1 ถึง ${MAX_VARIABLES}`);
+      return;
+    }
+    if (points < variables + 1) {
+      setError(`ตัวแปรต้น ${variables} ตัว ต้องใช้จุดข้อมูลอย่างน้อย ${variables + 1} จุด`);
+      return;
+    }
+
+    /* Normal equations for y = a₀ + a₁x₁ + … + aₖxₖ, with a leading 1 column. */
+    const design = X.map((row) => [1, ...row]);
+    const width = variables + 1;
+    const system = Array.from({ length: width }, (_, i) => [
+      ...Array.from({ length: width }, (_, j) =>
+        design.reduce((sum, row) => sum + row[i] * row[j], 0)
+      ),
+      design.reduce((sum, row, r) => sum + row[i] * Y[r], 0),
+    ]);
+
+    const a = solveSystem(system);
+    if (!a) {
+      setError('ระบบสมการปกติแก้ไม่ได้ — ตัวแปรต้นอาจสัมพันธ์เชิงเส้นกันเอง ลองเพิ่มข้อมูลที่หลากหลายกว่านี้');
+      setResult(null);
+      return;
+    }
+
+    const predicted = a[0] + query.reduce((sum, value, j) => sum + a[j + 1] * value, 0);
+
+    setRunId((id) => id + 1);
+    setResult({
+      coefficients: a,
+      predicted,
+      residuals: Y.map((y, i) => {
+        const fitted = a[0] + X[i].reduce((sum, value, j) => sum + a[j + 1] * value, 0);
+        return { i, y, fitted, residual: y - fitted };
+      }),
+    });
+
+    try {
+      await axios.post('/api/multiple', {
+        proublem: 'Multiple Regression',
+        point: points,
+        xvalue: variables,
+        X,
+        Y,
+        xi: query,
+        Date: new Date().toLocaleString('th-TH', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        }),
       });
-      try{
-        await axios.post('/api/multiple',{
-          proublem:"Multiplle",
-          point,
-          xvalue,
-          X,
-          Y,
-          xi,
-          Date:formattedDateTime 
-        })
-        }catch(error){
-          console.log('error',error)
-        }
-      console.log(X)
-      console.log(Y)
-      console.log(xi)
-      multiple(X,Y,xi,xvalue)
-    };
-
-    const fetchpoint = async () => {
-      try{
-          const Response= await axios.get('/api/multiple')
-          let test = Response.data
-          let keeppoint =[]
-          let number=[]
-          for(let i=0;i< test.length;i++){
-            if(!keeppoint.some(item=>item.label===test[i].point)){
-              keeppoint.push({ value: test[i].point, label: test[i].point});
-              number.push({ value: test[i].xvalue, label: test[i].xvalue});
-            }
-          }
-          setpoint(keeppoint)
-      }catch(error){
-        console.log('error',error)
-      }
+      fetchSaved();
+    } catch {
+      /* Saving is best-effort; the result on screen is what matters. */
     }
-    const fetchenumber = async (value) => {
-      try{
-          const Response= await axios.get('/api/multiple')
-          let test = Response.data
-          let number=[]
-          for(let i=0;i< test.length;i++){
-            if(test[i].point === value){
-              number.push({value:test[i].xvalue, label:test[i].xvalue})
-            }
-          }
-          setnumber(number)
-      }catch(error){
-        console.log('error',error)
-      }
-    }
-    const fetchequation = async (xcheck,pointcheck) => {
-      try{
-          const Response= await axios.get('/api/multiple')
-          let test = Response.data
-          let eqution=[]
-          for(let i=0;i< test.length;i++){
-            if(test[i].xvalue === xcheck && test[i].point === pointcheck){
-              eqution.push({value:test[i].id, label:test[i].X})
-            }
-          }
-          setEquationapi(eqution)
-      }catch(error){
-        console.log('error',error)
-      }
-    }
-    useEffect(()=>{
-      fetchpoint()
-    },[])
+  };
 
-    const handlepoint = (value)=>{
-      setpointValue(value)
-      fetchenumber(value)
-    }
-    const handlenumber = (value)=>{
-      setXnumber(value)
-      fetchequation(value,pointValue)
-    }
-    const handleequation = async(value)=>{
-      const Response = await axios.get(`/api/multiple/${value}`)
-      const X = Response.data.X
-      const Y = Response.data.Y
-      const xi = Response.data.xi
-      setMatrixX(X)
-      setMatrixY(Y)
-      setMatrixX0(xi)
-    }
-    
+  const equation =
+    result &&
+    `y = ${round(result.coefficients[0])}${result.coefficients
+      .slice(1)
+      .map((coefficient, j) => ` ${coefficient >= 0 ? '+' : '-'} ${Math.abs(round(coefficient))}x_{${j + 1}}`)
+      .join('')}`;
 
-    function findsumx(matrix,numx0,numx1){
-      let sum=0;
-      if(numx0==0&&numx1==1){
-        for(let i=0;i<pointValue;i++){
-          sum+=matrix[i][numx0]
-        }
-      }else if(numx0==0){
-        for(let i=0;i<pointValue;i++){
-          sum+=matrix[i][numx1-1]
-        }
-      }else if(numx0==numx1){
-          for(let i=0;i<pointValue;i++){
-            sum+=Math.pow(matrix[i][numx0-1],2)
-          }
-      }
-      else{
-        for(let i=0;i<pointValue;i++){
-          sum+= matrix[i][numx1-1]*matrix[i][numx0-1]
-        }
-      }
-      return sum;
-  }
-  function findsumy(matrix,matrixy,n){
-    let sum=0;
-    if(n==0){
-      for(let i=0;i<pointValue;i++){
-        sum+= matrixy[i]
-      }
-    }else{
-      for(let i=0;i<pointValue;i++){
-        sum+= matrixy[i]*matrix[i][n-1]
-      }
-    }
-    return sum;
-}
-    function multiple(matrixX,matrixY,x,numx){
-      const newmatrix = Array.from({ length: numx+1 }, () => Array(numx+1).fill(0));
-  
-      for(let i=0;i<numx;i++){
-        for(let j=i;j<numx;j++){
-          newmatrix[i][j+1] = findsumx(matrixX,i,j+1)
-          newmatrix[j+1][i] = findsumx(matrixX,i,j+1)
-        }
-        }
-
-        
-        for(let i=0;i<=numx;i++){
-          if(i==0){
-            newmatrix[i][i]  = parseInt(pointValue);
-          }else{
-            newmatrix[i][i]  = findsumx(matrixX,i,i);
-          }
-        }
-
-        const newmatrixsumy = []
-        for(let i=0;i<=numx;i++){
-            newmatrixsumy[i] = findsumy(matrixX,matrixY,i);
-        }
-
-        let ab = insertB(newmatrix,newmatrixsumy)
-        let eliminateab = eliminate(ab)
-        
-        let findxab = findXeliminate(eliminateab)
-
-        let equation= 'a_0'
-        for(let i = 1; i <= numx; i++) {
-          if(i==1){
-            equation += `+ a_{${i}}x`;
-          }else{
-            equation += `+ a_{${i}}x_{${i}}`;
-          }
-        }
-        setshowfx(equation)
-        setMatrixnewA(newmatrix)
-        setMatrixnewB(newmatrixsumy)
-        let an= []
-        for(let i = 0; i <= numx; i++) {
-          an.push(`a${i}`);
-        }
-        setmatrixa(an)
-        let result ='f(X1'
-        for(let i = 2; i <= numx; i++) {
-          result +=`,X_{${i}}`
-        }
-          result +=') = '
-        result += `${findxab[0].result}`
-        for(let i = 1; i <= numx; i++) {
-            result += `+${findxab[i].result}*X_${i}`;
-        }
-        setshowfxresult(result)
-
-
-        let findvalue=findxab[0].result;
-        for(let i=1;i<=numx;i++){
-            findvalue+= findxab[i].result*x[i-1]  
-        }
-        setmatrixvaluefx(`f(${x})= ${findvalue}`)
-
-        setkeepshow(true);
-
-      }
   return (
-    <div className="station-shell">
-      <main className="station-main">
-              <div className="grid grid-cols-3 gap-4 p-4">
-              
-                      <div className="text-center text-blue-500 text-3xl">input   {/*column1*/}
-                                  <form onSubmit={handleSubmit}>Number of points 
-                                        <input type="number"  value={pointValue}  onChange={(e) => {setpointValue(e.target.value)}}/>
-                                        <div className="pt-4">number x
-                                            <input type="number"  value={Xnumber}  onChange={(e) => setXnumber(e.target.value)}  ></input>
-                                        </div>
+    <MethodShell
+      family="extrapolation"
+      method="multiple"
+      aside={
+        <>
+          <ResultCard title="พารามิเตอร์">
+            <form id={formId} onSubmit={handleSubmit} className="form-grid">
+              <div className="form-grid form-grid--2">
+                <Field label="จำนวนจุดข้อมูล" hint={`สูงสุด ${MAX_POINTS}`}>
+                  {(props) => (
+                    <input
+                      {...props}
+                      type="number"
+                      min="2"
+                      max={MAX_POINTS}
+                      className="input input--mono"
+                      value={pointCount}
+                      onChange={(e) => setPointCount(e.target.value)}
+                      placeholder="5"
+                    />
+                  )}
+                </Field>
+                <Field label="ตัวแปรต้น (k)" hint={`สูงสุด ${MAX_VARIABLES}`}>
+                  {(props) => (
+                    <input
+                      {...props}
+                      type="number"
+                      min="1"
+                      max={MAX_VARIABLES}
+                      className="input input--mono"
+                      value={variableCount}
+                      onChange={(e) => setVariableCount(e.target.value)}
+                    />
+                  )}
+                </Field>
+              </div>
 
-                                        <button type="submit">Submit</button>
+              {query.length > 0 && (
+                <fieldset className="field">
+                  <legend className="field__label">ค่าที่ต้องการทำนาย</legend>
+                  <div className="form-grid form-grid--2">
+                    {query.map((value, j) => (
+                      <label key={j} className="field">
+                        <span className="field__hint">{`x${j + 1}`}</span>
+                        <input
+                          type="number"
+                          step="any"
+                          className="input input--sm input--mono"
+                          value={value}
+                          onChange={(e) => changeQuery(j, e.target.value)}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
 
-                                  </form>
-                        </div>
+            </form>
+          </ResultCard>
 
-                      <div className="text-center text-blue-500 text-3xl"> Multiple {/*column2*/}
+          <div className="method-grid__secondary">
+          <ResultCard
+            title="โหลดจากบันทึก"
+            description="ชุดข้อมูลที่เคยคำนวณไว้"
+            meta={<span className="badge badge--muted">{saved.length}</span>}
+          >
+            {saved.length === 0 ? (
+              <p className="field__hint">ยังไม่มีชุดข้อมูลที่บันทึกไว้</p>
+            ) : (
+              <Select placeholder="เลือกชุดข้อมูล…" onChange={loadSaved} options={saved} />
+            )}
+          </ResultCard>
+          </div>
+        </>
+      }
+    >
+      {X.length === 0 ? (
+        <section className="card">
+          <EmptyState
+            icon={Slope}
+            title="เริ่มจากกำหนดขนาดข้อมูล"
+            description="กรอกจำนวนจุดและจำนวนตัวแปรต้นในการ์ดพารามิเตอร์ ตารางกรอกข้อมูลจะขึ้นตรงนี้"
+          />
+        </section>
+      ) : (
+        <section className="card">
+          <header className="card__header">
+            <div>
+              <h2 className="card__title">จุดข้อมูล</h2>
+              <p className="card__desc">{`${points} จุด · ตัวแปรต้น ${variables} ตัว`}</p>
+            </div>
+          </header>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  {Array.from({ length: variables }, (_, j) => (
+                    <th key={j} scope="col">{`x${j + 1}`}</th>
+                  ))}
+                  <th scope="col">y</th>
+                </tr>
+              </thead>
+              <tbody>
+                {X.map((row, i) => (
+                  <tr key={i}>
+                    <td data-index="">{i + 1}</td>
+                    {row.map((value, j) => (
+                      <td key={j}>
+                        <input
+                          type="number"
+                          step="any"
+                          className="input input--sm input--mono !h-8 w-24"
+                          value={value}
+                          aria-label={`x${j + 1} จุดที่ ${i + 1}`}
+                          onChange={(e) => changeX(i, j, e.target.value)}
+                        />
+                      </td>
+                    ))}
+                    <td>
+                      <input
+                        type="number"
+                        step="any"
+                        className="input input--sm input--mono !h-8 w-24"
+                        value={Y[i]}
+                        aria-label={`y จุดที่ ${i + 1}`}
+                        onChange={(e) => changeY(i, e.target.value)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="card__actions">
+            <button type="submit" form={formId} className="btn btn--primary">
+              <Play size={14} />
+              คำนวณ
+            </button>
+            {error && <Alert variant="error">{error}</Alert>}
+          </div>
+        </section>
+      )}
 
-                              <div> points=  {pointValue}
-                                  {matrixX.length > 0 && (  //แสดงเมื่อ matrix >0
-                                          <div className="mt-4">
-                                                  <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
-                                                      <div className='grid grid-cols-3 gap-4 p-4'>
-                                                        <div>  </div>
+      {X.length === 0 && error && <Alert variant="error">{error}</Alert>}
 
-                                                        <div>  {'X'}   </div>
-                                                        <div> {'Y'}  </div>
-                                                      </div>
+      {result && (
+        <div className="stack results-enter" key={runId}>
+          <Readout
+            description={`ทำนายที่ (${query.map((value) => round(value)).join(', ')})`}
+            items={[{ label: 'ค่าที่ทำนาย ŷ', value: round(result.predicted) }]}
+          />
 
-                                                  <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  <div>  </div>
-                                                  <div className="grid" style={{ gridTemplateColumns: `repeat(${Xnumber}, minmax(0, 1fr))`, gap: '2px' }}>
-                                                              {matrixX.map((row, rowIndex) =>
-                                                                row.map((value, colIndex) => (
-                                                                  <input
-                                                                    key={`${rowIndex}-${colIndex}`}
-                                                                    type="number"
-                                                                    value={matrixX[rowIndex][colIndex]}
-                                                                    onChange={(e) =>
-                                                                      handleMatrixChange(rowIndex, colIndex, e.target.value)
-                                                                    }
-                                                                    className="border p-2 w-full text-center"
-                                                                  />
-                                                                )))}
-                                                            </div>
+          <ResultCard
+            title="สมการถดถอย"
+            description="สัมประสิทธิ์ที่ได้จากการแก้ระบบสมการปกติ"
+          >
+            <div className="overflow-x-auto">
+              <BlockMath math={equation} />
+            </div>
+          </ResultCard>
 
-                                                              <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixY.map((value, rowIndex) => (  // รับค่าmatrix y
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="number"
-                                                                      value={value}
-                                                                      onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-full text-center"
-                                                                    />
-                                                                  ))}
-                                                              </div>
-                                                            
-                                                                    <div className='flex'>{matrixX0.map((value, rowIndex) => (
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="number"
-                                                                      value={value}
-                                                                      onChange={(e) => handleMatrixChangeX0(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-20 text-center"
-                                                                    />
-                                                                  ))}</div>
-                                                  </div>
-                                          </div>
-                                    )}
-                              </div>  
-                              <div className='mt-4'>Multiple Equation History</div>
-                                      <StationSelect
-                                defaultValue="Size"
-                                onChange={handlepoint}
-                                options={point.map(item => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))}
-                              />  <StationSelect
-                              defaultValue="Number"
-                              onChange={handlenumber}
-                              options={number.map(item => ({
-                                value: item.value,
-                                label: item.label,
-                              }))}
-                            />   <StationSelect
-                            defaultValue="Xi value"
-                            onChange={handleequation}
-                            options={equationapi.map(item => ({
-                              value: item.value,
-                              label: item.label,
-                            }))}
-                          />         
-
-                        </div>
-
-                <div className="text-center text-blue-500 text-3xl"></div>  {/*column3  */}
-              </div >
-
-
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
-                    
-
-                          <div className="grid grid-cols-1 gap-0 p-4">     solution
-                  
-
-                                          {keepshow && (
-                                                    <div>
-
-                                                      <div>
-                                                    <BlockMath math={`f(x) = ${showfx}`} />
-                                                    </div>
-
-                                                    <div className='flex justify-center items-center'><ArrayDisplay matrix={matrixnewA} /> 
-                                                    <ArrayDisplay matrix={metexta} /> 
-                                                    <BlockMath math={`=`} /> <ArrayDisplay matrix={matrixnewB} /> 
-                                                    </div>
-                                                    <div>
-                                                    <BlockMath math={`${showfxresult}`} />
-                                                    </div>
-                                                    <div>
-                                                    <BlockMath math={`${matrixsetvaluefx}`} />
-                                                    </div>
-                                                    </div>
-                                          )}
-                          </div>
-                </div>
-          </main>
-    </div>
+          <IterationTable
+            title="ค่าที่ฟิตได้เทียบกับค่าจริง"
+            columns={[
+              { key: 'i', label: '#', render: (row) => row.i + 1 },
+              { key: 'y', label: 'y จริง', render: (row) => round(row.y) },
+              { key: 'fitted', label: 'ŷ ที่ฟิตได้', render: (row) => row.fitted.toFixed(6) },
+              { key: 'residual', label: 'เศษเหลือ', render: (row) => row.residual.toFixed(6) },
+            ]}
+            rows={result.residuals}
+            markLast={false}
+          />
+        </div>
+      )}
+    </MethodShell>
   );
 }
-
-//<BlockMath math={`C_{${index}}*X_{${index}}= ${iteration.cn.toExponential(4)}*${iteration.xi} matrixnewB  showfxresult` matrixsetvaluefx } <ArrayDisplay matrix={metexta} />/> 
-

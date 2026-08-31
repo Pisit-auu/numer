@@ -1,172 +1,51 @@
-'use client'
-import { InlineMath,BlockMath } from 'react-katex';
+'use client';
 import 'katex/dist/katex.min.css';
-import { useEffect,useState } from 'react'
-import { evaluate } from 'mathjs';
-import axios from 'axios'
-import StationSelect from '../../components/StationSelect';
-export default function Composite(){
-    const [fx,setfx] = useState('x^2-3')
-    const [a,seta] = useState(2)
-    const [b,setb] = useState(6)
-    const [n,setn] = useState(3)
-    const [h,seth] = useState()
-    const [fxi,setfxi] = useState([])
-    const [show,setshow] = useState(false)
-    const [x0,setx0] = useState()
-    const [xn,setxn] = useState()
-    const [xi,setxi] = useState()
-    const [result,setresult] = useState()
-    const [equation,setEquation]= useState([]);
-    function composit(x,h,fx,n){
-        let calx = []
-        for(let i=0;i<=n;i++){
-            calx[i] = evaluate(fx,{x:x[i]})
-        }
-        
-        let fxpushxi =[]
-        let settext =''
-        for(let i=0;i<=n;i++){
-            settext = `f(x_{${i}}) = ${fx.replace(/x/g,`(${x[i]})`)} = ${calx[i]} \\quad ; x_{${i}} = ${x[i]}`
-            fxpushxi[i] = settext
-            settext =''
-        }
-        setx0(calx[0])
-        setxn(calx[n])
-        setfxi(fxpushxi)
-        settext = `${calx[1]}`
-        for(let i=2;i<=n-1;i++){
-            settext+= `+${calx[i]}`
-        }
-        setxi(settext)
-        let sum=0;
-        for(let i=1;i<=n-1;i++){
-            sum+=calx[i]
-        }
-        sum*=2;
-        sum+= calx[0]+calx[n]
-        sum = sum * (h/2);
-        setresult(sum)
-        setshow(true)
+import { BlockMath } from 'react-katex';
+import IntegrationMethodPage from '../../components/IntegrationMethodPage';
 
-    }
-const handlesubmit = async(event)=>{
-    event.preventDefault();
+const round = (value) => Number(Number(value).toFixed(6));
 
-    const newn = n
-    const h = (b-a)/newn
-    let xstart = parseFloat(a);
-    let  x = [] 
-    seth(h)
-    for(let i=0;i<=n;i++){
-        x[i] = parseFloat(xstart);
-        xstart+=h
-    }
-    const now = new Date();
-    const formattedDateTime = now.toLocaleString('th-TH', {
-      timeZone: 'Asia/Bangkok',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-    try{
-        await axios.post('/api/integrate',{
-          proublem:"Composite Trapezoidal",
-          fx,
-          a:parseFloat(a),
-          b:parseFloat(b),
-          n:parseFloat(n),
-          Date:formattedDateTime 
-        })
-        }catch(error){
-          console.log('error',error)
-        }
-    composit(x,h,fx,n)
-    
+function solve({ a, b, n, f }) {
+  const h = (b - a) / n;
+  const points = Array.from({ length: n + 1 }, (_, i) => {
+    const x = a + i * h;
+    const weight = i === 0 || i === n ? 1 : 2;
+    const y = f(x);
+    return { i, x, y, weight, contribution: weight * y };
+  });
+
+  const total = points.reduce((sum, point) => sum + point.contribution, 0);
+  const value = (h / 2) * total;
+
+  return {
+    value,
+    steps: (
+      <>
+        <BlockMath math={`I = \\frac{h}{2}\\left(f(x_0) + 2\\sum_{i=1}^{n-1} f(x_i) + f(x_n)\\right)`} />
+        <BlockMath math={`h = \\frac{${round(b)} - ${round(a)}}{${n}} = ${round(h)}`} />
+        <BlockMath math={`I = \\frac{${round(h)}}{2}\\left(${round(total)}\\right) = ${round(value)}`} />
+      </>
+    ),
+    iterations: points,
+    columns: [
+      { key: 'i', label: 'i', render: (row) => row.i },
+      { key: 'x', label: 'xᵢ', render: (row) => round(row.x) },
+      { key: 'y', label: 'f(xᵢ)', render: (row) => row.y.toFixed(6) },
+      { key: 'weight', label: 'น้ำหนัก', render: (row) => row.weight },
+      { key: 'contribution', label: 'น้ำหนัก · f(xᵢ)', render: (row) => row.contribution.toFixed(6) },
+    ],
+  };
 }
-const fetchequation = async () => {
-    try{
-        const Response= await axios.get('/api/integrate')
-        let test = Response.data
-        let keepequation = []
-        for(let i=0;i< test.length;i++){
-          keepequation.push({ value: test[i].id, label: test[i].fx});
-        }
-        setEquation(keepequation)
-    }catch(error){
-      console.log('error',error)
-    }
-  }
-  useEffect(()=>{
-    fetchequation()
-  },[])
-  const handleeuation = async (value)=>{
-    const Response = await axios.get(`/api/integrate/${value}`)
-    seta(Response.data.a)
-    setb(Response.data.b)
-    setn(Response.data.n)
-    setfx(Response.data.fx)
-  }
-return(
 
-<div className="station-shell">
-      <main className="station-main">
-    <div className="text-2xl text-blue-500 text-center pt-4">Composite Trapezoidal
-        <div>
-                
-               <form onSubmit={handlesubmit}>
-
-               <div className=""> <InlineMath math={`\\int_{${a}}^{${b}} ${fx} \\,dx`}/></div>
-                <div>
-                    <BlockMath math="f(x)" />
-                    <input type='text' className='' value={fx} onChange={(e)=>setfx(e.target.value)} />
-                    <div className='grid grid-cols-3'>
-                    <div><BlockMath math='a=x_0'/><input type='number' value={a} onChange={(e)=> seta(e.target.value)} /></div>
-                    <div><BlockMath math='b=x_1'/><input type='number' value={b} onChange={(e)=> setb(e.target.value)} /></div>
-                    <div><BlockMath math='n=' /><input type='number' value={n} onChange={(e)=> setn(e.target.value)} /></div>
-                    </div>
-                    <div><button className='bg-blue-500 text-white px-4 py-2 rounded my-5'>submit</button></div>
-                </div>
-               </form>
-               <div className='mt-4'>Integration Equation History</div>
-                                <StationSelect
-                          defaultValue="fx"
-                          onChange={handleeuation}
-                          options={equation.map(item => ({
-                            value: item.value,
-                            label: item.label,
-                          }))}
-                        />
-
-
-        </div>
-    </div>
-
-    <div className='bg-slate-200 m-10 p-8 h-auto'> solution
-        { show&& (
-                    <div>
-                            <BlockMath math='I = \frac{1}{3} (h)(f(x_0)+f(x_n)+\sum_{i=1}^{n-1}f(x_i))'/>
-                            <BlockMath math={`h= \\frac{b-a}{n}`}/>
-                            <BlockMath math={`h= \\frac{${b}-${a}}{${n}}`}/>
-                            <BlockMath math={`h= ${h}`}/>
-                            {fxi.map((fxi,index) => (
-                                    <div key={index} className='py-1'>
-                                        <BlockMath math={fxi} />
-                                    </div>
-                            ))}
-                            <BlockMath math={`I = \\frac{1}{3} (${h})(${x0}+${xn}+(2(${xi}))`}/>
-                            <BlockMath math={`\\therefore I = ${result}`}/>
-
-                     </div>
-        )}
-
-
-    </div>
-
-      </main>
-    </div>
-)
+export default function CompositeTrapezoidal() {
+  return (
+    <IntegrationMethodPage
+      method="composite"
+      problem="Composite Trapezoidal"
+      solve={solve}
+      needsN
+      nHint="ยิ่ง n มาก ยิ่งแม่นยำ"
+      stepsDescription="ซอยช่วงเป็น n ส่วนเท่ากันแล้วรวมพื้นที่คางหมูทุกชิ้น"
+    />
+  );
 }

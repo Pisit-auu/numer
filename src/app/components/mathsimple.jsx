@@ -1,66 +1,72 @@
+'use client';
 import Plot from 'react-plotly.js';
-import { stationPlotColors, stationPlotLayout } from './plotTheme';
+import { usePlotTheme, plotLayout, PLOT_CONFIG } from './plotTheme';
 
-const Mathsimple = ({ dataPoints,ytrue, xtrue }) => {
+/** Sample points, the fitted curve through them, and the predicted value. */
+const Mathsimple = ({ dataPoints, ytrue, xtrue }) => {
+  const theme = usePlotTheme();
   const points = Array.isArray(dataPoints) ? dataPoints : [];
-  let xstart, xend, ystart, yend;
-  if (points.length > 0) {
-    xstart = xtrue - 0.5;
-    xend = points[points.length - 1].x + 1;
-    ystart = ytrue - 1;
-    yend = points[points.length - 1].y + 10;
-  } else {
-    xstart = 0;
-    xend = 7;
-    ystart = 0;
-    yend = 7;
-  }
 
-  const xData = points.map(point => point.x);
-  const yData = points.map(point => point.y);
-
+  const xData = points.map((point) => point.x);
+  const yData = points.map((point) => point.y);
   const xTrueData = Array.isArray(xtrue) ? xtrue : [xtrue];
   const yTrueData = Array.isArray(ytrue) ? ytrue : [ytrue];
+
+  const pad = (values, fallback) => {
+    const clean = values.filter((v) => Number.isFinite(v));
+    if (clean.length === 0) return fallback;
+    const min = Math.min(...clean);
+    const max = Math.max(...clean);
+    const margin = (max - min || Math.abs(max) || 1) * 0.12;
+    return [min - margin, max + margin];
+  };
+
   return (
-    <div className="w-full h-96 md:h-[600px] "> 
+    <div className="h-80 w-full md:h-[26rem]">
       <Plot
         data={[
-            {
-                x: xData,
-                y: yData,
-                mode: 'markers',
-                type: 'scatter',
-                marker: { color: stationPlotColors.amber, size: 10 },
-                name: 'point', 
-              }, {
-                x: xTrueData,
-                y: yTrueData,
-                mode: 'markers',
-                type: 'scatter',
-                marker: { color: stationPlotColors.blue, size: 10 },
-                name: 'result', 
-              },{
-                x: xData,
-                y: yData,
-                mode: 'lines',
-                type: 'scatter',
-                marker: { color: stationPlotColors.green, size: 10 },
-                line: { color: stationPlotColors.green, width: 2 },
-                name: 'regression', 
-              },
+          {
+            x: xData,
+            y: yData,
+            mode: 'lines',
+            type: 'scatter',
+            line: { color: theme.series, width: 2 },
+            name: 'เส้นถดถอย',
+            hoverinfo: 'skip',
+          },
+          {
+            x: xData,
+            y: yData,
+            mode: 'markers',
+            type: 'scatter',
+            marker: { color: theme.muted, size: 7 },
+            name: 'จุดข้อมูล',
+            hovertemplate: 'x = %{x}<br>y = %{y}<extra></extra>',
+          },
+          {
+            x: xTrueData,
+            y: yTrueData,
+            mode: 'markers',
+            type: 'scatter',
+            marker: {
+              color: theme.point,
+              size: 12,
+              symbol: 'diamond',
+              line: { color: theme.surface, width: 1 },
+            },
+            name: 'ค่าที่ทำนาย',
+            hovertemplate: 'x = %{x}<br>ŷ = %{y}<extra></extra>',
+          },
         ]}
-        layout={stationPlotLayout({
-          xaxis: {
-            range: [xstart, xend],
-          },
-          yaxis: {
-            range: [ystart, yend],
-          },
+        layout={plotLayout(theme, {
+          xaxis: { title: 'x', range: pad([...xData, ...xTrueData], [0, 7]) },
+          yaxis: { title: 'y', range: pad([...yData, ...yTrueData], [0, 7]) },
           showlegend: true,
+          margin: { t: 16, b: 60, l: 52, r: 16 },
         })}
-        config={{
-          scrollZoom: true,
-        }}
+        config={PLOT_CONFIG}
+        style={{ width: '100%', height: '100%' }}
+        useResizeHandler
       />
     </div>
   );
