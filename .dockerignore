@@ -1,0 +1,26 @@
+# Never let secrets into the build context. Without this, COPY . . bakes .env
+# into the image and `prisma generate` picks it up at build time.
+.env
+.env.*
+
+# Rebuilt inside the image; copying them in is slow and can shadow the build.
+node_modules
+.next
+out
+build
+
+# Not part of the running app.
+.git
+.github
+.gitignore
+.claude
+.impeccable
+Dockerfile
+.dockerignore
+docker-compose.yml
+README.md
+DESIGN.md
+PRODUCT.md
+npm-debug.log*
+yarn-error.log*
+*.tsbuildinfo
