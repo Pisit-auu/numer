@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-radius",
+        "value": "1px)",
+        "createdAt": "2026-08-31T16:33:17.992Z",
+        "reason": "detector regex artifact: the value is calc(var(--radius-lg) - 1px) on the card footer, an inner-radius correction, not a radius choice"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "0.25rem",
+        "createdAt": "2026-08-31T16:33:18.066Z",
+        "reason": "documenter recorded the 4px keycap corner in DESIGN.md Shapes as a deliberate off-scale exception imitating a physical key, with do-not-reuse-elsewhere; one use does not earn a scale step"
+      }
+    ]
+  }
+}

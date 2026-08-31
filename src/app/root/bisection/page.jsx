@@ -1,215 +1,59 @@
-'use client'
-import { useState, useEffect } from 'react';
+'use client';
 import dynamic from 'next/dynamic';
-import { findx, roundToSignificantDecimals } from '../../components/function'; 
 import { InlineMath } from 'react-katex';
-import 'katex/dist/katex.min.css';
-import axios from 'axios'
-import StationSelect from '../../components/StationSelect';
-import Navbar from  "../../components/header";
+import { findx } from '../../components/function';
+import RootMethodPage from '../../components/RootMethodPage';
 
 const MathGraph = dynamic(() => import('../../components/MathGraph'), { ssr: false });
 
-export default function Bisection() {
-    const [fx, setInputValue] = useState('');
-    const [xl , setXl] = useState('');
-    const [xr , setXr] = useState('');
-    const [toleranceinput , setTolerance] = useState('0.000001');
-    const [iterations, setIterations] = useState([]);
-    const [graphData, setGraphData] = useState([]);
-    const [equation,setEquation]= useState([]);
+/* Without a cap a non-converging f(x) would spin the tab forever. */
+const MAX_ITERATIONS = 200;
 
-    function bisection(fx, xlnum, xrNum, tolerance) {
-        const newIterations = [];
-        let xm=0
-        let xl = xlnum
-        let xr = xrNum
-        let Error=1
-        let i=0
-        if (isNaN(xlnum) || isNaN(xrNum) || xlnum >= xrNum ||!isNaN(fx)) {
-            alert('กรุณาใส่ค่า x0 และ xlass ที่ถูกต้อง และ fx');
-            return;
-        }
-        if (tolerance <= 0) {
-            alert('ค่าความทนทานต้องเป็นค่าที่มากกว่าศูนย์');
-            return;
-        }
-        if(findx(fx,xl)*findx(fx,xr)>0){
-            alert('fxl*fxr ต้อง <0');
-            return;
-        }
-        while (Error > tolerance) {
-            xm = (xl+xr)/2.0
-            if(findx(fx,xm)*findx(fx,xr)>0){
-                xr=xm
-            }else if(findx(fx,xm)*findx(fx,xr)<0){
-                xl=xm
-            }
-            Error = Math.abs(findx(fx, xm));
-            if (!newIterations.some(iter => iter.iter === i)) {
-            newIterations.push({ xk: xm, result: findx(fx,xm), error: Error * 100 });
-            }
-
-            i++;
-
-        }
-        const graphPoints = newIterations.map(iter => ({
-            x: iter.xk,
-            y: iter.result
-          }));
-          setGraphData(graphPoints);
-          graphPoints.sort((a, b) => a.x - b.x);
-        setIterations(newIterations);
-        
-    }
-    const handleSubmit = async(event) => {
-        event.preventDefault();
-        const newEquation = fx;
-        let xlnum = parseFloat(xl);
-        let xrNum = parseFloat(xr);
-        const tolerance = parseFloat(toleranceinput)
-        bisection(newEquation,xlnum,xrNum,tolerance)
-        const now = new Date();
-        const formattedDateTime = now.toLocaleString('th-TH', {
-          timeZone: 'Asia/Bangkok',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        });
-        try{
-          await axios.post('/api/root',{
-            name:fx,
-            proublem:"bisection",
-            xl:xlnum,
-            xr:xrNum,
-            Date:formattedDateTime 
-          })
-          }catch(error){
-            console.log('error',error)
-          }
-          
-        
-        
-      };
-      const fetchequation = async () => {
-        try{
-            const Response= await axios.get('/api/root')
-            let test = Response.data
-            let keepequation = []
-            for(let i=0;i< test.length;i++){
-              keepequation.push({ value: test[i].id, label: test[i].name});
-            }
-            setEquation(keepequation)
-        }catch(error){
-          console.log('error',error)
-        }
-      }
-      useEffect(()=>{
-        fetchequation()
-      },[])
-      const handleeuation = async (value)=>{
-        const Response = await axios.get(`/api/root/${value}`)
-        setXl(Response.data.xl)
-        setXr(Response.data.xr)
-        setInputValue(Response.data.name)
-      }
-
-      return (
-        <div className="station-shell">    
-            <Navbar  />
-            <main className="station-main">
-              <div className="subpage-header">
-                <span className="station-label">Root Finding</span>
-                <h1>Bisection <span>Method</span></h1>
-                <div className="subpage-equation"><InlineMath math={`f(x) = ${fx || '…'}`} /></div>
-              </div>
-
-              <div className="subpage-grid">
-                <section className="subpage-input-panel">
-                  <div className="station-console__header">
-                    <div>
-                      <span className="station-label">Parameters</span>
-                      <h2>Input</h2>
-                    </div>
-                  </div>
-                  <form onSubmit={handleSubmit} className="subpage-form">
-                    <label>
-                      <span><InlineMath math={`f(x)`} /></span>
-                      <input type="text" value={fx} onChange={(e) => setInputValue(e.target.value)} placeholder="e.g. x^3 - x - 2" />
-                    </label>
-                    <div className="subpage-form-row">
-                      <label>
-                        <span><InlineMath math={`X_L`} /></span>
-                        <input type="number" value={xl} onChange={(e) => setXl(e.target.value)} placeholder="0" />
-                      </label>
-                      <label>
-                        <span><InlineMath math={`X_R`} /></span>
-                        <input type="number" value={xr} onChange={(e) => setXr(e.target.value)} placeholder="1" />
-                      </label>
-                    </div>
-                    <label>
-                      <span>Tolerance</span>
-                      <input type="number" value={toleranceinput} onChange={(e) => setTolerance(e.target.value)} />
-                    </label>
-                    <button type="submit" className="bg-blue-500">Execute</button>
-                  </form>
-                </section>
-
-                <section className="subpage-history-panel">
-                  <div className="station-console__header">
-                    <div>
-                      <span className="station-label">Telemetry</span>
-                      <h2>History</h2>
-                    </div>
-                    <span className="station-console__state">{equation.length} REC</span>
-                  </div>
-                  <StationSelect
-                      placeholder="Select equation…"
-                      onChange={handleeuation}
-                      options={equation.map(item => ({
-                          value: item.value,
-                          label: item.label,
-                      }))}
-                  />
-                </section>
-              </div>
-
-              {graphData.length > 0 && (
-              <div className='bg-slate-200 subpage-section'>
-                  <div className="subpage-section-title">Graph</div>
-                  <div className="flex justify-center">
-                      <div className="max-w-full"> 
-                          <MathGraph dataPoints={graphData} />
-                      </div>
-                  </div>
-              </div>
-              )}
-
-              {iterations.length > 0 && (
-              <div className='bg-slate-200 subpage-section'>
-                  <div className='subpage-table-header'>
-                      <span>iter</span> 
-                      <span>Xk</span> 
-                      <span>yk</span>   
-                      <span>error</span>
-                  </div>
-                  <div className="subpage-table-body">
-                      {iterations.map((iteration, index) => (
-                          <div key={index} className="subpage-table-row">
-                              <span>{index}</span>
-                              <span>{iteration.xk.toFixed(6)}</span>
-                              <span>{roundToSignificantDecimals(iteration.result).toFixed(6)}</span>
-                              <span>{iteration.error.toFixed(6)}%</span>
-                          </div>
-                      ))}
-                  </div>
-              </div>
-              )}
-            </main>
-        </div>
-    );
+function solve({ fx, values: { xl, xr }, tolerance }) {
+  if (xl >= xr) return { error: 'xl ต้องน้อยกว่า xr' };
+  if (findx(fx, xl) * findx(fx, xr) > 0) {
+    return { error: 'ช่วงนี้ไม่คร่อมราก — f(xl) × f(xr) ต้องน้อยกว่าศูนย์ ลองเปลี่ยนช่วง' };
   }
-    
+
+  const rows = [];
+  let left = xl;
+  let right = xr;
+  let residual = 1;
+  let i = 0;
+
+  while (residual > tolerance && i < MAX_ITERATIONS) {
+    const mid = (left + right) / 2;
+    const fMid = findx(fx, mid);
+    if (fMid * findx(fx, right) > 0) right = mid;
+    else if (fMid * findx(fx, right) < 0) left = mid;
+    residual = Math.abs(fMid);
+    rows.push({ xk: mid, result: fMid, error: residual * 100 });
+    i += 1;
+  }
+
+  return {
+    rows,
+    graph: [...rows].sort((a, b) => a.xk - b.xk).map((row) => ({ x: row.xk, y: row.result })),
+    warning:
+      i >= MAX_ITERATIONS
+        ? `หยุดที่ ${MAX_ITERATIONS} รอบเพราะยังไม่ลู่เข้าถึง tolerance ที่ตั้งไว้ ลองเพิ่มค่า tolerance หรือแคบช่วง [xl, xr] ลง`
+        : '',
+  };
+}
+
+export default function Bisection() {
+  return (
+    <RootMethodPage
+      method="bisection"
+      problem="bisection"
+      solve={solve}
+      Graph={MathGraph}
+      answerLabel="ราก (xm)"
+      graphDescription="ค่า xm ของแต่ละรอบเทียบกับ f(xm)"
+      fields={[
+        { key: 'xl', apiKey: 'xl', label: <InlineMath math="x_l" />, plain: 'xl', placeholder: '0' },
+        { key: 'xr', apiKey: 'xr', label: <InlineMath math="x_r" />, plain: 'xr', placeholder: '2' },
+      ]}
+    />
+  );
+}

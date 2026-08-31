@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T00:00:00Z",
+  "title": "Design System: Numerical Methods",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "hsl(0 0% 100%)",
+        "darkCanonical": "hsl(240 10% 3.9%)",
+        "cssVar": "--background",
+        "tonalRamp": ["hsl(240 10% 3.9%)", "hsl(240 8% 6.5%)", "hsl(240 6% 10%)", "hsl(240 4% 17%)", "hsl(240 4% 30%)", "hsl(240 4% 55%)", "hsl(240 5% 90%)", "hsl(0 0% 100%)"]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Ink Text",
+        "canonical": "hsl(240 10% 3.9%)",
+        "darkCanonical": "hsl(0 0% 98%)",
+        "cssVar": "--foreground",
+        "contrastOnBackground": { "light": "19:1", "dark": "19:1" },
+        "tonalRamp": ["hsl(240 10% 4%)", "hsl(240 10% 12%)", "hsl(240 10% 22%)", "hsl(240 10% 34%)", "hsl(240 10% 48%)", "hsl(240 10% 64%)", "hsl(240 10% 80%)", "hsl(240 10% 95%)"]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Card Surface",
+        "canonical": "hsl(0 0% 100%)",
+        "darkCanonical": "hsl(240 8% 6.5%)",
+        "cssVar": "--card",
+        "tonalRamp": ["hsl(240 8% 6.5%)", "hsl(240 8% 12%)", "hsl(240 8% 22%)", "hsl(240 8% 34%)", "hsl(240 8% 50%)", "hsl(240 8% 68%)", "hsl(240 8% 86%)", "hsl(0 0% 100%)"]
+      },
+      "elevated": {
+        "role": "neutral",
+        "displayName": "Elevated Control Surface",
+        "canonical": "hsl(0 0% 100%)",
+        "darkCanonical": "hsl(240 6% 10%)",
+        "cssVar": "--elevated",
+        "purpose": "Fill for secondary and destructive buttons; the only surface that stays lighter than the card in dark mode.",
+        "tonalRamp": ["hsl(240 6% 10%)", "hsl(240 6% 16%)", "hsl(240 6% 25%)", "hsl(240 6% 38%)", "hsl(240 6% 52%)", "hsl(240 6% 70%)", "hsl(240 6% 88%)", "hsl(0 0% 100%)"]
+      },
+      "popover": {
+        "role": "neutral",
+        "displayName": "Overlay Surface",
+        "canonical": "hsl(0 0% 100%)",
+        "darkCanonical": "hsl(240 8% 7.5%)",
+        "cssVar": "--popover",
+        "tonalRamp": ["hsl(240 8% 7.5%)", "hsl(240 8% 14%)", "hsl(240 8% 24%)", "hsl(240 8% 36%)", "hsl(240 8% 52%)", "hsl(240 8% 70%)", "hsl(240 8% 88%)", "hsl(0 0% 100%)"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Wash",
+        "canonical": "hsl(240 4.8% 95.9%)",
+        "darkCanonical": "hsl(240 4% 14%)",
+        "cssVar": "--muted",
+        "purpose": "Table header, card footer, keycap, skeleton, empty-state plate.",
+        "tonalRamp": ["hsl(240 4.8% 14%)", "hsl(240 4.8% 22%)", "hsl(240 4.8% 34%)", "hsl(240 4.8% 48%)", "hsl(240 4.8% 62%)", "hsl(240 4.8% 78%)", "hsl(240 4.8% 90%)", "hsl(240 4.8% 96%)"]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Quiet Text",
+        "canonical": "hsl(240 3.8% 46.1%)",
+        "darkCanonical": "hsl(240 5% 66%)",
+        "cssVar": "--muted-foreground",
+        "contrastOnBackground": { "light": "4.83:1", "dark": "8.05:1" },
+        "purpose": "The contrast floor of the system. Descriptions, hints, table headers, breadcrumbs, inactive nav, row index.",
+        "tonalRamp": ["hsl(240 3.8% 15%)", "hsl(240 3.8% 25%)", "hsl(240 3.8% 36%)", "hsl(240 3.8% 46%)", "hsl(240 3.8% 58%)", "hsl(240 3.8% 70%)", "hsl(240 3.8% 84%)", "hsl(240 3.8% 95%)"]
+      },
+      "accent": {
+        "role": "neutral",
+        "displayName": "Hover Wash",
+        "canonical": "hsl(240 4.8% 95.9%)",
+        "darkCanonical": "hsl(240 4% 16%)",
+        "cssVar": "--accent",
+        "purpose": "The hover and keyboard-active state of every row, nav link, ghost button and list option.",
+        "tonalRamp": ["hsl(240 4.8% 16%)", "hsl(240 4.8% 24%)", "hsl(240 4.8% 36%)", "hsl(240 4.8% 50%)", "hsl(240 4.8% 64%)", "hsl(240 4.8% 79%)", "hsl(240 4.8% 90%)", "hsl(240 4.8% 96%)"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(240 5.9% 90%)",
+        "darkCanonical": "hsl(240 4% 17%)",
+        "cssVar": "--border",
+        "purpose": "Applied globally as the default border-color, so any element that turns a border on is already correct.",
+        "tonalRamp": ["hsl(240 5.9% 15%)", "hsl(240 5.9% 25%)", "hsl(240 5.9% 38%)", "hsl(240 5.9% 52%)", "hsl(240 5.9% 66%)", "hsl(240 5.9% 80%)", "hsl(240 5.9% 90%)", "hsl(240 5.9% 96%)"]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Control Stroke",
+        "canonical": "hsl(240 5.9% 90%)",
+        "darkCanonical": "hsl(240 4% 20%)",
+        "cssVar": "--input",
+        "tonalRamp": ["hsl(240 5.9% 15%)", "hsl(240 5.9% 25%)", "hsl(240 5.9% 38%)", "hsl(240 5.9% 52%)", "hsl(240 5.9% 66%)", "hsl(240 5.9% 80%)", "hsl(240 5.9% 90%)", "hsl(240 5.9% 96%)"]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Ink",
+        "canonical": "hsl(240 5.9% 10%)",
+        "darkCanonical": "hsl(0 0% 98%)",
+        "cssVar": "--primary",
+        "purpose": "The one committing button per surface, and the header brand mark. Inverts wholesale in dark mode.",
+        "tonalRamp": ["hsl(240 5.9% 10%)", "hsl(240 5.9% 18%)", "hsl(240 5.9% 28%)", "hsl(240 5.9% 40%)", "hsl(240 5.9% 54%)", "hsl(240 5.9% 70%)", "hsl(240 5.9% 86%)", "hsl(240 5.9% 96%)"]
+      },
+      "brand": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "hsl(221 83% 53%)",
+        "darkCanonical": "hsl(213 94% 68%)",
+        "cssVar": "--brand",
+        "purpose": "The single accent: links, focus ring, info alert, selection wash, caret, primary chart series. Never a button fill.",
+        "tonalRamp": ["hsl(221 83% 15%)", "hsl(221 83% 24%)", "hsl(221 83% 34%)", "hsl(221 83% 44%)", "hsl(221 83% 53%)", "hsl(221 83% 68%)", "hsl(221 83% 82%)", "hsl(221 83% 96%)"]
+      },
+      "brand-muted": {
+        "role": "primary",
+        "displayName": "Signal Wash",
+        "canonical": "hsl(221 83% 96%)",
+        "darkCanonical": "hsl(215 60% 16%)",
+        "cssVar": "--brand-muted",
+        "purpose": "Ground for the info alert and the brand badge.",
+        "tonalRamp": ["hsl(221 60% 16%)", "hsl(221 60% 24%)", "hsl(221 60% 34%)", "hsl(221 60% 46%)", "hsl(221 60% 60%)", "hsl(221 70% 78%)", "hsl(221 80% 90%)", "hsl(221 83% 96%)"]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Converged Green",
+        "canonical": "hsl(142 71% 33%)",
+        "darkCanonical": "hsl(142 69% 58%)",
+        "cssVar": "--success",
+        "purpose": "The final row of an iteration table, the success alert, and the plotted-point chart series.",
+        "tonalRamp": ["hsl(142 71% 12%)", "hsl(142 71% 20%)", "hsl(142 71% 27%)", "hsl(142 71% 33%)", "hsl(142 71% 45%)", "hsl(142 69% 58%)", "hsl(142 60% 80%)", "hsl(138 76% 96%)"]
+      },
+      "success-muted": {
+        "role": "tertiary",
+        "displayName": "Converged Wash",
+        "canonical": "hsl(138 76% 96%)",
+        "darkCanonical": "hsl(142 40% 14%)",
+        "cssVar": "--success-muted",
+        "tonalRamp": ["hsl(140 40% 14%)", "hsl(140 40% 22%)", "hsl(140 40% 32%)", "hsl(140 45% 45%)", "hsl(140 55% 60%)", "hsl(140 65% 78%)", "hsl(139 72% 90%)", "hsl(138 76% 96%)"]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Fault Red",
+        "canonical": "hsl(0 72% 46%)",
+        "darkCanonical": "hsl(0 84% 68%)",
+        "cssVar": "--destructive",
+        "purpose": "Invalid input, field errors, the error alert, the delete action, and the reference chart series.",
+        "tonalRamp": ["hsl(0 72% 15%)", "hsl(0 72% 24%)", "hsl(0 72% 35%)", "hsl(0 72% 46%)", "hsl(0 78% 58%)", "hsl(0 84% 68%)", "hsl(0 84% 85%)", "hsl(0 86% 97%)"]
+      },
+      "destructive-muted": {
+        "role": "tertiary",
+        "displayName": "Fault Wash",
+        "canonical": "hsl(0 86% 97%)",
+        "darkCanonical": "hsl(0 45% 16%)",
+        "cssVar": "--destructive-muted",
+        "tonalRamp": ["hsl(0 45% 16%)", "hsl(0 45% 24%)", "hsl(0 50% 34%)", "hsl(0 58% 47%)", "hsl(0 70% 62%)", "hsl(0 80% 80%)", "hsl(0 85% 91%)", "hsl(0 86% 97%)"]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Page Title", "purpose": "One per page: the method name or the directory heading. This is the base value a phone reader sees." },
+      "title-lg": { "displayName": "Page Title (large)", "purpose": "The same role from 768px up. The only responsive type step in the system besides the dense-breakpoint table shrink." },
+      "heading": { "displayName": "Card Title", "purpose": "The title bar of every card, and the command palette's search input. Deliberately small - a card is a container, not a chapter." },
+      "body": { "displayName": "Lead", "purpose": "The inherited base size: the paragraph under a page title, in Quiet Text, capped at 60ch with 1.65 leading for Thai, plus the equation plate." },
+      "control": { "displayName": "Control", "purpose": "The interactive size of the entire system - buttons, inputs, select triggers, sidebar links, index rows, palette items. If a user can click or type into it, it is 14px." },
+      "label": { "displayName": "Label", "purpose": "Field labels, card descriptions, breadcrumbs, alerts, index descriptions, table headers - the 13px annotation workhorse, and the most-used size in the stylesheet." },
+      "caption": { "displayName": "Caption", "purpose": "Hints, badges, timestamps, readout labels, sidebar and palette group labels, palette metadata." },
+      "data": { "displayName": "Table Data", "purpose": "Iteration table cells in Geist Mono with tabular numerals; shrinks to 0.71875rem below 32.5rem. The half-step below Label is deliberate - mono runs wider than sans at the same nominal size." },
+      "keycap": { "displayName": "Keycap", "purpose": "The smallest type in the system, used only inside a kbd. A keyboard hint is a legend, not text to read." },
+      "readout": { "displayName": "Answer Readout", "purpose": "The computed answer stated once at the top of the results stack - the only place a figure is set large." }
+    },
+    "shadows": [
+      { "name": "resting", "value": "0 1px 2px 0 hsl(240 6% 10% / 0.05)", "darkValue": "0 1px 2px 0 hsl(0 0% 0% / 0.4)", "purpose": "Cards, inputs, select triggers, primary and secondary buttons. Keeps a white card from dissolving into a white page." },
+      { "name": "raised", "value": "0 1px 2px -1px hsl(240 6% 10% / 0.1), 0 1px 3px 0 hsl(240 6% 10% / 0.1)", "darkValue": "0 1px 2px -1px hsl(0 0% 0% / 0.5), 0 1px 3px 0 hsl(0 0% 0% / 0.5)", "purpose": "Defined tier for detached panels; currently unused by shipping surfaces." },
+      { "name": "floating", "value": "0 2px 4px -2px hsl(240 6% 10% / 0.1), 0 4px 6px -1px hsl(240 6% 10% / 0.1)", "darkValue": "0 2px 4px -2px hsl(0 0% 0% / 0.5), 0 4px 6px -1px hsl(0 0% 0% / 0.5)", "purpose": "The mobile navigation drawer." },
+      { "name": "overlay", "value": "0 4px 6px -4px hsl(240 6% 10% / 0.1), 0 10px 15px -3px hsl(240 6% 10% / 0.1)", "darkValue": "0 4px 6px -4px hsl(0 0% 0% / 0.6), 0 10px 15px -3px hsl(0 0% 0% / 0.6)", "purpose": "The command palette and the select menu - the two surfaces that leave the page plane." },
+      { "name": "focus-ring", "value": "0 0 0 3px hsl(221 83% 53% / 0.2)", "purpose": "Input and select-trigger focus, paired with a border shift to the ring colour. Turns red at 20% alpha on an invalid field." }
+    ],
+    "motion": [
+      { "name": "state", "value": "120ms ease", "purpose": "Every interactive state change: background, border, colour, opacity. Never transform." },
+      { "name": "ease-entrance", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The one entrance curve, shared by the palette, the select menu, the chevron rotation and the results stack." },
+      { "name": "pop-in", "value": "140-160ms cubic-bezier(0.16, 1, 0.3, 1) from translateY(-4px) scale(0.98)", "purpose": "Floating panels arriving: select menu at 140ms, command palette at 160ms." },
+      { "name": "results-rise", "value": "420ms cubic-bezier(0.16, 1, 0.3, 1) from translateY(0.875rem) blur(2px)", "purpose": "The single authored moment: the results stack arriving after a calculation." },
+      { "name": "pulse", "value": "1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite", "purpose": "Skeleton placeholders." },
+      { "name": "reduced-motion", "value": "prefers-reduced-motion: reduce collapses all durations to 0.01ms", "purpose": "Global honour of the OS setting, including scroll-behavior." }
+    ],
+    "breakpoints": [
+      { "name": "dense", "value": "max-width: 32.5rem", "purpose": "Compresses iteration-table and matrix density for phones." },
+      { "name": "sm", "value": "640px", "purpose": "Header search trigger appears; command palette gains its 12vh top offset." },
+      { "name": "md", "value": "768px", "purpose": "Page padding and page-title step up." },
+      { "name": "lg", "value": "1024px", "purpose": "The 16.5rem method sidebar appears; the mobile drawer retires." },
+      { "name": "method-split", "value": "1100px", "purpose": "Method pages split into a 21rem sticky parameter column plus a fluid results column." },
+      { "name": "xl", "value": "1280px", "purpose": "The home directory becomes a two-column multi-column layout." }
+    ],
+    "layout": [
+      { "name": "header-h", "value": "3.5rem", "purpose": "Sticky translucent header height; every sticky offset is computed from it." },
+      { "name": "sidebar-w", "value": "16.5rem", "purpose": "The method sidebar listing all 25 methods." },
+      { "name": "page-max", "value": "68rem", "purpose": "Default content column." },
+      { "name": "page-max-wide", "value": "84rem", "purpose": "Method pages and the directory - extra width goes to tables, not prose." },
+      { "name": "aside-w", "value": "21rem", "purpose": "The parameter column on a split method page." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one committing action on a surface - always the button that runs the calculation.",
+      "html": "<button class=\"ds-btn ds-btn-primary\"><svg class=\"ds-icon\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 4.5 19 12 7 19.5Z\"/></svg>คำนวณ</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; border: 1px solid transparent; border-radius: var(--radius-sm, 0.375rem); padding-inline: 0.875rem; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 550; white-space: nowrap; cursor: pointer; transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease; } .ds-btn-primary { background-color: hsl(var(--primary, 240 5.9% 10%)); color: hsl(var(--primary-foreground, 0 0% 98%)); box-shadow: var(--shadow-xs, 0 1px 2px 0 hsl(240 6% 10% / 0.05)); } .ds-btn-primary:hover { background-color: hsl(var(--primary, 240 5.9% 10%) / 0.88); } .ds-btn-primary:focus-visible { outline: 2px solid hsl(var(--ring, 221 83% 53%)); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Bordered neutral action - reset, load, and every non-committing control beside the primary.",
+      "html": "<button class=\"ds-btn ds-btn-secondary\">โหลดค่าเดิม</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; border: 1px solid hsl(var(--border, 240 5.9% 90%)); border-radius: var(--radius-sm, 0.375rem); padding-inline: 0.875rem; background-color: hsl(var(--elevated, 0 0% 100%)); color: hsl(var(--foreground, 240 10% 3.9%)); font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 550; cursor: pointer; box-shadow: var(--shadow-xs, 0 1px 2px 0 hsl(240 6% 10% / 0.05)); transition: background-color 0.12s ease, border-color 0.12s ease; } .ds-btn-secondary:hover { background-color: hsl(var(--accent, 240 4.8% 95.9%)); } .ds-btn-secondary:focus-visible { outline: 2px solid hsl(var(--ring, 221 83% 53%)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Field + Mono Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "The standard parameter control: a real bound label, a mono tabular input, and a hint wired through aria-describedby.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-fx\">f(x)</label><input class=\"ds-input ds-input-mono\" id=\"ds-fx\" type=\"text\" value=\"x^3 - x - 2\" aria-describedby=\"ds-fx-hint\" spellcheck=\"false\"><p class=\"ds-field-hint\" id=\"ds-fx-hint\">ใช้รูปแบบ mathjs เช่น x^3 - x - 2</p></div>",
+      "css": ".ds-field { display: grid; gap: 0.375rem; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; } .ds-field-label { font-size: 0.8125rem; font-weight: 550; color: hsl(var(--foreground, 240 10% 3.9%)); } .ds-field-hint { margin: 0; font-size: 0.75rem; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); } .ds-input { display: flex; width: 100%; height: 2.25rem; align-items: center; border: 1px solid hsl(var(--input, 240 5.9% 90%)); border-radius: var(--radius-sm, 0.375rem); background-color: hsl(var(--background, 0 0% 100%)); padding-inline: 0.625rem; font-size: 0.875rem; color: hsl(var(--foreground, 240 10% 3.9%)); box-shadow: var(--shadow-xs, 0 1px 2px 0 hsl(240 6% 10% / 0.05)); transition: border-color 0.12s ease, box-shadow 0.12s ease; } .ds-input-mono { font-family: var(--font-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; } .ds-input:focus-visible { outline: none; border-color: hsl(var(--ring, 221 83% 53%)); box-shadow: 0 0 0 3px hsl(var(--ring, 221 83% 53%) / 0.2); } .ds-input[aria-invalid=\"true\"] { border-color: hsl(var(--destructive, 0 72% 46%)); }"
+    },
+    {
+      "name": "Result Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The single container the whole product uses: hairline border, 12px corners, titled header with a right-aligned meta badge.",
+      "html": "<section class=\"ds-card\"><header class=\"ds-card-header\"><div><h2 class=\"ds-card-title\">คำตอบ</h2><p class=\"ds-card-desc\">วนซ้ำทั้งหมด 12 รอบ</p></div><span class=\"ds-badge\">12 รอบ</span></header><div class=\"ds-card-body\">เนื้อหาการ์ด</div></section>",
+      "css": ".ds-card { border: 1px solid hsl(var(--border, 240 5.9% 90%)); border-radius: var(--radius-lg, 0.75rem); background-color: hsl(var(--card, 0 0% 100%)); color: hsl(var(--foreground, 240 10% 3.9%)); box-shadow: var(--shadow-xs, 0 1px 2px 0 hsl(240 6% 10% / 0.05)); font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; } .ds-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; padding: 1.125rem 1.25rem; border-bottom: 1px solid hsl(var(--border, 240 5.9% 90%)); } .ds-card-title { margin: 0; font-size: 0.9375rem; font-weight: 600; line-height: 1.4; } .ds-card-desc { margin: 0.125rem 0 0; font-size: 0.8125rem; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); } .ds-card-body { padding: 1.25rem; font-size: 0.875rem; } .ds-badge { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.0625rem 0.5rem; font-size: 0.75rem; font-weight: 550; line-height: 1.5; background-color: hsl(var(--muted, 240 4.8% 95.9%)); color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); white-space: nowrap; }"
+    },
+    {
+      "name": "Iteration Table",
+      "kind": "custom",
+      "refersTo": "table-cell",
+      "description": "The product's central surface: mono tabular cells, a sticky washed header, and the converged final row filled in success green.",
+      "html": "<div class=\"ds-table-wrap\"><table class=\"ds-table\"><thead><tr><th scope=\"col\">รอบ</th><th scope=\"col\">x</th><th scope=\"col\">f(x)</th><th scope=\"col\">error (%)</th></tr></thead><tbody><tr><td data-index>0</td><td>1.500000</td><td>-0.125000</td><td>33.333333</td></tr><tr><td data-index>1</td><td>1.750000</td><td>0.171875</td><td>14.285714</td></tr><tr data-final=\"true\"><td data-index>2</td><td>1.521380</td><td>0.000001</td><td>0.000042</td></tr></tbody></table></div>",
+      "css": ".ds-table-wrap { width: 100%; overflow-x: auto; } .ds-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.8125rem; } .ds-table th { position: sticky; top: 0; border-bottom: 1px solid hsl(var(--border, 240 5.9% 90%)); background-color: hsl(var(--muted, 240 4.8% 95.9%) / 0.6); backdrop-filter: blur(6px); padding: 0.5rem 0.875rem; font-weight: 600; text-align: right; white-space: nowrap; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); } .ds-table th:first-child, .ds-table td:first-child { text-align: left; padding-left: 1.25rem; } .ds-table td { border-bottom: 1px solid hsl(var(--border, 240 5.9% 90%) / 0.6); padding: 0.4375rem 0.875rem; text-align: right; white-space: nowrap; font-family: var(--font-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 0.78125rem; color: hsl(var(--foreground, 240 10% 3.9%)); } .ds-table td[data-index] { font-weight: 550; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); } .ds-table tbody tr:hover td { background-color: hsl(var(--accent, 240 4.8% 95.9%) / 0.6); } .ds-table tbody tr[data-final=\"true\"] td { background-color: hsl(var(--success-muted, 138 76% 96%)); color: hsl(var(--success, 142 71% 33%)); font-weight: 600; } .ds-table tbody tr:last-child td { border-bottom: 0; }"
+    },
+    {
+      "name": "Answer Readout",
+      "kind": "custom",
+      "refersTo": "readout",
+      "description": "The computed answer stated once, above the work that produced it: 12px label over an 18px mono value.",
+      "html": "<div class=\"ds-readout\"><div class=\"ds-readout-item\"><p class=\"ds-readout-label\">ราก</p><p class=\"ds-readout-value\">1.521380</p></div><div class=\"ds-readout-item\"><p class=\"ds-readout-label\">f(x)</p><p class=\"ds-readout-value\">0.000001</p></div><div class=\"ds-readout-item\"><p class=\"ds-readout-label\">ค่าความคลาดเคลื่อน</p><p class=\"ds-readout-value\">0.000042 %</p></div></div>",
+      "css": ".ds-readout { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; } .ds-readout-label { margin: 0; font-size: 0.75rem; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); } .ds-readout-value { margin: 0.125rem 0 0; font-family: var(--font-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 1.125rem; font-weight: 600; letter-spacing: -0.02em; color: hsl(var(--foreground, 240 10% 3.9%)); overflow-wrap: anywhere; }"
+    },
+    {
+      "name": "Sidebar Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "The method tree: a sentence-case group label with a family icon, over 6px-radius link rows that take the wash on hover and when current.",
+      "html": "<nav class=\"ds-nav\"><p class=\"ds-nav-label\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 18c4-1 5-12 9-12 3 0 4 2 4 4\"/><path d=\"M3 12h8\"/></svg>การหารากของสมการ</p><a class=\"ds-nav-link\" href=\"#\">Bisection</a><a class=\"ds-nav-link\" href=\"#\" aria-current=\"page\">Newton-Raphson</a><a class=\"ds-nav-link\" href=\"#\">Secant</a></nav>",
+      "css": ".ds-nav { display: grid; gap: 0.0625rem; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; } .ds-nav-label { display: inline-flex; align-items: center; gap: 0.375rem; margin: 0; padding: 0 0.5rem 0.375rem; font-size: 0.75rem; font-weight: 600; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); } .ds-nav-link { display: flex; align-items: center; gap: 0.5rem; border-radius: var(--radius-sm, 0.375rem); padding: 0.375rem 0.5rem; font-size: 0.875rem; text-decoration: none; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); transition: color 0.12s ease, background-color 0.12s ease; } .ds-nav-link:hover { background-color: hsl(var(--accent, 240 4.8% 95.9%)); color: hsl(var(--foreground, 240 10% 3.9%)); } .ds-nav-link[aria-current=\"page\"] { background-color: hsl(var(--accent, 240 4.8% 95.9%)); color: hsl(var(--foreground, 240 10% 3.9%)); font-weight: 550; } .ds-nav-link:focus-visible { outline: 2px solid hsl(var(--ring, 221 83% 53%)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Error Alert",
+      "kind": "custom",
+      "refersTo": "alert-error",
+      "description": "Tinted 8px panel with a 15px icon and a 35%-alpha border. Same shape serves success and info by swapping the hue.",
+      "html": "<div class=\"ds-alert ds-alert-error\" role=\"alert\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7.5v5.5\"/><path d=\"M12 16.5h.01\"/></svg><div>ค่า tolerance ต้องมากกว่าศูนย์</div></div>",
+      "css": ".ds-alert { display: flex; align-items: flex-start; gap: 0.625rem; border: 1px solid hsl(var(--border, 240 5.9% 90%)); border-radius: var(--radius, 0.5rem); padding: 0.75rem 0.875rem; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.8125rem; line-height: 1.6; } .ds-alert svg { flex-shrink: 0; margin-top: 0.0625rem; } .ds-alert-error { border-color: hsl(var(--destructive, 0 72% 46%) / 0.35); background-color: hsl(var(--destructive-muted, 0 86% 97%)); color: hsl(var(--destructive, 0 72% 46%)); }"
+    },
+    {
+      "name": "Search Trigger + Keycap",
+      "kind": "custom",
+      "refersTo": "input",
+      "description": "The header entry to the command palette: an input-shaped button carrying a mono keycap with a 2px bottom border that reads as a key edge.",
+      "html": "<button class=\"ds-search-trigger\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><span class=\"ds-search-text\">ค้นหาเมธอด…</span><kbd class=\"ds-kbd\">⌘ K</kbd></button>",
+      "css": ".ds-search-trigger { display: flex; align-items: center; gap: 0.5rem; width: 100%; max-width: 15rem; height: 2rem; border: 1px solid hsl(var(--input, 240 5.9% 90%)); border-radius: var(--radius-sm, 0.375rem); background-color: hsl(var(--background, 0 0% 100%)); padding-inline: 0.5rem 0.375rem; font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif; font-size: 0.8125rem; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); cursor: pointer; transition: border-color 0.12s ease, background-color 0.12s ease; } .ds-search-trigger:hover { border-color: hsl(var(--muted-foreground, 240 3.8% 46.1%) / 0.45); background-color: hsl(var(--accent, 240 4.8% 95.9%) / 0.5); } .ds-search-text { flex: 1; text-align: left; } .ds-kbd { display: inline-flex; height: 1.25rem; min-width: 1.25rem; align-items: center; justify-content: center; border: 1px solid hsl(var(--border, 240 5.9% 90%)); border-bottom-width: 2px; border-radius: 0.25rem; background-color: hsl(var(--muted, 240 4.8% 95.9%)); padding-inline: 0.3125rem; font-family: var(--font-mono), ui-monospace, monospace; font-size: 0.6875rem; color: hsl(var(--muted-foreground, 240 3.8% 46.1%)); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Standard Instrument",
+    "overview": "This system is the category standard played straight, at full craft. It was chosen deliberately over a bespoke visual world: the reader is a student with a homework sheet beside the laptop, and every unit of attention spent decoding an invented visual language is a unit taken from checking whether their fourth decimal place matches. So the interface borrows the vocabulary its reader already knows from GitHub, Vercel and shadcn/ui — a neutral zinc field, hairline borders, one blue, soft rectangles — and spends its craft budget on the things only a calculator can get right: figures that line up, a converged row you can find without counting, and a table that survives twenty minutes of reading on a bright classroom screen.\n\nThe mood is quiet and administrative in the best sense. Surfaces are near-white or near-black with almost no chroma; colour appears only where it carries meaning. Density is high but never crowded — controls sit on a 2.25rem line, cards are separated by 1.25rem, and the page tops out at 84rem so a wide monitor produces more table, not longer lines of prose. Nothing decorates. The one authored moment in the whole build is the results stack rising into place after คำนวณ is pressed; everything else moves in 120ms or not at all.\n\nLight and dark are equal citizens, not a theme and its afterthought. Both are declared in full, the choice is applied before first paint so no reader gets a white flash, and even the charts re-read the live token values when the theme flips rather than shipping a vendor palette. The system explicitly refuses the mission-control dark skin the previous build wore: dark mode here is the same neutral system at a different lightness, not a different personality.",
+    "keyCharacteristics": [
+      "Neutral zinc scale (240° hue at 4–10% saturation) carrying every surface, with a single blue for links, focus and data",
+      "Two faces only: Anuphan for Thai and Latin UI text, Geist Mono for every figure",
+      "Hairline 1px borders as the primary separator; shadows say elevation, never state",
+      "Three radii keyed to element scale — 6px controls, 8px panels, 12px containers",
+      "Tabular-lining numerals everywhere a number appears, so decimal points stack column to column",
+      "Light and dark both fully specified, applied pre-paint, and read back at runtime by the chart layer"
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "Exactly one accent hue exists, and it is reserved for wayfinding and data: links, focus rings, info, the primary chart series. It never becomes a button fill, a card background, or decoration. If a new surface seems to need \"a colour\", the answer is a neutral wash.", "section": "colors" },
+      { "name": "The Two-Signal Rule", "body": "Green means converged or saved; red means invalid or destructive. There is no third status colour in the shipping UI — a warning pair exists in the token block but no surface consumes it, so introducing one is a system decision, not a lookup.", "section": "colors" },
+      { "name": "The Borrowed-Surface Rule", "body": "Any third-party surface — KaTeX, Plotly, Swagger UI — is repainted from these tokens before it ships. Vendor defaults belong to no design system: KaTeX inherits color, the Plotly layout is built from the live custom properties and recomputed on every theme change, and Swagger's hardcoded greys are overridden to foreground / Quiet Text / card / hairline.", "section": "colors" },
+      { "name": "The Two-Script Rule", "body": "Thai is the reading language and English is the technical vocabulary, so both live inside the same sentence and one family has to carry both. Never apply text-transform: uppercase or positive letter-spacing to a UI string that can carry Thai — uppercase is a no-op in Thai and added tracking loosens Thai words without helping the Latin ones beside them. Every group label in the build (sidebar and command palette alike) is therefore sentence case at 12px/600 in Quiet Text. Body copy holds a line-height of 1.6 or more; negative tracking is confined to large headings and the mono readout.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "Every number a user might compare vertically is Geist Mono with font-variant-numeric: tabular-nums — table cells, readouts, matrix cells, and any input the user types a figure into. Tables get it globally in the base layer, so a new table is correct before anyone styles it.", "section": "typography" },
+      { "name": "The One Template Rule", "body": "All 25 method pages render through a single shell — sidebar, breadcrumb, title, lead, then the aside/results split. A method page supplies only its own fields and its own result cards. A page that needs a different frame is a change to the shell, never a local layout.", "section": "layout" },
+      { "name": "The Answer-First Rule", "body": "The results column always reads answer, then graph, then table, and an empty state occupies that column before the first run so the page never looks like it is missing a region.", "section": "layout" },
+      { "name": "The Layer-Not-State Rule", "body": "A shadow says how far a surface sits off the page, never that a pointer is over it. Hover is a background wash or a border shift; focus is a ring. No element gains or loses elevation on hover, and nothing lifts on translateY.", "section": "elevation" },
+      { "name": "The Hairline-First Rule", "body": "If a boundary can be drawn with a 1px border, it is. Shadow is an addition to a border, never a replacement for one.", "section": "elevation" },
+      { "name": "The Nesting Radius Rule", "body": "An inner radius is always smaller than the radius of the thing containing it: 12px card → 8px alert → 6px input. If a new element's radius is ambiguous, ask what contains it. (The direction contract named \"8px radius\" as the world's single value; the build resolved it into this three-step scale, and the scale is the rule.)", "section": "shapes" }
+    ],
+    "dos": [
+      "Do run every new method page through the shared shell so the 25 stay one template, and supply only fields and result cards.",
+      "Do set every figure in Geist Mono with tabular numerals — table cells, readouts, matrix cells, and any input the user types a number into.",
+      "Do reach for a 1px hairline before a shadow, and for a neutral wash before a colour, when you need to separate or emphasise something.",
+      "Do define both themes for anything new, and read tokens at runtime rather than hardcoding hex when handing colour to a chart or a third-party widget.",
+      "Do keep read text at or above the Quiet Text floor (4.83:1 light, 8.05:1 dark) and give Thai copy at least 1.6 line-height.",
+      "Do put the commit button at the end of the surface the user was filling in, and give every input a real bound <label>.",
+      "Do ship an empty state for every region that will later hold results.",
+      "Do pick radius by containment: 6px controls, 8px panels, 12px containers."
+    ],
+    "donts": [
+      "Don't fill a button, card, or large area with the blue. It carries links, focus, info and the primary data series, and its restraint is what makes a focus ring legible.",
+      "Don't uppercase or letter-space any UI string that can carry Thai — which, in a Thai-primary product, is every label, heading and group title. Uppercase is a no-op in Thai and added tracking only loosens it. Both the sidebar and the command palette use the same sentence-case 12px/600 muted group label, and that is the system's group-label pattern.",
+      "Don't move elevation on hover, or animate transform anywhere but the two entrance moments already defined.",
+      "Don't add a third status hue, a second icon set, a third font, or a fourth radius. Each is a system change, not a component decision.",
+      "Don't let a vendor stylesheet ship its own palette — repaint KaTeX, Plotly and Swagger from the tokens.",
+      "Don't widen prose past 60ch or let a wide viewport stretch a paragraph; extra width belongs to tables.",
+      "Don't use a decorative flourish, an emoji, or a glyph where the authored 24-grid, 1.75-stroke icon set has a symbol."
+    ]
+  }
+}

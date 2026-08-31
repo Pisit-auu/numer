@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# impeccable build evidence and per-machine config
+/.impeccable/review/
+/.impeccable/config.local.json

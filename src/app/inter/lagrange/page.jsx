@@ -1,298 +1,61 @@
-'use client'
-import { useState, useEffect } from 'react';
-import { evaluate} from 'mathjs';
+'use client';
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
-import axios from 'axios'
-import StationSelect from '../../components/StationSelect';
-export default function Lagrange() {
-  const [pointValue, setpointValue] = useState([]);
-  const [Xinput , setXinput] = useState('');
-  const [matrixX, setmatrixX] = useState([]);  
-  const [matrixY, setMatrixY] = useState([]);  
-  const [equtionli,setequtionli] =useState([]);  
-  const [eqution,seteqution]=useState('')
-  const [Li,setLi]=useState([]) 
-  const [result,setresult]= useState('');  //เก็บ result
-  const [equationapi,setEquationapi]= useState([]);
-  const [point,setpoint] = useState([])
-  const [show,setshow] = useState(false)
-    const handleMatrixChange = (rowIndex, value) => {  
-      const numericValue = parseFloat(value);
-      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix X
-      const newMatrix = [...matrixX];
-      newMatrix[rowIndex] = validValue;
-      setmatrixX(newMatrix);
-      
-    };
-    const handleMatrixChangeB = (rowIndex, value) => {   
-      const numericValue = parseFloat(value);
-      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix Y
-      const newMatrix = [...matrixY];
-      newMatrix[rowIndex] = validValue;
-      setMatrixY(newMatrix);
-      
-    };
-    
-    useEffect(() => {    
-      const newmatrixX = Array.from({ length: pointValue }, () => "" );
-      setmatrixX(newmatrixX);
-      const newMatrixY = Array.from({ length: pointValue }, () => "");
-      setMatrixY(newMatrixY);
-    }, [pointValue]);  //กำหนดขนาดของ matrix
-    
-    const handleSubmit = async(event) => {  
-      event.preventDefault();
-      if(Xinput ===''||pointValue<2){
-        alert('โปรดกรอกค่า x หรือ point > 1')
-        return
-      }
-      const X = matrixX;
-      const point = parseInt(pointValue);
-      const Y = matrixY
-      const x0 = parseFloat(Xinput)
-      const now = new Date();
-      const formattedDateTime = now.toLocaleString('th-TH', {
-        timeZone: 'Asia/Bangkok',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      try{
-        await axios.post('/api/inter',{
-          proublem:"Lagrange",
-          point,
-          X,
-          Y,
-          x0,
-          Date:formattedDateTime 
-        })
-        }catch(error){
-          console.log('error',error)
-        }
-      lagrange(X,Y,x0)
-      
-    };
-    const fetchpoint = async () => {
-      try{
-          const Response= await axios.get('/api/inter')
-          let test = Response.data
-          let keeppoint =[]
-          for(let i=0;i< test.length;i++){
-            if(!keeppoint.some(item=>item.label===test[i].point)){
-              keeppoint.push({ value: test[i].point, label: test[i].point});
-            }
-          }
-          setpoint(keeppoint)
-      }catch(error){
-        console.log('error',error)
+import { BlockMath } from 'react-katex';
+import PointsMethodPage from '../../components/PointsMethodPage';
+
+function solve({ X, Y, x0, n }) {
+  if (new Set(X).size !== X.length) {
+    return { error: 'ค่า X ต้องไม่ซ้ำกัน — ตัวส่วนของ L(x) จะเป็นศูนย์' };
+  }
+
+  /* Each basis polynomial Lᵢ is 1 at xᵢ and 0 at every other sample. */
+  const rows = Array.from({ length: n }, (_, i) => {
+    let numerator = 1;
+    let denominator = 1;
+    for (let j = 0; j < n; j += 1) {
+      if (i !== j) {
+        numerator *= X[j] - x0;
+        denominator *= X[j] - X[i];
       }
     }
-    const fetchequation = async (value) => {
-      try{
-          const Response= await axios.get('/api/inter')
-          let test = Response.data
-          let keepequation = []
-          for(let i=0;i< test.length;i++){
-            if(test[i].point === value){
-              keepequation.push({value:test[i].id, label:test[i].X})
-            }
-          }
-          setEquationapi(keepequation)
-      }catch(error){
-        console.log('error',error)
-      }
-    }
-    useEffect(()=>{
-      fetchpoint()
-    },[])
+    const L = numerator / denominator;
+    return { i, L, y: Y[i], term: L * Y[i] };
+  });
 
-    const handlepoint = (value)=>{
-      setpointValue(value)
-      fetchequation(value)
-    }
-    const handleeuation = async (value)=>{
-      const Response = await axios.get(`/api/inter/${value}`)
-      const X = Response.data.X
-      const Y = Response.data.Y
-      const x0 = Response.data.x0
-      setmatrixX(X)
-      setMatrixY(Y)
-      setXinput(x0)
-    }
+  const value = rows.reduce((sum, row) => sum + row.term, 0);
 
-    
-    function lagrange(xi, yi, x) {
-      let Li =[];
-      let newIterations =[];
-      for(let i=0;i<pointValue;i++){
-        let sumon = 1;
-        let sumunder = 1;
-        for( let j=0;j<pointValue;j++){
-          if(i!==j){
-            sumon *= xi[j]-x;
-            sumunder *= xi[j]-xi[i];
-          }
-        }
-        let calLi = sumon/sumunder;
-        Li.push(calLi);
-      }
-      console.log(Li)
-      setLi(Li)
-      let result=0;
-      for(let i=0;i<pointValue;i++){
-        result +=  Li[i]*yi[i];
-      }
-      console.log(result)
-      for(let i=0;i<pointValue;i++){
-        if(i==pointValue-1){
-          newIterations.push({ iter: i, li: Li[i], yi: yi[i],plus:"",equa:""  });
-          break
-        }
-        if(i==0){
-          newIterations.push({ iter: i, li: Li[i], yi: yi[i],plus:"+",equa:"="  });
-        }
-        newIterations.push({ iter: i, li: Li[i], yi: yi[i],plus:"+",equa:"" });
-      }
-      let equation = ''; // เริ่มต้นเป็น string ว่าง
-      for(let i = 0; i < pointValue; i++) {
-        equation += `L_{${i}}(${Xinput})f(x_{${i}}) + `;
-      }
-      // ลบ "+" ตัวสุดท้ายออก
-      equation = equation.slice(0, -3);
-      console.log(equation)
-      seteqution(equation)
-      console.log(newIterations)
-      setequtionli(newIterations)
-      setresult(result.toString())
-      setshow(true)
-    }
-    
-    
-  
-  return (
-    <div className="station-shell">
-      <main className="station-main">
-              <div className="grid grid-cols-3 gap-4 p-4">
-
-                      <div className="text-center text-blue-500 text-3xl">
-                        </div>
-
-                      <div className="text-center text-blue-500 text-3xl"> Lagrange Interpolation  {/*column2*/}
-
-                              <div> points=  {pointValue}
-                                  {matrixX.length > 0 && (  //แสดงเมื่อ matrix >0
-                                          <div className="mt-4">
-                                                  <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
-                                                      <div className='grid grid-cols-3 gap-4 p-4'>
-                                                      <div>  {'X'}   </div>
-                                                        <div>  </div>
-
-                                                        
-                                                        <div> {'Y'}  </div>
-                                                      </div>
-
-                                                  <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                        {matrixX.map((value, rowIndex) => (  // รับค่าmatrix x
-                                                                          <input
-                                                                            key={rowIndex}
-                                                                            type="number"
-                                                                            value={value}
-                                                                            onChange={(e) => handleMatrixChange(rowIndex, e.target.value)}
-                                                                            className="border p-2 w-full text-center"
-                                                                          />
-                                                                        ))}
-                                                                    </div>
-                                                  <div>  </div>
-                                                        
-
-                                                              <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixY.map((value, rowIndex) => (  // รับค่าmatrix y
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="number"
-                                                                      value={value}
-                                                                      onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-full text-center"
-                                                                    />
-                                                                  ))}
-                                                              </div>
-                                                  </div>
-                                          </div>
-                                    )}
-                              </div>     
-                              <div>
-                              input Number of points 
-                                  <form onSubmit={handleSubmit}>
-                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
-                                        <div className="pt-4">X value
-                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
-                                        </div>
-
-                                        <button type="submit">Submit</button>
-
-                                  </form>   
-                              </div>
-                              <div className='mt-4'>Inter Equation History</div>
-                                      <StationSelect
-                                defaultValue="size"
-                                onChange={handlepoint}
-                                options={point.map(item => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))}
-                              /><StationSelect
-                              defaultValue="data"
-                              onChange={handleeuation}
-                              options={equationapi.map(item => ({
-                                value: item.value,
-                                label: item.label,
-                              }))}
-                            />           
-
-                        </div>
-
-                <div className="text-center text-blue-500 text-3xl"></div>  {/*column3*/}
-              </div >
-
-
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
-                    
-
-                          <div className="grid grid-cols-1 gap-0 p-4">     solution
-                            {show &&(
-                                    <div>
-                                    {Li.map((iteration, index) => (
-                                        <div key={index}>
-                                          <BlockMath math={`L_{${index}}(${Xinput}) = ${iteration}`} />
-                                        </div>
-                                      ))}
-                                  <div className='text-center'>  <InlineMath math =  {`f(${Xinput})=`}/> <InlineMath math =  {`${eqution}`}/> 
-                                  {equtionli.map((iteration, index) => (
-                                        <div key={index}>
-                                          <InlineMath math={`${iteration.equa}(${iteration.li})(${iteration.yi})${iteration.plus}`} />
-                                        </div>
-                                      ))}
-                                  <InlineMath math =  {"="}/>  <InlineMath math =  {result}/> </div>
-                                    
-                                  </div>
-
-                            )}
-                                    
-                        
-                       
-
-
-
-                          </div>
-                </div>
-          </main>
-    </div>
-  );
+  return {
+    value,
+    steps: (
+      <div className="overflow-x-auto">
+        <BlockMath
+          math={`f(${x0}) = ${rows.map((row) => `L_{${row.i}}(${x0})\\,f(x_{${row.i}})`).join(' + ')}`}
+        />
+        <BlockMath
+          math={`f(${x0}) = ${rows.map((row) => `(${Number(row.L.toFixed(6))})(${Number(row.y)})`).join(' + ')} = ${Number(value.toFixed(6))}`}
+        />
+      </div>
+    ),
+    iterations: rows,
+    tableTitle: 'พหุนามฐาน Lᵢ',
+    columns: [
+      { key: 'i', label: 'i', render: (row) => row.i },
+      { key: 'L', label: 'Lᵢ(x)', render: (row) => row.L.toFixed(6) },
+      { key: 'y', label: 'f(xᵢ)', render: (row) => Number(row.y) },
+      { key: 'term', label: 'Lᵢ · f(xᵢ)', render: (row) => row.term.toFixed(6) },
+    ],
+  };
 }
 
-//<BlockMath math={`C_{${index}}*X_{${index}}= ${iteration.cn.toExponential(4)}*${iteration.xi}`} />
+export default function Lagrange() {
+  return (
+    <PointsMethodPage
+      family="inter"
+      method="lagrange"
+      problem="Lagrange"
+      resource="inter"
+      solve={solve}
+      stepsDescription="ถ่วงน้ำหนักทุกจุดข้อมูลด้วยพหุนามฐานของตัวเอง"
+    />
+  );
+}

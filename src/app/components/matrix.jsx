@@ -342,7 +342,4 @@ function pushBcolumn(A, B, column) {
         } 
         return newarray;
     }
-    import React from 'react';
-import { BlockMath } from 'react-katex';
-import 'katex/dist/katex.min.css'; 
 

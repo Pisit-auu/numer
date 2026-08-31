@@ -1,752 +1,228 @@
-'use client'
-import { useState, useEffect } from 'react';
+'use client';
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
-import { eliminate ,findXeliminate,insertB} from '@/app/components/matrix';
-import ArrayDisplay from '@/app/components/showmatrixnxn'
-import axios from 'axios'
-import StationSelect from '../../components/StationSelect';
-export default function Spline() {
-  const [pointValue, setpointValue] = useState([]);
-  const [Xinput , setXinput] = useState('');
-  const [matrixX, setmatrixX] = useState([]);  
-  const [matrixY, setMatrixY] = useState([]);  
-  const [result,setresult]= useState('');  //เก็บ result
-  const [colorbuttonl,setcolorbuttonl] = useState('bg-green-200');
-  const [colorbuttonq,setcolorbuttonq] = useState('bg-slate-200');
-  const [colorbuttonc,setcolorbuttonc] = useState('bg-slate-200');
-  const [spline,setspline]= useState('linear');
-  const [equationcalresult,setequationcalresult]= useState('');
-  const [equationfn,setequationfn]= useState([]);
-  const [metexta,setmatrixa] = useState([])
-  const [matrixnewB, setMatrixnewB] = useState([]);  
-  const [matrixnewA, setMatrixnewA] = useState([]);  
-  const [keepm,setkeepm] = useState();
-  const [showfxresult , setshowfxresult] = useState([]);
-  const [fx, setfx] = useState([])
-  const [fxresult, setfxresult] = useState([])
-  const [showlinear,setlinear] = useState(false);
-  const [showqua,setqua] = useState(false);
-  const [showcubic,setcubic] = useState(false);
-  const clickchoosespline =(message) =>{
-    if(message==='linear'){
-      setcolorbuttonl('bg-green-200')
-      setcolorbuttonq('bg-slate-200')
-      setcolorbuttonc('bg-slate-200')
-      setspline(message);
-      setcubic(false)
-      setqua(false)
-      setlinear(false);
-    }else if(message==='quadratic'){
-      setcolorbuttonq('bg-green-200')
-      setcolorbuttonc('bg-slate-200')
-      setcolorbuttonl('bg-slate-200')
-      setspline(message);
-      setcubic(false)
-      setlinear(false);
-      setqua(false)
-    }else if(message==='cubic'){
-      setcolorbuttonc('bg-green-200')
-      setcolorbuttonl('bg-slate-200')
-      setcolorbuttonq('bg-slate-200')
-      setspline(message);
-      setqua(false)
-      setcubic(false)
-      setlinear(false);
+import { BlockMath } from 'react-katex';
+import PointsMethodPage from '../../components/PointsMethodPage';
+
+const round = (value) => Number(Number(value).toFixed(6));
+
+/** Gaussian elimination with partial pivoting, for the quadratic spline system. */
+function solveSystem(M) {
+  const n = M.length;
+  for (let i = 0; i < n; i += 1) {
+    let pivot = i;
+    for (let r = i + 1; r < n; r += 1) if (Math.abs(M[r][i]) > Math.abs(M[pivot][i])) pivot = r;
+    if (Math.abs(M[pivot][i]) < 1e-12) return null;
+    [M[i], M[pivot]] = [M[pivot], M[i]];
+    for (let r = i + 1; r < n; r += 1) {
+      const factor = M[r][i] / M[i][i];
+      for (let c = i; c <= n; c += 1) M[r][c] -= factor * M[i][c];
     }
   }
-  const [equation,setEquation]= useState([]);
-  const [point,setpoint] = useState([])
-
-
-    const handleMatrixChange = (rowIndex, value) => {  
-      const numericValue = parseFloat(value);
-      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix X
-      const newMatrix = [...matrixX];
-      newMatrix[rowIndex] = validValue;
-      setmatrixX(newMatrix);
-      
-    };
-    const handleMatrixChangeB = (rowIndex, value) => {   
-      const numericValue = parseFloat(value);
-      const validValue = Number.isNaN(numericValue) ? 0 : numericValue; //update matrix Y
-      const newMatrix = [...matrixY];
-      newMatrix[rowIndex] = validValue;
-      setMatrixY(newMatrix);
-      
-    };
-    
-    useEffect(() => {    
-      const newmatrixX = Array.from({ length: pointValue }, () => "" );
-      setmatrixX(newmatrixX);
-      const newMatrixY = Array.from({ length: pointValue }, () => "");
-      setMatrixY(newMatrixY);
-    }, [pointValue]);  //กำหนดขนาดของ matrix
-    
-    const handleSubmit = async(event) => {  
-      event.preventDefault();
-      if(Xinput ===''){
-        alert('โปรดกรอกค่า x')
-        return
-      }
-      const newmetrixX =matrixX
-      const newmetrixY =matrixY
-      setkeepm(findm(newmetrixX,newmetrixY))
-      const X = matrixX;
-      const point = parseInt(pointValue);
-      const Y = matrixY
-      const x0 = parseFloat(Xinput)
-      const now = new Date();
-      const formattedDateTime = now.toLocaleString('th-TH', {
-        timeZone: 'Asia/Bangkok',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      try{
-        await axios.post('/api/inter',{
-          proublem:"Spline",
-          point,
-          X,
-          Y,
-          x0,
-          Date:formattedDateTime 
-        })
-        }catch(error){
-          console.log('error',error)
-        }
-      if(spline==='linear'){
-        linear(newmetrixX,newmetrixY,parseFloat(Xinput))
-      }else if(spline==='quadratic'){
-        qua(newmetrixX,newmetrixY,parseFloat(Xinput));
-      }else if(spline==='cubic'){
-        cubic(newmetrixX,newmetrixY,parseFloat(Xinput));
-      }
-      
-    };
-    const fetchpoint = async () => {
-      try{
-          const Response= await axios.get('/api/inter')
-          let test = Response.data
-          let keeppoint =[]
-          for(let i=0;i< test.length;i++){
-            if(!keeppoint.some(item=>item.label===test[i].point)){
-              keeppoint.push({ value: test[i].point, label: test[i].point});
-            }
-          }
-          setpoint(keeppoint)
-      }catch(error){
-        console.log('error',error)
-      }
-    }
-    const fetchequation = async (value) => {
-      try{
-          const Response= await axios.get('/api/inter')
-          let test = Response.data
-          let keepequation = []
-          for(let i=0;i< test.length;i++){
-            if(test[i].point === value){
-              keepequation.push({value:test[i].id, label:test[i].X})
-            }
-          }
-          setEquation(keepequation)
-      }catch(error){
-        console.log('error',error)
-      }
-    }
-    useEffect(()=>{
-      fetchpoint()
-    },[])
-
-    const handlepoint = (value)=>{
-      setpointValue(value)
-      fetchequation(value)
-    }
-    const handleeuation = async (value)=>{
-      const Response = await axios.get(`/api/inter/${value}`)
-      const X = Response.data.X
-      const Y = Response.data.Y
-      const x0 = Response.data.x0
-      setmatrixX(X)
-      setMatrixY(Y)
-      setXinput(x0)
-    }
-
-    function findm(x,y){
-          let m = new Array(pointValue).fill(0);
-          for(let i=1;i<pointValue;i++){
-            if(x[i]-x[i-1]==0){
-              alert('x[i]-x[i-1] ==0')
-              return
-            }
-            m[i-1] = (y[i]-y[i-1])/(x[i]-x[i-1]);
-          }
-          return m
-    }
-    function cubic(x,y,xinput){
-          let keepi
-          let check =true;
-          //find range
-          for(let i=0;i<pointValue-1;i++){
-              if(Xinput >= x[i]&& Xinput<=x[i+1]){
-                keepi = i;
-                check=false;
-              }
-          }
-          if(check){
-            alert("x not found")
-            return
-          }
-
-
-
-          const newmatrix = Array.from({ length: (pointValue-1)*4 }, () => Array((pointValue-1)*4).fill(0));
-          let count =0
-          let index=1;
-          let start=0;//keepindex when push x
-          
-
-          // push matrix abcdn
-          let an= []
-          for(let i = 1; i <= newmatrix.length/4; i++) {
-            an.push(`a${i}`);
-            an.push(`b${i}`);
-            an.push(`c${i}`);
-            an.push(`d${i}`);
-          }
-          setmatrixa(an)
-
-          //push arrayX  x two at a time
-          for(let i=0;i<(pointValue-2)*2;i+=2){
-            for(let k=count;k<=count+3;k++){
-              if(k==count){
-                newmatrix[i][k] = Math.pow(x[index], 3);
-                newmatrix[i+1][k+4] = Math.pow(x[index], 3);
-              }else if(Math.abs(k-count)==2){
-                newmatrix[i][k] = x[index]
-                newmatrix[i+1][k+4] = x[index]
-              }else if(Math.abs(k-count)==3){
-                newmatrix[i][k] = 1
-                newmatrix[i+1][k+4] = 1
-              }else{
-                newmatrix[i][k] = Math.pow(x[index], 2);
-                newmatrix[i+1][k+4] = Math.pow(x[index], 2);
-              }
-          }
-          start+=2; 
-          count+=4;
-          index++
-        }
- 
-          //push x0 xn-1
-            newmatrix[start][0] = Math.pow(x[0], 3);
-            newmatrix[start][1] = Math.pow(x[0], 2);
-            newmatrix[start][2] = x[0]
-            newmatrix[start][3] = 1;
-  
-            newmatrix[(start+1)][newmatrix.length-1] = 1
-            newmatrix[(start+1)][newmatrix.length-2] = x[(parseInt(pointValue)-1)];
-            newmatrix[(start+1)][newmatrix.length-3] =  Math.pow(x[(parseInt(pointValue)-1)], 2);
-            newmatrix[(start+1)][newmatrix.length-4] =  Math.pow(x[(parseInt(pointValue)-1)], 3);
-          setMatrixnewA(newmatrix)
-
-
-          //push f'(x)
-          count =0
-          for(let i=0;i<parseInt(pointValue)-2;i++){
-              for(let j=count;j<7+count;j++){
-                  if(j==count){
-                    newmatrix[start+2+i][j] = Math.pow(x[i+1],2)*3
-                  }else if(j-count ==1){
-                    newmatrix[start+2+i][j] = x[i+1]*2
-                  }else if(j-count ==2){
-                    newmatrix[start+2+i][j] = 1
-                  }else if(j-count ==3){
-                    newmatrix[start+2+i][j] = 0
-                  }else if(j-count ==4){
-                    newmatrix[start+2+i][j] = Math.pow(x[i+1],2)*(-3)
-                  }else if(j-count ==5){
-                    newmatrix[start+2+i][j] = x[i+1]*(-2)
-                  }else if(j-count ==6){
-                    newmatrix[start+2+i][j] = -1
-                  }
-                  
-              }
-              count+=4
-          }
-          start+=parseInt(pointValue)-2 //keepindex wantto push f'(x)
-          count =0
-          //push f''(x)
-          for(let i=0;i<parseInt(pointValue)-2;i++){
-              for(let j=count;j<7+count;j++){
-                  if(j==count){
-                    newmatrix[start+2+i][j] = x[i+1]*6
-                  }else if(j-count ==1){
-                    newmatrix[start+2+i][j] = 2
-                  }else if(j-count ==2){
-                    newmatrix[start+2+i][j] = 0
-                  }else if(j-count ==3){
-                    newmatrix[start+2+i][j] = 0
-                  }else if(j-count ==4){
-                    newmatrix[start+2+i][j] = x[i+1]*(-6)
-                  }else if(j-count ==5){
-                    newmatrix[start+2+i][j] = -2
-                  }else if(j-count ==6){
-                    newmatrix[start+2+i][j] = 0
-                  }
-              }
-              count+=4
-          }
-          start-=parseInt(pointValue)-2 //back to index push head 
-
-
-          newmatrix[newmatrix.length-2][0] = x[0]*6
-          newmatrix[newmatrix.length-2][1] = 2;
-          newmatrix[(newmatrix.length-1)][newmatrix.length-3] = 2;
-          newmatrix[(newmatrix.length-1)][newmatrix.length-4] =  x[parseInt(pointValue)-1]*6;
-
-          //push y to array b
-          const newmatrixsumy = new Array(newmatrix.length).fill(0);
-          index=0
-          //push fn(x) 
-          for(let i=0;i<start;i+=2){
-                newmatrixsumy[i] =y[index+1];
-                newmatrixsumy[i+1] =y[index+1];
-            index++
-          }
-          setMatrixnewB(newmatrixsumy)
-
-          //push fx(0) fx(n-1)
-          newmatrixsumy[start] =y[0];
-          newmatrixsumy[start+1] =y[parseInt(pointValue)-1];
-
-            //elminate
-          let ab = insertB(newmatrix,newmatrixsumy)
-          let eliminateab = eliminate(ab)
-          let findxab = findXeliminate(eliminateab)
-
-          let arraykeepabc =[]
-
-
-          
-          let keepindex= 0
-          for(let i = 0; i < newmatrix.length/4; i++) {
-              arraykeepabc[i] = {a: findxab[keepindex].result,b:findxab[keepindex+1].result,c: findxab[keepindex+2].result,d: findxab[keepindex+3].result}
-              keepindex+=4;
-          }
-
-          //fx(x)= anbncndn = what value
-          let equationarray =[]
-          let equation= ''
-          for(let i = 1; i <= newmatrix.length/4; i++) {
-                equation += ` a_{${i}} = {${arraykeepabc[i-1].a}}`;
-                equation += `, b_{${i}} = {${arraykeepabc[i-1].b}}`;
-              equation += `, c_{${i}} = {${arraykeepabc[i-1].c}}`;
-              equation += `, d_{${i}} = {${arraykeepabc[i-1].d}}`;
-              equationarray.push(equation)
-              equation=''
-          }
-          setshowfxresult(equationarray)
-
-
-          //array fx insert  anbncndn
-          let arrayfx =[]
-          let fx = ''
-          keepindex= 0
-          for(let i = 1; i <= newmatrix.length/4; i++) {
-                fx += `f${i}(x) = {${findxab[keepindex].result}}x^3`;
-                fx += `+ {${findxab[keepindex+1].result}}x^2`;
-                fx += `+ {${findxab[keepindex+2].result}}x`;
-                fx += `+ {${findxab[keepindex+3].result}} \\quad ;\\quad  ${x[i-1]}<=x<=${x[i]}`;
-                arrayfx.push(fx);
-              keepindex+=4
-            fx=''
-          }
-          setfx(arrayfx)
-
-
-          //find result
-          let fxreult;
-          let arrayfxresult =[]
-            fxreult = `f_${keepi+1}(${Xinput}) = ${(arraykeepabc[keepi].a*xinput*xinput*xinput)+(arraykeepabc[keepi].b*xinput*xinput)+(arraykeepabc[keepi].c*xinput)+arraykeepabc[keepi].d}`
-
-          arrayfxresult.push(fxreult)
-          keepindex= 0
-          
-          setfxresult(arrayfxresult)
-          setcubic( true)
-    }
-    function qua(x,y,xinput){
-      let keepi
-      let check =true;
-      for(let i=0;i<pointValue-1;i++){
-          if(Xinput >= x[i]&& Xinput<=x[i+1]){
-            keepi = i;
-            check=false;
-          }
-      }
-      if(check){
-        alert("x not found")
-        return
-      }
-      const newmatrix = Array.from({ length: (pointValue-1)*3 }, () => Array((pointValue-1)*3).fill(0));
-      let count =0
-      let index=1;
-      let start=0;
-
-      let an= []
-      for(let i = 1; i <= newmatrix.length/3; i++) {
-        an.push(`a${i}`);
-        an.push(`b${i}`);
-        an.push(`c${i}`);
-      }
-      setmatrixa(an)
-
-
-      for(let i=0;i<(pointValue-2)*2;i+=2){
-          for(let k=count;k<count+3;k++){
-            if(k==count){
-              newmatrix[i][k] = Math.pow(x[index], 2);
-              newmatrix[i+1][k+3] = Math.pow(x[index], 2);
-            }else if(Math.abs(k-count)==2){
-              newmatrix[i][k] =1
-              newmatrix[i+1][k+3] =1
-            }else{
-              newmatrix[i][k] = x[index]
-              newmatrix[i+1][k+3] = x[index]
-            }
-        }
-        start+=2;
-        count+=3;
-        index++
-      }
-
-          newmatrix[start][0] = Math.pow(x[0], 2);
-          newmatrix[start][2] = 1
-          newmatrix[start][1] = x[0];
-
-          newmatrix[(start+1)][newmatrix.length-1] = 1
-          newmatrix[(start+1)][newmatrix.length-2] = x[(parseInt(pointValue)-1)];
-          newmatrix[(start+1)][newmatrix.length-3] =  Math.pow(x[(parseInt(pointValue)-1)], 2);
-
-          newmatrix[(newmatrix.length)-1][0] =  1;
-          setMatrixnewA(newmatrix)
-          count =0
-          for(let i=0;i<parseInt(pointValue)-2;i++){
-              for(let j=count;j<5+count;j++){
-                  if(j==count){
-                    newmatrix[start+2+i][j] = x[i+1]*2
-                  }else if(j-count ==1){
-                    newmatrix[start+2+i][j] = 1
-                  }else if(j-count ==2){
-                    newmatrix[start+2+i][j] = 0
-                  }else if(j-count ==3){
-                    newmatrix[start+2+i][j] = x[i+1]*(-2)
-                  }else if(j-count ==4){
-                    newmatrix[start+2+i][j] = -1
-                  }
-              }
-              count+=3
-          }
-
-
-          index=1
-          const newmatrixsumy = new Array(newmatrix.length).fill(0);
-          
-          for(let i=0;i<=start;i+=2){
-                newmatrixsumy[i] =y[index];
-                newmatrixsumy[i+1] =y[index];
-            index++
-          }
-
-          
-          const newmatrixcal = Array.from({ length: (newmatrix.length-1) }, () => Array((newmatrix.length-1)).fill(0));
-          for(let i=0;i<newmatrixcal.length;i++){
-            for(let j=0;j<newmatrixcal.length;j++){
-              newmatrixcal[i][j] = newmatrix[i][j+1]
-              
-            }
-          }
-
-          newmatrixsumy[start] =y[0];
-          newmatrixsumy[start+1] =y[parseInt(pointValue)-1];
-          
-
-          const newmatrixcaly =new Array((newmatrixsumy.length-1)).fill(0);
-          for(let i=0;i<newmatrixcaly.length;i++){
-              newmatrixcaly[i] =newmatrixsumy[i]; 
-              
-          }
-          setMatrixnewB(newmatrixsumy)
-
-          let ab = insertB(newmatrixcal,newmatrixsumy)
-          let eliminateab = eliminate(ab)
-          let findxab = findXeliminate(eliminateab)
-          
-          let arraykeepabc =[]
-
-
-          
-          let keepindex= 0
-          for(let i = 0; i < newmatrix.length/3; i++) {
-            if(i==0){
-              arraykeepabc[i] = {a: 0,b:findxab[keepindex].result,c: findxab[keepindex+1].result}
-              keepindex+=2;
-            }else{
-              arraykeepabc[i] = {a: findxab[keepindex].result,b:findxab[keepindex+1].result,c: findxab[keepindex+2].result}
-              keepindex+=3;
-            }
-    
-          }
-
-
-          let equationarray =[]
-          let equation= 'a_1 = 0'
-          keepindex= 0
-          for(let i = 1; i <= newmatrix.length/3; i++) {
-           
-              if(i==1){
-                equation += `, b_{${i}} = {${findxab[keepindex].result}}`;
-              equation += `, c_{${i}} = {${findxab[keepindex+1].result}}`;
-              keepindex+=2
-              equationarray.push(equation)
-              }else{
-                equation += ` a_{${i}} = {${findxab[keepindex].result}}`;
-                equation += `, b_{${i}} = {${findxab[keepindex+1].result}}`;
-              equation += `, c_{${i}} = {${findxab[keepindex+2].result}}`;
-              equationarray.push(equation)
-              keepindex+=3
-            }
-            equation=''
-          }
-          setshowfxresult(equationarray)
-          let arrayfx =[]
-          let fx = ''
-          keepindex= 0
-          for(let i = 1; i <= newmatrix.length/3; i++) {
-           
-              if(i==1){
-                fx += `f${i}(x) = {${findxab[keepindex].result}}x`;
-                fx += `+ {${findxab[keepindex+1].result}}\\quad \\quad ${x[i-1]}<=x<=${x[i]}`;
-              keepindex+=2
-              arrayfx.push(fx);
-              }else{
-                fx += `f${i}(x) = {${findxab[keepindex].result}}x^2`;
-                fx += `+ {${findxab[keepindex+1].result}}x`;
-                fx += `+ {${findxab[keepindex+2].result}} \\quad \\quad ${x[i-1]}<=x<=${x[i]}`;
-                arrayfx.push(fx);
-              keepindex+=3 
-            }
-          fx=''
-          }
-          setfx(arrayfx)
-
-          let fxreult;
-          let arrayfxresult =[]
-
-            fxreult = `f_${keepi+1}(${Xinput}) = ${(arraykeepabc[keepi].a*xinput*xinput)+(arraykeepabc[keepi].b*xinput)+arraykeepabc[keepi].c}`
-
-          arrayfxresult.push(fxreult)
-          keepindex= 0
-          
-          setfxresult(arrayfxresult)
-          setqua(true)
-
-    }
-    
-    function linear(x, y, Xinput) {
-      let m =findm(x,y)
-      let r
-      let keepi
-      let check =true;
-      for(let i=0;i<pointValue-1;i++){
-          if(Xinput >= x[i]&& Xinput<=x[i+1]){
-            keepi = i;
-            check=false;
-          }
-      }
-      if(check){
-        alert("x not found")
-        return
-      }
-      let fn= [];
-      for(let i=1;i<pointValue;i++){
-        fn.push(`f_${i}(x) = ${y[i-1]}+(${m[i-1]})(x-${x[i-1]});\\quad  ${x[i-1]}<=x<=${x[i]}`)
-      }
-      setequationfn(fn)
-      r = y[keepi] + m[keepi]*(Xinput-x[keepi])
-      setequationcalresult(`f(${Xinput}) = ${y[keepi]}+ (${m[keepi]})(${Xinput}-${x[keepi]})`)
-      setresult(`f(${Xinput}) = ${r}`)
-
-
-      setlinear(true)
-    }
-    
-  
-  return (
-    <div className="station-shell">
-      <main className="station-main">
-              <div className="grid grid-cols-3 gap-4 p-4">
-                      <div className="text-center text-blue-500 text-3xl">
-                        </div>
-
-                      <div className="text-center text-blue-500 text-3xl"> Spline  {/*column2*/}
-                              <div> points=  {pointValue}
-                                  {matrixX.length > 0 && (  //แสดงเมื่อ matrix >0
-                                          <div className="mt-4">
-                                                  <h2 className="text-xl mb-4">กรอกข้อมูลในช่องให้ครบถ้วน</h2>
-                                                      <div className='grid grid-cols-3 gap-4 p-4'>
-                                                      <div>  {'X'}   </div>
-                                                        <div>  </div>
-                                                        <div> {'Y'}  </div>
-                                                      </div>
-                                                  <div className='grid grid-cols-3 gap-4 p-4'>
-                                                  <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                        {matrixX.map((value, rowIndex) => (  // รับค่าmatrix x
-                                                                          <input
-                                                                            key={rowIndex}
-                                                                            type="number"
-                                                                            value={value}
-                                                                            onChange={(e) => handleMatrixChange(rowIndex, e.target.value)}
-                                                                            className="border p-2 w-full text-center"
-                                                                          />
-                                                                        ))}
-                                                                    </div>
-                                                  <div>  </div>
-                                                       
-
-                                                              <div className="grid" style={{ gridTemplateRows: `repeat(${pointValue}, minmax(0, 1fr))`, gap: '2px' }}> 
-                                                                  {matrixY.map((value, rowIndex) => (  // รับค่าmatrix y
-                                                                    <input
-                                                                      key={rowIndex}
-                                                                      type="number"
-                                                                      value={value}
-                                                                      onChange={(e) => handleMatrixChangeB(rowIndex, e.target.value)}
-                                                                      className="border p-2 w-full text-center"
-                                                                    />
-                                                                  ))}
-                                                              </div>
-                                                  </div>
-                                          </div>
-                                    )}
-                              </div>  
-                              <div>
-                              input  Number of points        
-                                  <form onSubmit={handleSubmit}>
-                                        <input type="number" value={pointValue} onChange={(e) => setpointValue(e.target.value)}/>
-                                        <div className="pt-4">X value
-                                            <input type="number"  value={Xinput}  onChange={(e) => setXinput(e.target.value)}  ></input>
-                                        </div>
-                                        <button type="submit">Submit</button>
-                                  </form>
-                              </div>
-                              <div className='mt-4'>Inter Equation History</div>
-                                      <StationSelect
-                                defaultValue="size"
-                                onChange={handlepoint}
-                                options={point.map(item => ({
-                                  value: item.value,
-                                  label: item.label,
-                                }))}
-                              /><StationSelect
-                              defaultValue="data"
-                              onChange={handleeuation}
-                              options={equation.map(item => ({
-                                value: item.value,
-                                label: item.label,
-                              }))}
-                            />           
-
-                        </div>
-
-                <div className="text-center text-blue-500 text-3xl"> {/*column3 bg-green-400*/}
-                 <div>
-                 <button  className={`p-2 ${colorbuttonl}`}onClick={() => clickchoosespline('linear')}>Linear</button>
-                  <button className={`p-2 ${colorbuttonq} `}onClick={() => clickchoosespline('quadratic')}>Quadratic</button>
-                  <button  className={`p-2 ${colorbuttonc} `}onClick={() => clickchoosespline('cubic')}>Cubic</button>
-                  </div>
-                  
-                  
-                  </div> 
-                
-              </div >
-
-
-              <div className='bg-slate-200 font-bold	m-10 p-8 h-auto '> {/*กรอบแสดงผล*/}
-                    
-
-                          <div className="grid grid-cols-1 gap-0 p-4">     solution
-                                     
-                                  {showlinear && (
-                                                    <div>
-                                                      <div>
-                                                                                                {equationfn.map((iteration, index) => (
-                                                                                                    <div key={index}>
-                                                                                                        <BlockMath math =  {`${iteration}`}/> 
-                                                                                                    </div>
-                                                                                                  ))}
-                                                                                                  <BlockMath math =  {`${equationcalresult}`}/> 
-                                                                                                  <BlockMath math =  {`${result}`}/> 
-                                                                                            
-                                                                                        </div>
-                                                    </div>
-                                          )}
-                                {showqua && (
-                                                    <div>
-                                                      <div className='flex justify-center items-center'><ArrayDisplay matrix={matrixnewA} /> 
-                                                            <ArrayDisplay matrix={metexta} /> 
-                                                            <BlockMath math={`=`} /> <ArrayDisplay matrix={matrixnewB} /> 
-                                                            
-                                                    </div>
-                                                    <div>
-                                                        {showfxresult.map((showfxresult,index)=> (
-                                                                <BlockMath key={index} math={showfxresult} />
-                                                            ))}
-                                                        <BlockMath math={'f_i(x) = a_ix^2+b_ix+c_i'} />
-                                                        {fx.map((fx,index)=> (
-                                                            <BlockMath key={index} math={fx} />
-                                                        ))}
-                                                        {fxresult.map((fxresult,index)=> (
-                                                            <BlockMath key={index} math={fxresult} />
-                                                        ))}
-                                                    </div>
-                                                    </div>
-                                          )}  
-
-                                        {showcubic && (
-                                                       <div>
-                                                       <div className='flex justify-center items-center'><ArrayDisplay matrix={matrixnewA} /> 
-                                                             <ArrayDisplay matrix={metexta} /> 
-                                                             <BlockMath math={`=`} /> <ArrayDisplay matrix={matrixnewB} /> 
-                                                             
-                                                     </div>
-                                                     <div>
-                                                         {showfxresult.map((showfxresult,index)=> (
-                                                                 <BlockMath key={index} math={showfxresult} />
-                                                             ))}
-                                                         <BlockMath math={'f_i(x) = a_ix^3+b_ix^2+c_ix+d_i'} />
-                                                         {fx.map((fx,index)=> (
-                                                             <BlockMath key={index} math={fx} />
-                                                         ))}
-                                                         {fxresult.map((fxresult,index)=> (
-                                                             <BlockMath key={index} math={fxresult} />
-                                                         ))}
-                                                     </div>
-                                                     </div>
-                                          )}  
-                        
-                       
-
-
-
-                          </div>
-                </div>
-          </main>
-    </div>
-  );
+  const x = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i -= 1) {
+    x[i] = M[i][n];
+    for (let j = i + 1; j < n; j += 1) x[i] -= M[i][j] * x[j];
+    x[i] /= M[i][i];
+  }
+  return x;
 }
 
-//<BlockMath math={`C_{${index}}*X_{${index}}= ${iteration.cn.toExponential(4)}*${iteration.xi}`} />
+function findInterval(X, x0) {
+  for (let i = 0; i < X.length - 1; i += 1) {
+    if (x0 >= X[i] && x0 <= X[i + 1]) return i;
+  }
+  return -1;
+}
+
+function linearSpline(X, Y, x0, k) {
+  const slopes = X.slice(0, -1).map((_, i) => (Y[i + 1] - Y[i]) / (X[i + 1] - X[i]));
+  const value = Y[k] + slopes[k] * (x0 - X[k]);
+
+  return {
+    value,
+    steps: (
+      <div className="grid gap-2 overflow-x-auto">
+        {slopes.map((m, i) => (
+          <BlockMath
+            key={i}
+            math={`f_{${i + 1}}(x) = ${round(Y[i])} + (${round(m)})(x - ${round(X[i])}), \\quad ${round(X[i])} \\le x \\le ${round(X[i + 1])}`}
+          />
+        ))}
+        <BlockMath
+          math={`f(${x0}) = ${round(Y[k])} + (${round(slopes[k])})(${x0} - ${round(X[k])}) = ${round(value)}`}
+        />
+      </div>
+    ),
+    iterations: slopes.map((m, i) => ({ i, m, from: X[i], to: X[i + 1] })),
+    tableTitle: 'ความชันของแต่ละช่วง',
+    columns: [
+      { key: 'i', label: 'ช่วง', render: (row) => `${row.i + 1}` },
+      { key: 'from', label: 'จาก x', render: (row) => round(row.from) },
+      { key: 'to', label: 'ถึง x', render: (row) => round(row.to) },
+      { key: 'm', label: 'ความชัน m', render: (row) => row.m.toFixed(6) },
+    ],
+  };
+}
+
+function quadraticSpline(X, Y, x0, k, n) {
+  /* Three unknowns (a, b, c) per interval, closed by a₁ = 0. */
+  const pieces = n - 1;
+  const size = 3 * pieces;
+  const M = Array.from({ length: size }, () => new Array(size + 1).fill(0));
+  let row = 0;
+
+  for (let i = 0; i < pieces; i += 1) {
+    for (const [x, y] of [
+      [X[i], Y[i]],
+      [X[i + 1], Y[i + 1]],
+    ]) {
+      M[row][3 * i] = x * x;
+      M[row][3 * i + 1] = x;
+      M[row][3 * i + 2] = 1;
+      M[row][size] = y;
+      row += 1;
+    }
+  }
+
+  for (let i = 0; i < pieces - 1; i += 1) {
+    const x = X[i + 1];
+    M[row][3 * i] = 2 * x;
+    M[row][3 * i + 1] = 1;
+    M[row][3 * (i + 1)] = -2 * x;
+    M[row][3 * (i + 1) + 1] = -1;
+    row += 1;
+  }
+
+  M[row][0] = 1;
+
+  const coefficients = solveSystem(M);
+  if (!coefficients) return { error: 'ระบบสมการของ spline นี้แก้ไม่ได้ ลองตรวจว่าค่า X ไม่ซ้ำกัน' };
+
+  const rows = Array.from({ length: pieces }, (_, i) => ({
+    i,
+    a: coefficients[3 * i],
+    b: coefficients[3 * i + 1],
+    c: coefficients[3 * i + 2],
+  }));
+  const { a, b, c } = rows[k];
+  const value = a * x0 * x0 + b * x0 + c;
+
+  return {
+    value,
+    steps: (
+      <div className="grid gap-2 overflow-x-auto">
+        {rows.map((piece) => (
+          <BlockMath
+            key={piece.i}
+            math={`f_{${piece.i + 1}}(x) = ${round(piece.a)}x^2 + ${round(piece.b)}x + ${round(piece.c)}, \\quad ${round(X[piece.i])} \\le x \\le ${round(X[piece.i + 1])}`}
+          />
+        ))}
+        <BlockMath math={`f(${x0}) = ${round(value)}`} />
+      </div>
+    ),
+    iterations: rows,
+    tableTitle: 'สัมประสิทธิ์ของแต่ละช่วง',
+    columns: [
+      { key: 'i', label: 'ช่วง', render: (r) => r.i + 1 },
+      { key: 'a', label: 'a', render: (r) => r.a.toFixed(6) },
+      { key: 'b', label: 'b', render: (r) => r.b.toFixed(6) },
+      { key: 'c', label: 'c', render: (r) => r.c.toFixed(6) },
+    ],
+  };
+}
+
+function cubicSpline(X, Y, x0, k, n) {
+  /* Natural cubic spline: second derivatives are zero at both ends. */
+  const h = X.slice(0, -1).map((_, i) => X[i + 1] - X[i]);
+  const M = new Array(n).fill(0);
+
+  if (n > 2) {
+    const size = n - 2;
+    const system = Array.from({ length: size }, () => new Array(size + 1).fill(0));
+    for (let i = 0; i < size; i += 1) {
+      const idx = i + 1;
+      if (i > 0) system[i][i - 1] = h[idx - 1];
+      system[i][i] = 2 * (h[idx - 1] + h[idx]);
+      if (i < size - 1) system[i][i + 1] = h[idx];
+      system[i][size] =
+        6 * ((Y[idx + 1] - Y[idx]) / h[idx] - (Y[idx] - Y[idx - 1]) / h[idx - 1]);
+    }
+    const inner = solveSystem(system);
+    if (!inner) return { error: 'ระบบสมการของ spline นี้แก้ไม่ได้ ลองตรวจว่าค่า X เรียงจากน้อยไปมาก' };
+    inner.forEach((value, i) => {
+      M[i + 1] = value;
+    });
+  }
+
+  const evaluate = (i, x) => {
+    const hi = h[i];
+    return (
+      (M[i] * (X[i + 1] - x) ** 3) / (6 * hi) +
+      (M[i + 1] * (x - X[i]) ** 3) / (6 * hi) +
+      (Y[i] / hi - (M[i] * hi) / 6) * (X[i + 1] - x) +
+      (Y[i + 1] / hi - (M[i + 1] * hi) / 6) * (x - X[i])
+    );
+  };
+
+  const value = evaluate(k, x0);
+
+  return {
+    value,
+    steps: (
+      <div className="grid gap-2 overflow-x-auto">
+        <BlockMath math={`S_i(x) = \\frac{M_i(x_{i+1}-x)^3 + M_{i+1}(x-x_i)^3}{6h_i} + \\left(\\frac{y_i}{h_i} - \\frac{M_i h_i}{6}\\right)(x_{i+1}-x) + \\left(\\frac{y_{i+1}}{h_i} - \\frac{M_{i+1} h_i}{6}\\right)(x-x_i)`} />
+        <BlockMath math={`f(${x0}) = ${round(value)} \\quad \\text{(ช่วงที่ } ${k + 1}\\text{)}`} />
+      </div>
+    ),
+    iterations: X.map((x, i) => ({ i, x, y: Y[i], M: M[i] })),
+    tableTitle: 'อนุพันธ์อันดับสองที่แต่ละจุด',
+    columns: [
+      { key: 'i', label: 'i', render: (r) => r.i },
+      { key: 'x', label: 'xᵢ', render: (r) => round(r.x) },
+      { key: 'y', label: 'yᵢ', render: (r) => round(r.y) },
+      { key: 'M', label: 'Mᵢ', render: (r) => r.M.toFixed(6) },
+    ],
+  };
+}
+
+function solve({ X, Y, x0, n, extra }) {
+  const sorted = X.every((value, i) => i === 0 || value > X[i - 1]);
+  if (!sorted) return { error: 'ค่า X ต้องเรียงจากน้อยไปมากและไม่ซ้ำกัน' };
+
+  const k = findInterval(X, x0);
+  if (k === -1) {
+    return { error: `ค่า x = ${x0} อยู่นอกช่วงข้อมูล [${X[0]}, ${X[n - 1]}] — spline ใช้ประมาณค่าในช่วงเท่านั้น` };
+  }
+
+  if (extra.kind === 'quadratic') return quadraticSpline(X, Y, x0, k, n);
+  if (extra.kind === 'cubic') return cubicSpline(X, Y, x0, k, n);
+  return linearSpline(X, Y, x0, k);
+}
+
+export default function Spline() {
+  return (
+    <PointsMethodPage
+      family="inter"
+      method="spline"
+      problem="Spline"
+      resource="inter"
+      solve={solve}
+      targetHint="ต้องอยู่ในช่วงของข้อมูล"
+      extraFields={[
+        {
+          key: 'kind',
+          label: 'ชนิดของ spline',
+          default: 'linear',
+          hint: 'ยิ่งดีกรีสูงยิ่งเรียบต่อเนื่อง แต่ต้องใช้จุดมากขึ้น',
+          choices: [
+            { value: 'linear', label: 'Linear — ต่อด้วยเส้นตรง' },
+            { value: 'quadratic', label: 'Quadratic — ต่อด้วยพาราโบลา' },
+            { value: 'cubic', label: 'Cubic (natural) — เรียบที่สุด' },
+          ],
+        },
+      ]}
+      stepsTitle="สมการของแต่ละช่วง"
+      stepsDescription="พหุนามที่ใช้ในแต่ละช่วงย่อย และค่าที่แทนลงไป"
+    />
+  );
+}
