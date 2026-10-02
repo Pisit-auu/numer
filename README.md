@@ -197,7 +197,7 @@ cd numer
 # 2. ติดตั้ง dependencies
 npm install
 
-# 3. สร้างไฟล์ .env.local (ดูหัวข้อ Environment Variables)
+# 3. สร้างไฟล์ .env (ดูหัวข้อ Environment Variables)
 
 # 4. สร้าง Prisma Client และตารางในฐานข้อมูล
 npx prisma generate
@@ -215,7 +215,7 @@ npm run dev
 
 ## Environment Variables
 
-สร้างไฟล์ `.env.local` ที่ root ของโปรเจกต์ (ไฟล์นี้อยู่ใน `.gitignore` แล้ว):
+สร้างไฟล์ `.env` ที่ root ของโปรเจกต์ (ไฟล์นี้อยู่ใน `.gitignore` แล้ว ห้าม commit):
 
 ```env
 # Connection string ของ PostgreSQL (ถ้าใช้ pooler เช่น Neon ให้ใส่ URL แบบ pooled)
@@ -229,7 +229,7 @@ DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/numer?sslmode=require"
 | `DATABASE_URL` | ✅ | Connection string ที่แอปใช้ |
 | `DIRECT_URL` | ✅ | Connection ตรงสำหรับ Prisma migrate |
 
-> Prisma CLI (`migrate`, `studio`) อ่านจากไฟล์ `.env` เท่านั้น ไม่อ่าน `.env.local` ถ้าจะรันคำสั่ง Prisma ให้ export ตัวแปรใน shell ก่อน เช่น `export $(grep -v "^#" .env.local | xargs)` แล้วค่อยรัน `npx prisma migrate deploy`
+> ใช้ `.env` ไฟล์เดียวได้ทั้ง Next.js, Prisma CLI (`migrate`, `studio`) และ `docker compose` (อ่านผ่าน `env_file`)
 
 ---
 
@@ -312,6 +312,14 @@ docker run -p 3000:3000 \
 ```
 
 ค่า `DATABASE_URL` / `DIRECT_URL` ต้องส่งตอนรัน container (ด้วย `-e`, `--env-file` หรือระบบ secret ของแพลตฟอร์ม) ไม่ฝังลงใน image
+
+### Docker Compose
+
+`docker-compose.yml` มี 2 service: `app` (ตัวเว็บ พอร์ต 3000) และ `prisma` (Prisma Studio พอร์ต 5555) ทั้งสองอ่านค่าจากไฟล์ `.env`
+
+```bash
+docker compose up -d --build
+```
 
 ### GitHub Actions
 

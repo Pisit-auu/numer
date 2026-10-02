@@ -1,20 +1,21 @@
+# ค่า DATABASE_URL / DIRECT_URL อ่านจากไฟล์ .env (อยู่ใน .gitignore) ห้ามใส่รหัสผ่านลงไฟล์นี้
 services:
   app:
     build:
       context: .
     ports:
-      - '3000:3000' 
-    environment:
-      DATABASE_URL: "postgres://default:ZDQ7EjAIXY0U@ep-flat-morning-a1efwc0r.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+      - '3000:3000'
+    env_file:
+      - .env
 
   prisma:
-    image: node:18-alpine
+    image: node:22-alpine
     working_dir: /app
     volumes:
       - .:/app
       - /app/node_modules
-    environment:
-      DATABASE_URL: postgres://default:ZDQ7EjAIXY0U@ep-flat-morning-a1efwc0r.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+    env_file:
+      - .env
     command: npx prisma studio
     ports:
-      - '5555:5555' 
+      - '5555:5555'
