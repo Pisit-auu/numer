@@ -5,7 +5,8 @@ services:
     ports:
       - '3000:3000' 
     environment:
-      DATABASE_URL: "postgres://default:ZDQ7EjAIXY0U@ep-flat-morning-a1efwc0r.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL_UNPOOLED: ${DATABASE_URL_UNPOOLED}
 
   prisma:
     image: node:18-alpine
@@ -14,7 +15,8 @@ services:
       - .:/app
       - /app/node_modules
     environment:
-      DATABASE_URL: postgres://default:ZDQ7EjAIXY0U@ep-flat-morning-a1efwc0r.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL_UNPOOLED: ${DATABASE_URL_UNPOOLED}
     command: npx prisma studio
     ports:
       - '5555:5555' 
