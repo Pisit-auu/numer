@@ -1,4 +1,4 @@
-# ค่า DATABASE_URL / DIRECT_URL อ่านจากไฟล์ .env (อยู่ใน .gitignore) ห้ามใส่รหัสผ่านลงไฟล์นี้
+# ค่า DATABASE_URL / DATABASE_URL_UNPOOLED อ่านจากไฟล์ .env (อยู่ใน .gitignore) ห้ามใส่รหัสผ่านลงไฟล์นี้
 services:
   app:
     build:

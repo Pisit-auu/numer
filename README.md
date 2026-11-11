@@ -221,13 +221,13 @@ npm run dev
 # Connection string ของ PostgreSQL (ถ้าใช้ pooler เช่น Neon ให้ใส่ URL แบบ pooled)
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/numer?sslmode=require"
 # Connection ตรงสำหรับ prisma migrate (ถ้าไม่ได้ใช้ pooler ใส่ค่าเดียวกับ DATABASE_URL)
-DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/numer?sslmode=require"
+DATABASE_URL_UNPOOLED="postgresql://USER:PASSWORD@HOST:5432/numer?sslmode=require"
 ```
 
 | ตัวแปร | จำเป็น | คำอธิบาย |
 |--------|:------:|----------|
 | `DATABASE_URL` | ✅ | Connection string ที่แอปใช้ |
-| `DIRECT_URL` | ✅ | Connection ตรงสำหรับ Prisma migrate |
+| `DATABASE_URL_UNPOOLED` | ✅ | Connection ตรง (ไม่ผ่าน pooler) สำหรับ Prisma migrate — ชื่อนี้ Neon integration บน Vercel สร้างให้อัตโนมัติ |
 
 > ใช้ `.env` ไฟล์เดียวได้ทั้ง Next.js, Prisma CLI (`migrate`, `studio`) และ `docker compose` (อ่านผ่าน `env_file`)
 
@@ -307,11 +307,11 @@ curl -X POST http://localhost:3000/api/root \
 docker build -t numer .
 docker run -p 3000:3000 \
   -e DATABASE_URL="postgresql://..." \
-  -e DIRECT_URL="postgresql://..." \
+  -e DATABASE_URL_UNPOOLED="postgresql://..." \
   numer
 ```
 
-ค่า `DATABASE_URL` / `DIRECT_URL` ต้องส่งตอนรัน container (ด้วย `-e`, `--env-file` หรือระบบ secret ของแพลตฟอร์ม) ไม่ฝังลงใน image
+ค่า `DATABASE_URL` / `DATABASE_URL_UNPOOLED` ต้องส่งตอนรัน container (ด้วย `-e`, `--env-file` หรือระบบ secret ของแพลตฟอร์ม) ไม่ฝังลงใน image
 
 ### Docker Compose
 
@@ -327,7 +327,7 @@ docker compose up -d --build
 
 ### Vercel
 
-deploy บน Vercel ได้โดยตรง: import repo, ตั้ง `DATABASE_URL` และ `DIRECT_URL` ใน Environment Variables แล้วกด Deploy (คำสั่ง `npm run build` จะรัน `prisma generate` ให้เอง)
+deploy บน Vercel ได้โดยตรง: import repo, เชื่อม Neon ผ่าน Storage (prefix `DATABASE`) ซึ่งจะสร้าง `DATABASE_URL` และ `DATABASE_URL_UNPOOLED` ให้ แล้วกด Deploy (Vercel ใช้สคริปต์ `vercel-build` ที่รัน `prisma generate` + `prisma migrate deploy` ให้เอง ตารางจึงถูกสร้างอัตโนมัติ)
 
 ---
 

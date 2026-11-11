@@ -32,6 +32,6 @@ USER node
 EXPOSE 3000
 ENV PORT=3000
 
-# DATABASE_URL and DIRECT_URL are supplied at run time (-e, --env-file, or the
+# DATABASE_URL and DATABASE_URL_UNPOOLED are supplied at run time (-e, --env-file, or the
 # platform's secret store) and are never baked into the image.
 CMD ["npm", "run", "start"]
